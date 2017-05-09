@@ -7,7 +7,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.SynchronousQueue;
 
-import com.yqc.executor.LiftOff;
+import com.yqc.basic.execute.executor.LiftOff;
 
 class LiftOffRunner implements Runnable {
 
