@@ -152,7 +152,7 @@ public class ArrayBlockingQueue<E> extends AbstractQueue<E> implements BlockingQ
     }
 
     /**
-     * enqueueÔÚofferÀïÃæÊ¹ÓÃ
+     * enqueueåœ¨offeré‡Œé¢ä½¿ç”¨
      * Inserts element at current put position, advances, and signals.
      * Call only when holding lock.
      */
@@ -231,7 +231,7 @@ public class ArrayBlockingQueue<E> extends AbstractQueue<E> implements BlockingQ
     }
 
     /**
-     * capacity ÈİÁ¿
+     * capacity å®¹é‡
      * Creates an {@code ArrayBlockingQueue} with the given (fixed)
      * capacity and default access policy.
      *
@@ -256,7 +256,7 @@ public class ArrayBlockingQueue<E> extends AbstractQueue<E> implements BlockingQ
         if (capacity <= 0)
             throw new IllegalArgumentException();
         this.items = new Object[capacity];
-        lock = new ReentrantLock(fair);   //ÆäÊµ¾ÍÊÇÓÃÁËÒ»¸ö·Ç¹«Æ½Ëø
+        lock = new ReentrantLock(fair);   //å…¶å®å°±æ˜¯ç”¨äº†ä¸€ä¸ªéå…¬å¹³é”
         notEmpty = lock.newCondition();
         notFull =  lock.newCondition();
     }
@@ -277,7 +277,7 @@ public class ArrayBlockingQueue<E> extends AbstractQueue<E> implements BlockingQ
      * @throws NullPointerException if the specified collection or any
      *         of its elements are null
      */
-	public ArrayBlockingQueue(int capacity, boolean fair, Collection<? extends E> c) {
+    public ArrayBlockingQueue(int capacity, boolean fair, Collection<? extends E> c) {
         this(capacity, fair);
 
         final ReentrantLock lock = this.lock;
@@ -315,7 +315,7 @@ public class ArrayBlockingQueue<E> extends AbstractQueue<E> implements BlockingQ
     }
 
     /**
-     * Èç¹û¶ÓÁĞÒÑÂú£¬Ôò²»¼ÓÈëµ½¶ÓÁĞÖĞ£¬ÇÒ·µ»Øfalse
+     * å¦‚æœé˜Ÿåˆ—å·²æ»¡ï¼Œåˆ™ä¸åŠ å…¥åˆ°é˜Ÿåˆ—ä¸­ï¼Œä¸”è¿”å›false
      * Inserts the specified element at the tail of this queue if it is
      * possible to do so immediately without exceeding the queue's capacity,
      * returning {@code true} upon success and {@code false} if this queue
@@ -341,7 +341,7 @@ public class ArrayBlockingQueue<E> extends AbstractQueue<E> implements BlockingQ
     }
 
     /**
-     * Èç¹û¶ÓÁĞÒÑÂú£¬ÔòÒ»Ö±µÈ´ı£¬Ö±µ½¶ÓÁĞÖĞÓĞÔªËØ³ö¶ÓÁĞ
+     * å¦‚æœé˜Ÿåˆ—å·²æ»¡ï¼Œåˆ™ä¸€ç›´ç­‰å¾…ï¼Œç›´åˆ°é˜Ÿåˆ—ä¸­æœ‰å…ƒç´ å‡ºé˜Ÿåˆ—
      * Inserts the specified element at the tail of this queue, waiting
      * for space to become available if the queue is full.
      *
@@ -362,7 +362,7 @@ public class ArrayBlockingQueue<E> extends AbstractQueue<E> implements BlockingQ
     }
 
     /**
-     * µÈ´ıÖ¸¶¨Ê±¼ä£¬Èç¹û¶ÓÁĞ»¹ÊÇÂúµÄ£¬ÄÇÃ´»¹ÊÇ·µ»Øfalse
+     * ç­‰å¾…æŒ‡å®šæ—¶é—´ï¼Œå¦‚æœé˜Ÿåˆ—è¿˜æ˜¯æ»¡çš„ï¼Œé‚£ä¹ˆè¿˜æ˜¯è¿”å›false
      * Inserts the specified element at the tail of this queue, waiting
      * up to the specified wait time for space to become available if
      * the queue is full.
@@ -371,7 +371,7 @@ public class ArrayBlockingQueue<E> extends AbstractQueue<E> implements BlockingQ
      * @throws NullPointerException {@inheritDoc}
      */
     public boolean offer(E e, long timeout, TimeUnit unit)
-        throws InterruptedException {
+            throws InterruptedException {
 
         checkNotNull(e);
         long nanos = unit.toNanos(timeout);
@@ -391,7 +391,7 @@ public class ArrayBlockingQueue<E> extends AbstractQueue<E> implements BlockingQ
     }
 
     /**
-     * Èç¹û¶ÓÁĞÎª¿Õ£¬ÄÇÃ´·µ»Ønull£¬·ñÔò·µ»ØÁĞ±íÍ·ÔªËØ
+     * å¦‚æœé˜Ÿåˆ—ä¸ºç©ºï¼Œé‚£ä¹ˆè¿”å›nullï¼Œå¦åˆ™è¿”å›åˆ—è¡¨å¤´å…ƒç´ 
      */
     public E poll() {
         final ReentrantLock lock = this.lock;
@@ -404,8 +404,8 @@ public class ArrayBlockingQueue<E> extends AbstractQueue<E> implements BlockingQ
     }
 
     /**
-     * Èç¹û¶ÓÁĞÎª¿Õ£¬ÔòÒ»Ö±µÈ´ı£¬ÖªµÀ¶ÓÁĞ²»Îª¿ÕÎªÖ¹
-     * ×èÈû¹ı³ÌÖĞ£¬ÈÎÈ»ÏìÓ¦ÖĞ¶Ï
+     * å¦‚æœé˜Ÿåˆ—ä¸ºç©ºï¼Œåˆ™ä¸€ç›´ç­‰å¾…ï¼ŒçŸ¥é“é˜Ÿåˆ—ä¸ä¸ºç©ºä¸ºæ­¢
+     * é˜»å¡è¿‡ç¨‹ä¸­ï¼Œä»»ç„¶å“åº”ä¸­æ–­
      */
     public E take() throws InterruptedException {
         final ReentrantLock lock = this.lock;
@@ -420,7 +420,7 @@ public class ArrayBlockingQueue<E> extends AbstractQueue<E> implements BlockingQ
     }
 
     /**
-     * Ö¸¶¨Ê±³¤»ñÈ¡
+     * æŒ‡å®šæ—¶é•¿è·å–
      */
     public E poll(long timeout, TimeUnit unit) throws InterruptedException {
         long nanos = unit.toNanos(timeout);
@@ -637,7 +637,7 @@ public class ArrayBlockingQueue<E> extends AbstractQueue<E> implements BlockingQ
             final int len = a.length;
             if (len < count)
                 a = (T[])java.lang.reflect.Array.newInstance(
-                    a.getClass().getComponentType(), count);
+                        a.getClass().getComponentType(), count);
             int n = items.length - takeIndex;
             if (count <= n)
                 System.arraycopy(items, takeIndex, a, 0, count);
@@ -1151,7 +1151,7 @@ public class ArrayBlockingQueue<E> extends AbstractQueue<E> implements BlockingQ
                 // how far takeIndex has advanced since the previous
                 // operation of this iterator
                 long dequeues = (cycles - prevCycles) * len
-                    + (takeIndex - prevTakeIndex);
+                        + (takeIndex - prevTakeIndex);
 
                 // Check indices for invalidation
                 if (invalidated(lastRet, prevTakeIndex, dequeues, len))
@@ -1338,7 +1338,7 @@ public class ArrayBlockingQueue<E> extends AbstractQueue<E> implements BlockingQ
             if (removedIndex < takeIndex)
                 cycleDiff++;
             final int removedDistance =
-                (cycleDiff * len) + (removedIndex - prevTakeIndex);
+                    (cycleDiff * len) + (removedIndex - prevTakeIndex);
             // assert removedDistance >= 0;
             int cursor = this.cursor;
             if (cursor >= 0) {
@@ -1425,8 +1425,8 @@ public class ArrayBlockingQueue<E> extends AbstractQueue<E> implements BlockingQ
      */
     public Spliterator<E> spliterator() {
         return Spliterators.spliterator
-            (this, Spliterator.ORDERED | Spliterator.NONNULL |
-             Spliterator.CONCURRENT);
+                (this, Spliterator.ORDERED | Spliterator.NONNULL |
+                        Spliterator.CONCURRENT);
     }
 
 }
