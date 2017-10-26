@@ -10,16 +10,6 @@ public class TestFuture implements Callable<Integer> {
 
     private volatile int a = 2;
 
-    @Override
-    public Integer call() throws Exception {
-        while (a < 100000) {
-            TimeUnit.SECONDS.sleep(1);
-            a++;
-            System.out.println("haha!" + a);
-        }
-        return 2;
-    }
-
     public static void main(String[] args) {
         ExecutorService exec = Executors.newCachedThreadPool();
         Future<Integer> future = exec.submit(new TestFuture());
@@ -35,5 +25,15 @@ public class TestFuture implements Callable<Integer> {
             future.cancel(true);   //如果不取消，即使抛出TimeoutException异常，线程还是会继续执行
             System.out.println(future.isCancelled());
         } // 如果在指定时间内没有获取到结果，那么future会抛出异常
+    }
+
+    @Override
+    public Integer call() throws Exception {
+        while (a < 100000) {
+            TimeUnit.SECONDS.sleep(1);
+            a++;
+            System.out.println("haha!" + a);
+        }
+        return 2;
     }
 }

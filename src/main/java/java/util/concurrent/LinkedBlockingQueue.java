@@ -35,15 +35,10 @@
 
 package java.util.concurrent;
 
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.AbstractQueue;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
-import java.util.Spliterator;
-import java.util.Spliterators;
 import java.util.function.Consumer;
 
 /**
@@ -58,24 +53,24 @@ import java.util.function.Consumer;
  * operations obtain elements at the head of the queue.
  * Linked queues typically have higher throughput than array-based queues but
  * less predictable performance in most concurrent applications.
- *
+ * <p>
  * <p>The optional capacity bound constructor argument serves as a
  * way to prevent excessive queue expansion. The capacity, if unspecified,
  * is equal to {@link Integer#MAX_VALUE}.  Linked nodes are
  * dynamically created upon each insertion unless this would bring the
  * queue above capacity.
- *
+ * <p>
  * <p>This class and its iterator implement all of the
  * <em>optional</em> methods of the {@link Collection} and {@link
  * Iterator} interfaces.
- *
+ * <p>
  * <p>This class is a member of the
  * <a href="{@docRoot}/../technotes/guides/collections/index.html">
  * Java Collections Framework</a>.
  *
- * @since 1.5
- * @author Doug Lea
  * @param <E> the type of elements held in this collection
+ * @author Doug Lea
+ * @since 1.5
  */
 public class LinkedBlockingQueue<E> extends AbstractQueue<E>
         implements BlockingQueue<E>, java.io.Serializable {
@@ -115,53 +110,91 @@ public class LinkedBlockingQueue<E> extends AbstractQueue<E>
      * linking a Node that has just been dequeued to itself.  Such a
      * self-link implicitly means to advance to head.next.
      */
-
     /**
-     * Linked list node class
+     * The capacity bound, or Integer.MAX_VALUE if none
      */
-    static class Node<E> {
-        E item;
-
-        /**
-         * One of:
-         * - the real successor Node
-         * - this Node, meaning the successor is head.next
-         * - null, meaning there is no successor (this is the last node)
-         */
-        Node<E> next;
-
-        Node(E x) { item = x; }
-    }
-
-    /** The capacity bound, or Integer.MAX_VALUE if none */
     private final int capacity;
-
-    /** Current number of elements */
+    /**
+     * Current number of elements
+     */
     private final AtomicInteger count = new AtomicInteger();
-
+    /**
+     * Lock held by take, poll, etc
+     */
+    private final ReentrantLock takeLock = new ReentrantLock();
+    /**
+     * Wait queue for waiting takes
+     */
+    private final Condition notEmpty = takeLock.newCondition();
+    /**
+     * Lock held by put, offer, etc
+     */
+    private final ReentrantLock putLock = new ReentrantLock();
+    /**
+     * Wait queue for waiting puts
+     */
+    private final Condition notFull = putLock.newCondition();
     /**
      * Head of linked list.
      * Invariant: head.item == null
      */
     transient Node<E> head;
-
     /**
      * Tail of linked list.
      * Invariant: last.next == null
      */
     private transient Node<E> last;
 
-    /** Lock held by take, poll, etc */
-    private final ReentrantLock takeLock = new ReentrantLock();
+    /**
+     * Creates a {@code LinkedBlockingQueue} with a capacity of
+     * {@link Integer#MAX_VALUE}.
+     */
+    public LinkedBlockingQueue() {
+        this(Integer.MAX_VALUE);
+    }
 
-    /** Wait queue for waiting takes */
-    private final Condition notEmpty = takeLock.newCondition();
+    /**
+     * Creates a {@code LinkedBlockingQueue} with the given (fixed) capacity.
+     *
+     * @param capacity the capacity of this queue
+     * @throws IllegalArgumentException if {@code capacity} is not greater
+     *                                  than zero
+     */
+    public LinkedBlockingQueue(int capacity) {
+        if (capacity <= 0) throw new IllegalArgumentException();
+        this.capacity = capacity;
+        last = head = new Node<E>(null);
+    }
 
-    /** Lock held by put, offer, etc */
-    private final ReentrantLock putLock = new ReentrantLock();
-
-    /** Wait queue for waiting puts */
-    private final Condition notFull = putLock.newCondition();
+    /**
+     * Creates a {@code LinkedBlockingQueue} with a capacity of
+     * {@link Integer#MAX_VALUE}, initially containing the elements of the
+     * given collection,
+     * added in traversal order of the collection's iterator.
+     *
+     * @param c the collection of elements to initially contain
+     * @throws NullPointerException if the specified collection or any
+     *                              of its elements are null
+     */
+    public LinkedBlockingQueue(Collection<? extends E> c) {
+        this(Integer.MAX_VALUE);
+        final ReentrantLock putLock = this.putLock;
+        putLock.lock(); // Never contended, but necessary for visibility
+        try {
+            int n = 0;
+            for (E e : c) {
+                if (e == null)
+                    throw new NullPointerException();
+                if (n == capacity)
+                    throw new IllegalStateException("Queue full");
+                enqueue(new Node<E>(e));
+                ++n;
+            }
+            count.set(n);
+        } finally {
+            putLock.unlock();
+        }
+    }
 
     /**
      * Signals a waiting take. Called only from put/offer (which do not
@@ -218,6 +251,14 @@ public class LinkedBlockingQueue<E> extends AbstractQueue<E>
         return x;
     }
 
+//     /**
+//      * Tells whether both locks are held by current thread.
+//      */
+//     boolean isFullyLocked() {
+//         return (putLock.isHeldByCurrentThread() &&
+//                 takeLock.isHeldByCurrentThread());
+//     }
+
     /**
      * Locks to prevent both puts and takes.
      */
@@ -234,67 +275,6 @@ public class LinkedBlockingQueue<E> extends AbstractQueue<E>
         putLock.unlock();
     }
 
-//     /**
-//      * Tells whether both locks are held by current thread.
-//      */
-//     boolean isFullyLocked() {
-//         return (putLock.isHeldByCurrentThread() &&
-//                 takeLock.isHeldByCurrentThread());
-//     }
-
-    /**
-     * Creates a {@code LinkedBlockingQueue} with a capacity of
-     * {@link Integer#MAX_VALUE}.
-     */
-    public LinkedBlockingQueue() {
-        this(Integer.MAX_VALUE);
-    }
-
-    /**
-     * Creates a {@code LinkedBlockingQueue} with the given (fixed) capacity.
-     *
-     * @param capacity the capacity of this queue
-     * @throws IllegalArgumentException if {@code capacity} is not greater
-     *         than zero
-     */
-    public LinkedBlockingQueue(int capacity) {
-        if (capacity <= 0) throw new IllegalArgumentException();
-        this.capacity = capacity;
-        last = head = new Node<E>(null);
-    }
-
-    /**
-     * Creates a {@code LinkedBlockingQueue} with a capacity of
-     * {@link Integer#MAX_VALUE}, initially containing the elements of the
-     * given collection,
-     * added in traversal order of the collection's iterator.
-     *
-     * @param c the collection of elements to initially contain
-     * @throws NullPointerException if the specified collection or any
-     *         of its elements are null
-     */
-    public LinkedBlockingQueue(Collection<? extends E> c) {
-        this(Integer.MAX_VALUE);
-        final ReentrantLock putLock = this.putLock;
-        putLock.lock(); // Never contended, but necessary for visibility
-        try {
-            int n = 0;
-            for (E e : c) {
-                if (e == null)
-                    throw new NullPointerException();
-                if (n == capacity)
-                    throw new IllegalStateException("Queue full");
-                enqueue(new Node<E>(e));
-                ++n;
-            }
-            count.set(n);
-        } finally {
-            putLock.unlock();
-        }
-    }
-
-    // this doc comment is overridden to remove the reference to collections
-    // greater in size than Integer.MAX_VALUE
     /**
      * Returns the number of elements in this queue.
      *
@@ -304,14 +284,15 @@ public class LinkedBlockingQueue<E> extends AbstractQueue<E>
         return count.get();
     }
 
-    // this doc comment is a modified copy of the inherited doc comment,
-    // without the reference to unlimited queues.
+    // this doc comment is overridden to remove the reference to collections
+    // greater in size than Integer.MAX_VALUE
+
     /**
      * Returns the number of additional elements that this queue can ideally
      * (in the absence of memory or resource constraints) accept without
      * blocking. This is always equal to the initial capacity of this queue
      * less the current {@code size} of this queue.
-     *
+     * <p>
      * <p>Note that you <em>cannot</em> always tell if an attempt to insert
      * an element will succeed by inspecting {@code remainingCapacity}
      * because it may be the case that another thread is about to
@@ -320,6 +301,9 @@ public class LinkedBlockingQueue<E> extends AbstractQueue<E>
     public int remainingCapacity() {
         return capacity - count.get();
     }
+
+    // this doc comment is a modified copy of the inherited doc comment,
+    // without the reference to unlimited queues.
 
     /**
      * Inserts the specified element at the tail of this queue, waiting if
@@ -365,12 +349,12 @@ public class LinkedBlockingQueue<E> extends AbstractQueue<E>
      * necessary up to the specified wait time for space to become available.
      *
      * @return {@code true} if successful, or {@code false} if
-     *         the specified waiting time elapses before space is available
+     * the specified waiting time elapses before space is available
      * @throws InterruptedException {@inheritDoc}
      * @throws NullPointerException {@inheritDoc}
      */
     public boolean offer(E e, long timeout, TimeUnit unit)
-        throws InterruptedException {
+            throws InterruptedException {
 
         if (e == null) throw new NullPointerException();
         long nanos = unit.toNanos(timeout);
@@ -585,11 +569,11 @@ public class LinkedBlockingQueue<E> extends AbstractQueue<E>
     /**
      * Returns an array containing all of the elements in this queue, in
      * proper sequence.
-     *
+     * <p>
      * <p>The returned array will be "safe" in that no references to it are
      * maintained by this queue.  (In other words, this method must allocate
      * a new array).  The caller is thus free to modify the returned array.
-     *
+     * <p>
      * <p>This method acts as bridge between array-based and collection-based
      * APIs.
      *
@@ -615,22 +599,22 @@ public class LinkedBlockingQueue<E> extends AbstractQueue<E>
      * the specified array.  If the queue fits in the specified array, it
      * is returned therein.  Otherwise, a new array is allocated with the
      * runtime type of the specified array and the size of this queue.
-     *
+     * <p>
      * <p>If this queue fits in the specified array with room to spare
      * (i.e., the array has more elements than this queue), the element in
      * the array immediately following the end of the queue is set to
      * {@code null}.
-     *
+     * <p>
      * <p>Like the {@link #toArray()} method, this method acts as bridge between
      * array-based and collection-based APIs.  Further, this method allows
      * precise control over the runtime type of the output array, and may,
      * under certain circumstances, be used to save allocation costs.
-     *
+     * <p>
      * <p>Suppose {@code x} is a queue known to contain only strings.
      * The following code can be used to dump the queue into a newly
      * allocated array of {@code String}:
-     *
-     *  <pre> {@code String[] y = x.toArray(new String[0]);}</pre>
+     * <p>
+     * <pre> {@code String[] y = x.toArray(new String[0]);}</pre>
      *
      * Note that {@code toArray(new Object[0])} is identical in function to
      * {@code toArray()}.
@@ -639,9 +623,9 @@ public class LinkedBlockingQueue<E> extends AbstractQueue<E>
      *          be stored, if it is big enough; otherwise, a new array of the
      *          same runtime type is allocated for this purpose
      * @return an array containing all of the elements in this queue
-     * @throws ArrayStoreException if the runtime type of the specified array
-     *         is not a supertype of the runtime type of every element in
-     *         this queue
+     * @throws ArrayStoreException  if the runtime type of the specified array
+     *                              is not a supertype of the runtime type of every element in
+     *                              this queue
      * @throws NullPointerException if the specified array is null
      */
     @SuppressWarnings("unchecked")
@@ -650,12 +634,12 @@ public class LinkedBlockingQueue<E> extends AbstractQueue<E>
         try {
             int size = count.get();
             if (a.length < size)
-                a = (T[])java.lang.reflect.Array.newInstance
-                    (a.getClass().getComponentType(), size);
+                a = (T[]) java.lang.reflect.Array.newInstance
+                        (a.getClass().getComponentType(), size);
 
             int k = 0;
             for (Node<E> p = head.next; p != null; p = p.next)
-                a[k++] = (T)p.item;
+                a[k++] = (T) p.item;
             if (a.length > k)
                 a[k] = null;
             return a;
@@ -673,7 +657,7 @@ public class LinkedBlockingQueue<E> extends AbstractQueue<E>
 
             StringBuilder sb = new StringBuilder();
             sb.append('[');
-            for (;;) {
+            for (; ; ) {
                 E e = p.item;
                 sb.append(e == this ? "(this Collection)" : e);
                 p = p.next;
@@ -765,7 +749,7 @@ public class LinkedBlockingQueue<E> extends AbstractQueue<E>
     /**
      * Returns an iterator over the elements in this queue in proper sequence.
      * The elements will be returned in order from first (head) to last (tail).
-     *
+     * <p>
      * <p>The returned iterator is
      * <a href="package-summary.html#Weakly"><i>weakly consistent</i></a>.
      *
@@ -775,87 +759,100 @@ public class LinkedBlockingQueue<E> extends AbstractQueue<E>
         return new Itr();
     }
 
-    private class Itr implements Iterator<E> {
-        /*
-         * Basic weakly-consistent iterator.  At all times hold the next
-         * item to hand out so that if hasNext() reports true, we will
-         * still have it to return even if lost race with a take etc.
-         */
+    /**
+     * Returns a {@link Spliterator} over the elements in this queue.
+     * <p>
+     * <p>The returned spliterator is
+     * <a href="package-summary.html#Weakly"><i>weakly consistent</i></a>.
+     * <p>
+     * <p>The {@code Spliterator} reports {@link Spliterator#CONCURRENT},
+     * {@link Spliterator#ORDERED}, and {@link Spliterator#NONNULL}.
+     *
+     * @return a {@code Spliterator} over the elements in this queue
+     * @implNote The {@code Spliterator} implements {@code trySplit} to permit limited
+     * parallelism.
+     * @since 1.8
+     */
+    public Spliterator<E> spliterator() {
+        return new LBQSpliterator<E>(this);
+    }
 
-        private Node<E> current;
-        private Node<E> lastRet;
-        private E currentElement;
+    /**
+     * Saves this queue to a stream (that is, serializes it).
+     *
+     * @param s the stream
+     * @throws java.io.IOException if an I/O error occurs
+     * @serialData The capacity is emitted (int), followed by all of
+     * its elements (each an {@code Object}) in the proper order,
+     * followed by a null
+     */
+    private void writeObject(java.io.ObjectOutputStream s)
+            throws java.io.IOException {
 
-        Itr() {
-            fullyLock();
-            try {
-                current = head.next;
-                if (current != null)
-                    currentElement = current.item;
-            } finally {
-                fullyUnlock();
-            }
-        }
+        fullyLock();
+        try {
+            // Write out any hidden stuff, plus capacity
+            s.defaultWriteObject();
 
-        public boolean hasNext() {
-            return current != null;
-        }
+            // Write out all elements in the proper order.
+            for (Node<E> p = head.next; p != null; p = p.next)
+                s.writeObject(p.item);
 
-        /**
-         * Returns the next live successor of p, or null if no such.
-         *
-         * Unlike other traversal methods, iterators need to handle both:
-         * - dequeued nodes (p.next == p)
-         * - (possibly multiple) interior removed nodes (p.item == null)
-         */
-        private Node<E> nextNode(Node<E> p) {
-            for (;;) {
-                Node<E> s = p.next;
-                if (s == p)
-                    return head.next;
-                if (s == null || s.item != null)
-                    return s;
-                p = s;
-            }
-        }
-
-        public E next() {
-            fullyLock();
-            try {
-                if (current == null)
-                    throw new NoSuchElementException();
-                E x = currentElement;
-                lastRet = current;
-                current = nextNode(current);
-                currentElement = (current == null) ? null : current.item;
-                return x;
-            } finally {
-                fullyUnlock();
-            }
-        }
-
-        public void remove() {
-            if (lastRet == null)
-                throw new IllegalStateException();
-            fullyLock();
-            try {
-                Node<E> node = lastRet;
-                lastRet = null;
-                for (Node<E> trail = head, p = trail.next;
-                     p != null;
-                     trail = p, p = p.next) {
-                    if (p == node) {
-                        unlink(p, trail);
-                        break;
-                    }
-                }
-            } finally {
-                fullyUnlock();
-            }
+            // Use trailing null as sentinel
+            s.writeObject(null);
+        } finally {
+            fullyUnlock();
         }
     }
 
-    /** A customized variant of Spliterators.IteratorSpliterator */
+    /**
+     * Reconstitutes this queue from a stream (that is, deserializes it).
+     *
+     * @param s the stream
+     * @throws ClassNotFoundException if the class of a serialized object
+     *                                could not be found
+     * @throws java.io.IOException    if an I/O error occurs
+     */
+    private void readObject(java.io.ObjectInputStream s)
+            throws java.io.IOException, ClassNotFoundException {
+        // Read in capacity, and any hidden stuff
+        s.defaultReadObject();
+
+        count.set(0);
+        last = head = new Node<E>(null);
+
+        // Read in all elements and place in queue
+        for (; ; ) {
+            @SuppressWarnings("unchecked")
+            E item = (E) s.readObject();
+            if (item == null)
+                break;
+            add(item);
+        }
+    }
+
+    /**
+     * Linked list node class
+     */
+    static class Node<E> {
+        E item;
+
+        /**
+         * One of:
+         * - the real successor Node
+         * - this Node, meaning the successor is head.next
+         * - null, meaning there is no successor (this is the last node)
+         */
+        Node<E> next;
+
+        Node(E x) {
+            item = x;
+        }
+    }
+
+    /**
+     * A customized variant of Spliterators.IteratorSpliterator
+     */
     static final class LBQSpliterator<E> implements Spliterator<E> {
         static final int MAX_BATCH = 1 << 25;  // max batch array size;
         final LinkedBlockingQueue<E> queue;
@@ -863,12 +860,15 @@ public class LinkedBlockingQueue<E> extends AbstractQueue<E>
         int batch;          // batch size for splits
         boolean exhausted;  // true when no more nodes
         long est;           // size estimate
+
         LBQSpliterator(LinkedBlockingQueue<E> queue) {
             this.queue = queue;
             this.est = queue.size();
         }
 
-        public long estimateSize() { return est; }
+        public long estimateSize() {
+            return est;
+        }
 
         public Spliterator<E> trySplit() {
             Node<E> h;
@@ -876,8 +876,8 @@ public class LinkedBlockingQueue<E> extends AbstractQueue<E>
             int b = batch;
             int n = (b <= 0) ? 1 : (b >= MAX_BATCH) ? MAX_BATCH : b + 1;
             if (!exhausted &&
-                ((h = current) != null || (h = q.head.next) != null) &&
-                h.next != null) {
+                    ((h = current) != null || (h = q.head.next) != null) &&
+                    h.next != null) {
                 Object[] a = new Object[n];
                 int i = 0;
                 Node<E> p = current;
@@ -895,14 +895,13 @@ public class LinkedBlockingQueue<E> extends AbstractQueue<E>
                 if ((current = p) == null) {
                     est = 0L;
                     exhausted = true;
-                }
-                else if ((est -= i) < 0L)
+                } else if ((est -= i) < 0L)
                     est = 0L;
                 if (i > 0) {
                     batch = i;
                     return Spliterators.spliterator
-                        (a, 0, i, Spliterator.ORDERED | Spliterator.NONNULL |
-                         Spliterator.CONCURRENT);
+                            (a, 0, i, Spliterator.ORDERED | Spliterator.NONNULL |
+                                    Spliterator.CONCURRENT);
                 }
             }
             return null;
@@ -965,80 +964,87 @@ public class LinkedBlockingQueue<E> extends AbstractQueue<E>
 
         public int characteristics() {
             return Spliterator.ORDERED | Spliterator.NONNULL |
-                Spliterator.CONCURRENT;
+                    Spliterator.CONCURRENT;
         }
     }
 
-    /**
-     * Returns a {@link Spliterator} over the elements in this queue.
-     *
-     * <p>The returned spliterator is
-     * <a href="package-summary.html#Weakly"><i>weakly consistent</i></a>.
-     *
-     * <p>The {@code Spliterator} reports {@link Spliterator#CONCURRENT},
-     * {@link Spliterator#ORDERED}, and {@link Spliterator#NONNULL}.
-     *
-     * @implNote
-     * The {@code Spliterator} implements {@code trySplit} to permit limited
-     * parallelism.
-     *
-     * @return a {@code Spliterator} over the elements in this queue
-     * @since 1.8
-     */
-    public Spliterator<E> spliterator() {
-        return new LBQSpliterator<E>(this);
-    }
+    private class Itr implements Iterator<E> {
+        /*
+         * Basic weakly-consistent iterator.  At all times hold the next
+         * item to hand out so that if hasNext() reports true, we will
+         * still have it to return even if lost race with a take etc.
+         */
 
-    /**
-     * Saves this queue to a stream (that is, serializes it).
-     *
-     * @param s the stream
-     * @throws java.io.IOException if an I/O error occurs
-     * @serialData The capacity is emitted (int), followed by all of
-     * its elements (each an {@code Object}) in the proper order,
-     * followed by a null
-     */
-    private void writeObject(java.io.ObjectOutputStream s)
-        throws java.io.IOException {
+        private Node<E> current;
+        private Node<E> lastRet;
+        private E currentElement;
 
-        fullyLock();
-        try {
-            // Write out any hidden stuff, plus capacity
-            s.defaultWriteObject();
-
-            // Write out all elements in the proper order.
-            for (Node<E> p = head.next; p != null; p = p.next)
-                s.writeObject(p.item);
-
-            // Use trailing null as sentinel
-            s.writeObject(null);
-        } finally {
-            fullyUnlock();
+        Itr() {
+            fullyLock();
+            try {
+                current = head.next;
+                if (current != null)
+                    currentElement = current.item;
+            } finally {
+                fullyUnlock();
+            }
         }
-    }
 
-    /**
-     * Reconstitutes this queue from a stream (that is, deserializes it).
-     * @param s the stream
-     * @throws ClassNotFoundException if the class of a serialized object
-     *         could not be found
-     * @throws java.io.IOException if an I/O error occurs
-     */
-    private void readObject(java.io.ObjectInputStream s)
-        throws java.io.IOException, ClassNotFoundException {
-        // Read in capacity, and any hidden stuff
-        s.defaultReadObject();
+        public boolean hasNext() {
+            return current != null;
+        }
 
-        count.set(0);
-        last = head = new Node<E>(null);
+        /**
+         * Returns the next live successor of p, or null if no such.
+         * <p>
+         * Unlike other traversal methods, iterators need to handle both:
+         * - dequeued nodes (p.next == p)
+         * - (possibly multiple) interior removed nodes (p.item == null)
+         */
+        private Node<E> nextNode(Node<E> p) {
+            for (; ; ) {
+                Node<E> s = p.next;
+                if (s == p)
+                    return head.next;
+                if (s == null || s.item != null)
+                    return s;
+                p = s;
+            }
+        }
 
-        // Read in all elements and place in queue
-        for (;;) {
-            @SuppressWarnings("unchecked")
-            E item = (E)s.readObject();
-            if (item == null)
-                break;
-            add(item);
+        public E next() {
+            fullyLock();
+            try {
+                if (current == null)
+                    throw new NoSuchElementException();
+                E x = currentElement;
+                lastRet = current;
+                current = nextNode(current);
+                currentElement = (current == null) ? null : current.item;
+                return x;
+            } finally {
+                fullyUnlock();
+            }
+        }
+
+        public void remove() {
+            if (lastRet == null)
+                throw new IllegalStateException();
+            fullyLock();
+            try {
+                Node<E> node = lastRet;
+                lastRet = null;
+                for (Node<E> trail = head, p = trail.next;
+                     p != null;
+                     trail = p, p = p.next) {
+                    if (p == node) {
+                        unlink(p, trail);
+                        break;
+                    }
+                }
+            } finally {
+                fullyUnlock();
+            }
         }
     }
 }

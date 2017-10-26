@@ -14,6 +14,31 @@ public class ActiveObjectDemo {
     private ExecutorService ex = Executors.newSingleThreadExecutor();
     private Random rand = new Random(47);
 
+    public static void main(String[] args) {
+        ActiveObjectDemo d1 = new ActiveObjectDemo();
+        List<Future<?>> results = new CopyOnWriteArrayList<>();
+        for (float f = 0.0f; f < 1.0f; f += 0.2f) {
+            results.add(d1.calculateFloat(f, f));
+        }
+        for (int i = 0; i < 5; i++) {
+            results.add(d1.calculateInt(i, i));
+        }
+        System.out.println("All asynch calls made");
+        while (results.size() > 0) {
+            for (Future<?> f : results) {
+                if (f.isDone()) {
+                    try {
+                        System.out.println(f.get());
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                    results.remove(f);
+                }
+            }
+        }
+        d1.shutdown();
+    }
+
     private void pause(int factor) {
         try {
             TimeUnit.MILLISECONDS.sleep(100 + rand.nextInt(factor));
@@ -41,30 +66,5 @@ public class ActiveObjectDemo {
 
     public void shutdown() {
         ex.shutdown();
-    }
-
-    public static void main(String[] args) {
-        ActiveObjectDemo d1 = new ActiveObjectDemo();
-        List<Future<?>> results = new CopyOnWriteArrayList<>();
-        for (float f = 0.0f; f < 1.0f; f += 0.2f) {
-            results.add(d1.calculateFloat(f, f));
-        }
-        for (int i = 0; i < 5; i++) {
-            results.add(d1.calculateInt(i, i));
-        }
-        System.out.println("All asynch calls made");
-        while (results.size() > 0) {
-            for (Future<?> f : results) {
-                if (f.isDone()) {
-                    try {
-                        System.out.println(f.get());
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
-                    results.remove(f);
-                }
-            }
-        }
-        d1.shutdown();
     }
 }

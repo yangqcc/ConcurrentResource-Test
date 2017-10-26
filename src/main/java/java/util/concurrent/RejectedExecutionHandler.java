@@ -35,14 +35,11 @@
 
 package java.util.concurrent;
 
-import java.util.concurrent.RejectedExecutionException;
-import java.util.concurrent.ThreadPoolExecutor;
-
 /**
  * A handler for tasks that cannot be executed by a {@link ThreadPoolExecutor}.
  *
- * @since 1.5
  * @author Doug Lea
+ * @since 1.5
  */
 public interface RejectedExecutionHandler {
 
@@ -52,12 +49,12 @@ public interface RejectedExecutionHandler {
      * task.  This may occur when no more threads or queue slots are
      * available because their bounds would be exceeded, or upon
      * shutdown of the Executor.
-     *
+     * <p>
      * <p>In the absence of other alternatives, the method may throw
      * an unchecked {@link RejectedExecutionException}, which will be
      * propagated to the caller of {@code execute}.
      *
-     * @param r the runnable task requested to be executed
+     * @param r        the runnable task requested to be executed
      * @param executor the executor attempting to execute this task
      * @throws RejectedExecutionException if there is no remedy
      */

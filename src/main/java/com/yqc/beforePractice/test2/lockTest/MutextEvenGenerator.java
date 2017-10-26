@@ -11,6 +11,10 @@ public class MutextEvenGenerator extends IntGenerator {
     private int currentEvenValue = 0;
     private Lock lock = new ReentrantLock();
 
+    public static void main(String[] args) {
+        EventChecker.test(new MutextEvenGenerator());
+    }
+
     @Override
     public int next() {
         lock.lock();
@@ -21,9 +25,5 @@ public class MutextEvenGenerator extends IntGenerator {
         } finally {
             lock.unlock();
         }
-    }
-
-    public static void main(String[] args) {
-        EventChecker.test(new MutextEvenGenerator());
     }
 }

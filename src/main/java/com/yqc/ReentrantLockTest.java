@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-
 public class ReentrantLockTest {
     private static Lock fairLock = new ReentrantLock(true); // 公平锁
     private static Lock unfairLock = new ReentrantLock(false); // 非公平锁

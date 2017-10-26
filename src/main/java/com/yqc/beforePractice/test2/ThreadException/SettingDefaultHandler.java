@@ -4,15 +4,14 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * Ïß³ÌÒì³£´¦Àí
+ * ï¿½ß³ï¿½ï¿½ì³£ï¿½ï¿½ï¿½ï¿½
  *
  * @author yangqc
- *
  */
 public class SettingDefaultHandler {
-	public static void main(String[] args) {
-		Thread.setDefaultUncaughtExceptionHandler(new MyUncaughtExceptionHandler());
-		ExecutorService exec = Executors.newCachedThreadPool();
-		exec.execute(new ExceptionThread());
-	}
+    public static void main(String[] args) {
+        Thread.setDefaultUncaughtExceptionHandler(new MyUncaughtExceptionHandler());
+        ExecutorService exec = Executors.newCachedThreadPool();
+        exec.execute(new ExceptionThread());
+    }
 }

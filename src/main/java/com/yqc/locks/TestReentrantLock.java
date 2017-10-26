@@ -10,37 +10,39 @@ import java.util.concurrent.locks.ReentrantLock;
  * @author yangqc 2016年8月27日
  */
 public class TestReentrantLock {
-	private ArrayList<Integer> arrayList = new ArrayList<>();
-	Lock lock = new ReentrantLock();   //多个线程共享一个锁
+    Lock lock = new ReentrantLock();   //多个线程共享一个锁
+    private ArrayList<Integer> arrayList = new ArrayList<>();
 
-	public void insert(Thread thread) {
-		// Lock lock = new ReentrantLock(); //每个线程都有自己的锁
-		lock.lock();
-		try {
-			System.out.println(thread.getName() + "得到锁!");
-			for (int i = 0; i < 5; i++) {
-				arrayList.add(i);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			System.out.println(thread.getName() + "释放锁!");
-			lock.unlock();
-		}
-	}
+    public static void main(String[] args) {
+        final TestReentrantLock test = new TestReentrantLock();
+        new Thread() {
+            public void run() {
+                test.insert(Thread.currentThread());
+            }
+        }.start();
 
-	public static void main(String[] args) {
-		final TestReentrantLock test = new TestReentrantLock();
-		new Thread() {
-			public void run() {
-				test.insert(Thread.currentThread());
-			}
-		}.start();
+        new Thread() {
+            public void run() {
+                test.insert(Thread.currentThread());
+            }
 
-		new Thread() {
-			public void run() {
-				test.insert(Thread.currentThread());
-			};
-		}.start();
-	}
+            ;
+        }.start();
+    }
+
+    public void insert(Thread thread) {
+        // Lock lock = new ReentrantLock(); //每个线程都有自己的锁
+        lock.lock();
+        try {
+            System.out.println(thread.getName() + "得到锁!");
+            for (int i = 0; i < 5; i++) {
+                arrayList.add(i);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            System.out.println(thread.getName() + "释放锁!");
+            lock.unlock();
+        }
+    }
 }

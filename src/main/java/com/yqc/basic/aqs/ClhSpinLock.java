@@ -12,6 +12,23 @@ public class ClhSpinLock {
         this.prev = ThreadLocal.withInitial(() -> null);
     }
 
+    public static void main(String[] args) throws InterruptedException {
+        final ClhSpinLock lock = new ClhSpinLock();
+        lock.lock();
+
+        for (int i = 0; i < 10; i++) {
+            new Thread(() -> {
+                lock.lock();
+                System.out.println(Thread.currentThread().getId() + " acquired the lock!");
+                lock.unlock();
+            }).start();
+            Thread.sleep(100);
+        }
+
+        System.out.println("main thread unlock!");
+        lock.unlock();
+    }
+
     public void lock() {
         final Node node = this.node.get();  //获取当前线程的Node对象
         node.locked = true;
@@ -31,22 +48,5 @@ public class ClhSpinLock {
 
     private static class Node {
         private volatile boolean locked;
-    }
-
-    public static void main(String[] args) throws InterruptedException {
-        final ClhSpinLock lock = new ClhSpinLock();
-        lock.lock();
-
-        for (int i = 0; i < 10; i++) {
-            new Thread(() -> {
-                lock.lock();
-                System.out.println(Thread.currentThread().getId() + " acquired the lock!");
-                lock.unlock();
-            }).start();
-            Thread.sleep(100);
-        }
-
-        System.out.println("main thread unlock!");
-        lock.unlock();
     }
 }

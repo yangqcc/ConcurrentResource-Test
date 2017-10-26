@@ -9,38 +9,38 @@ import java.util.concurrent.locks.LockSupport;
  * @author yangqc 2016年9月21日
  */
 public class TestLockSupport {
-	public static void main(String[] args) throws InterruptedException {
-		Thread thread = new Thread(new LockSupportTask());
-		thread.start();
-		Thread.sleep(1000);
-		thread.interrupt();
-		// LockSupport.unpark(thread);
-	}
+    public static void main(String[] args) throws InterruptedException {
+        Thread thread = new Thread(new LockSupportTask());
+        thread.start();
+        Thread.sleep(1000);
+        thread.interrupt();
+        // LockSupport.unpark(thread);
+    }
 }
 
 class LockSupportTask implements Runnable {
 
-	@Override
-	public void run() {
-		int i = 0;
-		while (true) {
-			try {
-				if (Thread.currentThread().isInterrupted()) {
+    @Override
+    public void run() {
+        int i = 0;
+        while (true) {
+            try {
+                if (Thread.currentThread().isInterrupted()) {
 //					break;
-				}
-				if(i==0){
-					Thread.sleep(100);
-				}
-				System.out.println("哎，我要被阻塞了！");
-				if (i == 0) {
-					LockSupport.park();
-				}
-				i++;
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-			System.out.println("xixi");
-		}
+                }
+                if (i == 0) {
+                    Thread.sleep(100);
+                }
+                System.out.println("哎，我要被阻塞了！");
+                if (i == 0) {
+                    LockSupport.park();
+                }
+                i++;
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            System.out.println("xixi");
+        }
 //		System.out.println("娘的，老子被中断了!");
-	}
+    }
 }
