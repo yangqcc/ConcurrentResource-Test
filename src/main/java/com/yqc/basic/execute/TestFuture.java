@@ -8,10 +8,10 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 /**
- * 
+ *
  *
  * @author yangqc
- * 2016Äê8ÔÂ1ÈÕ
+ * 2016å¹´8æœˆ1æ—¥
  */
 public class TestFuture implements Callable<Integer> {
 
@@ -39,8 +39,8 @@ public class TestFuture implements Callable<Integer> {
 			e.printStackTrace();
 		} catch (TimeoutException e) {
 			// e.printStackTrace();
-			future.cancel(true);   //Èç¹û²»È¡Ïû£¬¼´Ê¹Å×³öTimeoutExceptionÒì³££¬Ïß³Ì»¹ÊÇ»á¼ÌĞøÖ´ĞĞ
+			future.cancel(true);   //å¦‚æœä¸å–æ¶ˆï¼Œå³ä½¿æŠ›å‡ºTimeoutExceptionå¼‚å¸¸ï¼Œçº¿ç¨‹è¿˜æ˜¯ä¼šç»§ç»­æ‰§è¡Œ
 			System.out.println(future.isCancelled());
-		} // Èç¹ûÔÚÖ¸¶¨Ê±¼äÄÚÃ»ÓĞ»ñÈ¡µ½½á¹û£¬ÄÇÃ´future»áÅ×³öÒì³£
+		} // å¦‚æœåœ¨æŒ‡å®šæ—¶é—´å†…æ²¡æœ‰è·å–åˆ°ç»“æœï¼Œé‚£ä¹ˆfutureä¼šæŠ›å‡ºå¼‚å¸¸
 	}
 }

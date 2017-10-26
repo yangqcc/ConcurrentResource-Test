@@ -1,7 +1,7 @@
 //package com.yqc.Resource;
 //
-//import java.java.concurrent.ExecutorService;
-//import java.java.concurrent.Executors;
+//import java.java.util.concurrent.ExecutorService;
+//import java.java.util.concurrent.Executors;
 //
 //class CircularSet {
 //	private int[] array;
