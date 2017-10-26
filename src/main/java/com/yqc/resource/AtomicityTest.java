@@ -28,7 +28,7 @@ public class AtomicityTest implements Runnable {
 		AtomicityTest at = new AtomicityTest();
 		exec.execute(at);
 		while (true) {
-			int val = at.getValue();  //没有使用同步，getValue会在不稳定的中间态被读取
+			int val = at.getValue();  //娌℃湁浣跨敤鍚屾锛実etValue浼氬湪涓嶇ǔ瀹氱殑涓棿鎬佽璇诲彇
 			if (val % 2 != 0) {
 				System.out.println(val);
 				System.exit(0);
