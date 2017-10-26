@@ -2,3 +2,5 @@
 .idea/
 out/
 concurrent-resource-test1.iml
+target/
+.settings/
