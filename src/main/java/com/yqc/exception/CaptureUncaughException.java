@@ -5,11 +5,11 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 
 /**
- * ²¶»ñÏß³ÌÒì³£
+ * æ•è·çº¿ç¨‹å¼‚å¸¸
  *
- * @author yangqc 2016Äê7ÔÂ21ÈÕ
+ * @author yangqc 2016å¹´7æœˆ21æ—¥
  */
-class ExceptionThread2 implements Runnable {  //¶¨ÒåÒ»¸öÈÎÎñ
+class ExceptionThread2 implements Runnable {  //å®šä¹‰ä¸€ä¸ªä»»åŠ¡
 
 	@Override
 	public void run() {
@@ -21,7 +21,7 @@ class ExceptionThread2 implements Runnable {  //¶¨ÒåÒ»¸öÈÎÎñ
 
 }
 
-class MyUncugtExceptionHandler implements Thread.UncaughtExceptionHandler {  //¶¨Òå×Ô¼ºµÄÒì³£
+class MyUncugtExceptionHandler implements Thread.UncaughtExceptionHandler {  //å®šä¹‰è‡ªå·±çš„å¼‚å¸¸
 
 	@Override
 	public void uncaughtException(Thread t, Throwable e) {
@@ -29,7 +29,7 @@ class MyUncugtExceptionHandler implements Thread.UncaughtExceptionHandler {  //¶
 	}
 }
 
-class HandlerThreadFactory implements ThreadFactory { //Ïß³Ì¹¤³§
+class HandlerThreadFactory implements ThreadFactory { //çº¿ç¨‹å·¥å‚
 
 	@Override
 	public Thread newThread(Runnable r) {

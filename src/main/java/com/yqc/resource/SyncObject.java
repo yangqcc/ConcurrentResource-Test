@@ -1,12 +1,12 @@
 package com.yqc.resource;
 /**
- * Á½¸öÏß³Ì¿ÉÒÔÍ¬Ê±½øÈëÒ»¸ö¶ÔÏó£¬Ö»ÒªÁ½¸ö·½·¨³ÖÓÐÁ½¸ö²»Í¬µÄËø
+ * ä¸¤ä¸ªçº¿ç¨‹å¯ä»¥åŒæ—¶è¿›å…¥ä¸€ä¸ªå¯¹è±¡ï¼Œåªè¦ä¸¤ä¸ªæ–¹æ³•æŒæœ‰ä¸¤ä¸ªä¸åŒçš„é”
  *
  * @author yangqc
- * 2016Äê7ÔÂ24ÈÕ
+ * 2016å¹´7æœˆ24æ—¥
  */
 class DualSynch {
-	//¸Ã¶ÔÏóÁ½¸öËøÊÇÏà»¥¶ÀÁ¢µÄ
+	//è¯¥å¯¹è±¡ä¸¤ä¸ªé”æ˜¯ç›¸äº’ç‹¬ç«‹çš„
 	private Object syncObject = new Object();
 
 	public synchronized void f() {

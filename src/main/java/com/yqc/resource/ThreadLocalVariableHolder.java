@@ -6,9 +6,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 /**
- * ±äÁ¿±¾µØ´æ´¢¿ÉÒÔ½â¾ö×ÊÔ´¹²ÏíÎÊÌâ
+ * å˜é‡æœ¬åœ°å­˜å‚¨å¯ä»¥è§£å†³èµ„æºå…±äº«é—®é¢˜
  *
- * @author yangqc 2016Äê7ÔÂ24ÈÕ
+ * @author yangqc 2016å¹´7æœˆ24æ—¥
  */
 class Accessor implements Runnable {
 	private final int id;
@@ -43,7 +43,7 @@ public class ThreadLocalVariableHolder {
 		private Random rand = new Random(47);
 
 		protected synchronized Integer initialValue() {
-			return rand.nextInt(10000);  //Ã¿´Î·µ»Ø²»Ò»ÑùµÄÖµ
+			return rand.nextInt(10000);  //æ¯æ¬¡è¿”å›ä¸ä¸€æ ·çš„å€¼
 		}
 	};
 	static{

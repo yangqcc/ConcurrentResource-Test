@@ -7,7 +7,7 @@ public class SychronizedEvenGenerator extends IntGenerator{
 
 	@Override
 	public synchronized int next() {
-		++currentEvenValue;   //ÕâÀï»á³öÏÖ´íÎó
+		++currentEvenValue;   //è¿™é‡Œä¼šå‡ºç°é”™è¯¯
 		Thread.yield();
 		try {
 			TimeUnit.MICROSECONDS.sleep(100);

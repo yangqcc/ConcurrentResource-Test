@@ -4,7 +4,6 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import com.yqc.demo1.TraditionalThreadCommunicaion.Business;
 
 public class ConditionCommunication {
 	public static void main(String[] args) {

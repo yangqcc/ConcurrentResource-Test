@@ -8,7 +8,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-class Pair { // ���̰߳�ȫ
+class Pair { // 非线程安全
 	private int x, y;
 
 	public Pair(int x, int y) {

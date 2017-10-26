@@ -6,13 +6,13 @@ import java.util.concurrent.RecursiveAction;
 import java.util.concurrent.TimeUnit;
 
 /**
- * ¼´Ê¹ForkJoinPoolÀà±»Éè¼Æ³ÉÓÃÀ´Ö´ĞĞÒ»¸öForkJoinTask£¬ÄãÒ²¿ÉÒÔÖ±½ÓÖ´ĞĞRunnableºÍCallable¶ÔÏó¡£
- * ÄãÒ²¿ÉÒÔÊ¹ÓÃForkJoinTaskÀàµÄadapt()·½·¨À´Ö´ĞĞÈÎÎñ£¬Ëü½ÓÊÕÒ»¸öCallable¶ÔÏó»òRunnable¶ÔÏó£¨×÷Îª²ÎÊı£©
- * ²¢·µ»ØÒ»¸öForkJoinTask¶ÔÏó
+ * å³ä½¿ForkJoinPoolç±»è¢«è®¾è®¡æˆç”¨æ¥æ‰§è¡Œä¸€ä¸ªForkJoinTaskï¼Œä½ ä¹Ÿå¯ä»¥ç›´æ¥æ‰§è¡ŒRunnableå’ŒCallableå¯¹è±¡ã€‚
+ * ä½ ä¹Ÿå¯ä»¥ä½¿ç”¨ForkJoinTaskç±»çš„adapt()æ–¹æ³•æ¥æ‰§è¡Œä»»åŠ¡ï¼Œå®ƒæ¥æ”¶ä¸€ä¸ªCallableå¯¹è±¡æˆ–Runnableå¯¹è±¡ï¼ˆä½œä¸ºå‚æ•°ï¼‰
+ * å¹¶è¿”å›ä¸€ä¸ªForkJoinTaskå¯¹è±¡
  *
- * RecursiveAction, RecursiveTask ¶¼ÊÇForkJoinTaskµÄ×ÓÀà
+ * RecursiveAction, RecursiveTask éƒ½æ˜¯ForkJoinTaskçš„å­ç±»
  *
- * @author yangqc 2016Äê8ÔÂ21ÈÕ
+ * @author yangqc 2016å¹´8æœˆ21æ—¥
  */
 public class Task extends RecursiveAction {
 
@@ -22,7 +22,7 @@ public class Task extends RecursiveAction {
 	private int last;
 	private double increment;
 
-	public Task(List<Production> productions, int first, int last, double increment) { // incrementÔö³¤ÂÊ
+	public Task(List<Production> productions, int first, int last, double increment) { // incrementå¢é•¿ç‡
 		this.productions = productions;
 		this.first = first;
 		this.last = last;
@@ -39,7 +39,7 @@ public class Task extends RecursiveAction {
 			Task t1 = new Task(productions, first, middle + 1, increment);
 			Task t2 = new Task(productions, middle + 1, last, increment);
 			invokeAll(t1, t2);
-			// invokeAll(ForkJoinTask<?>... tasks)£ºÕâ¸ö°æ±¾µÄ·½·¨Ê¹ÓÃÒ»¸ö¿É±ä²ÎÊıÁĞ±í¡£Äã¿ÉÒÔ´«ÈëĞí¶àÄãÏëÒªÖ´ĞĞµÄForkJoinTask¶ÔÏó×÷Îª²ÎÊı¡£
+			// invokeAll(ForkJoinTask<?>... tasks)ï¼šè¿™ä¸ªç‰ˆæœ¬çš„æ–¹æ³•ä½¿ç”¨ä¸€ä¸ªå¯å˜å‚æ•°åˆ—è¡¨ã€‚ä½ å¯ä»¥ä¼ å…¥è®¸å¤šä½ æƒ³è¦æ‰§è¡Œçš„ForkJoinTaskå¯¹è±¡ä½œä¸ºå‚æ•°ã€‚
 		}
 	}
 
@@ -54,7 +54,7 @@ public class Task extends RecursiveAction {
 		ProductListGenerator generator = new ProductListGenerator();
 		List<Production> productions = generator.generate(10000);
 		Task task = new Task(productions, 0, productions.size(), 0.20);
-		ForkJoinPool pool = new ForkJoinPool(); // ÕâÀïÊ¹ÓÃÁËÎŞ²Î¹¹ÔìÆ÷
+		ForkJoinPool pool = new ForkJoinPool(); // è¿™é‡Œä½¿ç”¨äº†æ— å‚æ„é€ å™¨
 		pool.execute(task);
 		do {
 			System.out.printf("Main: Thread Count: %d\n", pool.getActiveThreadCount());
@@ -65,14 +65,14 @@ public class Task extends RecursiveAction {
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-		} while (!task.isDone());   //ÈÎÎñÍê³Éºó£¬Ö÷Ïß³Ì²ÅÖ´ĞĞÏÂÃæµÄ´úÂë
+		} while (!task.isDone());   //ä»»åŠ¡å®Œæˆåï¼Œä¸»çº¿ç¨‹æ‰æ‰§è¡Œä¸‹é¢çš„ä»£ç 
 		pool.shutdown();
 		if (task.isCompletedNormally()) {
 			System.out.printf("Main: The process has completed normally.\n");
 		}
 		for (int i = 0; i < productions.size(); i++) {
 			Production product = productions.get(i);
-			if (product.getPrice() != 12) { // ½«¼Û¸ñÃ»ÓĞÔö³¤20%µÄ²úÆ·ĞÅÏ¢´òÓ¡³öÀ´
+			if (product.getPrice() != 12) { // å°†ä»·æ ¼æ²¡æœ‰å¢é•¿20%çš„äº§å“ä¿¡æ¯æ‰“å°å‡ºæ¥
 				System.out.printf("Product %s: %f\n", product.getName(), product.getPrice());
 			}
 		}
