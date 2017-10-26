@@ -1,9 +1,9 @@
 package com.yqc.basic.stop;
 /**
- * Ò»¸öÈÎÎñÄÜ¹»µ÷ÓÃÍ¬Ò»¸ö¶ÔÏóµÄÆäËûµÄsunchronized·½·¨£¬¶øÕâ¸öÈÎÎñÒÑ¾­³ÖÓĞËøÁË
+ * ä¸€ä¸ªä»»åŠ¡èƒ½å¤Ÿè°ƒç”¨åŒä¸€ä¸ªå¯¹è±¡çš„å…¶ä»–çš„sunchronizedæ–¹æ³•ï¼Œè€Œè¿™ä¸ªä»»åŠ¡å·²ç»æŒæœ‰é”äº†
  *
  * @author yangqc
- * 2016Äê7ÔÂ25ÈÕ
+ * 2016å¹´7æœˆ25æ—¥
  */
 public class MultiLock {
 	public synchronized void f1(int count) {

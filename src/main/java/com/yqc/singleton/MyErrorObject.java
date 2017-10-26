@@ -4,9 +4,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * ´íÎóµÄµ¥ÀıÄ£Ê½
+ * é”™è¯¯çš„å•ä¾‹æ¨¡å¼
  *
- * @author yangqc 2016Äê8ÔÂ24ÈÕ
+ * @author yangqc 2016å¹´8æœˆ24æ—¥
  */
 public class MyErrorObject {
 	private static MyErrorObject myErrorObject;
@@ -19,14 +19,14 @@ public class MyErrorObject {
 		} else {
 			try {
 				Thread.sleep(1000);
-				synchronized (MyErrorObject.class) {  //ÕâÀï¾Í±ÜÃâÁËÏß³ÌÍ¬²½ÎÊÌâ
+				synchronized (MyErrorObject.class) {  //è¿™é‡Œå°±é¿å…äº†çº¿ç¨‹åŒæ­¥é—®é¢˜
 					if (myErrorObject == null) {
 						myErrorObject = new MyErrorObject();
 					}
 				}
 			} catch (InterruptedException e) {
 //				myErrorObject = new MyErrorObject();
-				System.out.println("³ö´íÁË!");
+				System.out.println("å‡ºé”™äº†!");
 			}
 		}
 		return myErrorObject;

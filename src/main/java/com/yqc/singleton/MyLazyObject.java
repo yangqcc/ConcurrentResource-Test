@@ -1,17 +1,17 @@
 package com.yqc.singleton;
 /**
- * µ¥Àı   ÀÁººÄ£Ê½
+ * å•ä¾‹   æ‡’æ±‰æ¨¡å¼
  *
  * @author yangqc
- * 2016Äê8ÔÂ24ÈÕ
+ * 2016å¹´8æœˆ24æ—¥
  */
 public class MyLazyObject {
 	private static MyLazyObject myObject;
-	
+
 	private MyLazyObject(){}
-	
+
 	public static MyLazyObject getInstance() {
-		if (myObject != null) {   //·ÀÖ¹³öÏÖÏß³Ì°²È«ÎÊÌâ
+		if (myObject != null) {   //é˜²æ­¢å‡ºç°çº¿ç¨‹å®‰å…¨é—®é¢˜
 		} else {
 			synchronized (MyLazyObject.class) {
 				if (myObject == null) {

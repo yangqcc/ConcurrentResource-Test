@@ -13,7 +13,7 @@ public class MutexEvenGenerator extends IntGenerator {
 		try {
 			++currentEvenValue;
 			++currentEvenValue;
-			return currentEvenValue;  //return语句放在lock里面
+			return currentEvenValue;  //return璇彞鏀惧湪lock閲岄潰
 		} finally {
 			lock.unlock();
 		}

@@ -5,9 +5,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 /**
- * ÕÜÑ§¼Ò½ø²ÍÎÊÌâËÀËø°æ±¾
+ * å“²å­¦å®¶è¿›é¤é—®é¢˜æ­»é”ç‰ˆæœ¬
  *
- * @author yangqc 2016Äê7ÔÂ26ÈÕ
+ * @author yangqc 2016å¹´7æœˆ26æ—¥
  */
 public class DeadlockingDiningPhilosophers {
 	public static void main(String[] args) throws InterruptedException {

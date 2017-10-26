@@ -1,22 +1,22 @@
 package com.yqc.sisuo;
 
 /**
- * Èç¹ûÒ»¸ù¿ê×Ó±»Ê¹ÓÃ£¬Ôò»ñÈ¡¸Ã¿ê×ÓµÄÏß³ÌËÀËø£¬Èç¹û¿ê×Ódrop£¬Ôò»½ĞÑÆäËûÏß³Ì
+ * å¦‚æœä¸€æ ¹ç­·å­è¢«ä½¿ç”¨ï¼Œåˆ™è·å–è¯¥ç­·å­çš„çº¿ç¨‹æ­»é”ï¼Œå¦‚æœç­·å­dropï¼Œåˆ™å”¤é†’å…¶ä»–çº¿ç¨‹
  *
- * @author yangqc 2016Äê7ÔÂ26ÈÕ
+ * @author yangqc 2016å¹´7æœˆ26æ—¥
  */
 public class Chopstick {
 	private boolean taken = false;
 
 	public synchronized void take() throws InterruptedException {
-		while (taken) { // Èç¹ûÕâ¸ù¿ê×ÓÒÑ¾­±»ÄÃÆğ£¬Ôò¹ÒÆğµ±Ç°ÇëÇóµÄÏß³Ì
+		while (taken) { // å¦‚æœè¿™æ ¹ç­·å­å·²ç»è¢«æ‹¿èµ·ï¼Œåˆ™æŒ‚èµ·å½“å‰è¯·æ±‚çš„çº¿ç¨‹
 			wait();
 		}
 		taken = true;
 	}
 
 	public synchronized void drop() {
-		taken = false; // µ±Ç°¿ê×ÓÊ¹ÓÃÍê±Ï£¬Ôò»½ĞÑÆäËûµÈ´ıµÄÏß³Ì
+		taken = false; // å½“å‰ç­·å­ä½¿ç”¨å®Œæ¯•ï¼Œåˆ™å”¤é†’å…¶ä»–ç­‰å¾…çš„çº¿ç¨‹
 		notifyAll();
 	}
 }

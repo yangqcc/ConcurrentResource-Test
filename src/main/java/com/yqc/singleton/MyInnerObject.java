@@ -1,9 +1,9 @@
 package com.yqc.singleton;
 /**
- * Í¨¹ıÄÚ²¿ÀàÊµÏÖµ¥ÀıÄ£Ê½£¨ÆäÊµÒ²¾ÍÊÇÒ»¸öclassÖ»»á±»¼ÓÔØÒ»´ÎÕâºÍÔ­Àí£©
+ * é€šè¿‡å†…éƒ¨ç±»å®ç°å•ä¾‹æ¨¡å¼ï¼ˆå…¶å®ä¹Ÿå°±æ˜¯ä¸€ä¸ªclassåªä¼šè¢«åŠ è½½ä¸€æ¬¡è¿™å’ŒåŸç†ï¼‰
  *
  * @author yangqc
- * 2016Äê8ÔÂ24ÈÕ
+ * 2016å¹´8æœˆ24æ—¥
  */
 public class MyInnerObject {
 	private static class MyObjectHandler {

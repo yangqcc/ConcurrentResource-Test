@@ -2,10 +2,10 @@ package com.yqc;
 
 import java.util.concurrent.locks.ReentrantLock;
 /**
- * ReentrantLockÔÚ»ñÈ¡±»×èÈûÊ±£¬²¢²»»áÏìÓ¦ÖĞ¶Ï£¬Ö»»áÉèÖÃÏß³ÌµÄ±êÖ¾Î»
+ * ReentrantLockåœ¨è·å–è¢«é˜»å¡æ—¶ï¼Œå¹¶ä¸ä¼šå“åº”ä¸­æ–­ï¼Œåªä¼šè®¾ç½®çº¿ç¨‹çš„æ ‡å¿—ä½
  *
  * @author yangqc
- * 2016Äê9ÔÂ22ÈÕ
+ * 2016å¹´9æœˆ22æ—¥
  */
 public class TestReentrantLockInterrupt {
 	public static void main(String[] args) throws InterruptedException {
@@ -16,7 +16,7 @@ public class TestReentrantLockInterrupt {
 		lock.lock();
 		thread.interrupt();
 		lock.unlock();
-		System.out.println("ÒÑ½âËø!");
+		System.out.println("å·²è§£é”!");
 	}
 }
 

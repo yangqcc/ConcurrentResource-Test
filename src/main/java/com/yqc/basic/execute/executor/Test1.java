@@ -5,26 +5,26 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /**
- * ²âÊÔ±¥ºÍ²ßÂÔ£¬µ±Ïß³Ì³ØÂúºó£¬²¢ÇÒÓĞ½ç¶ÓÁĞ±»ÌîÂúºó£¬¿ªÊ¼Ö´ĞĞ±¥ºÍ²ßÂÔ£¬setRejectedExecutionPoolÊµÏÖ£¬
- * Ä¬ÈÏÊÇÅ×³öÎ´¼ì²éµÄRejectedExecutionException 
- * (ÖÕÖ¹±¥ºÍ²ßÂÔ)
- * 
- * @author yangqc 2016Äê9ÔÂ4ÈÕ
+ * æµ‹è¯•é¥±å’Œç­–ç•¥ï¼Œå½“çº¿ç¨‹æ± æ»¡åï¼Œå¹¶ä¸”æœ‰ç•Œé˜Ÿåˆ—è¢«å¡«æ»¡åï¼Œå¼€å§‹æ‰§è¡Œé¥±å’Œç­–ç•¥ï¼ŒsetRejectedExecutionPoolå®ç°ï¼Œ
+ * é»˜è®¤æ˜¯æŠ›å‡ºæœªæ£€æŸ¥çš„RejectedExecutionException
+ * (ç»ˆæ­¢é¥±å’Œç­–ç•¥)
+ *
+ * @author yangqc 2016å¹´9æœˆ4æ—¥
  */
 public class Test1 {
-	public static void main(String[] args) {
-		ThreadPoolExecutor threadPool = new ThreadPoolExecutor(0, 5, 5, TimeUnit.SECONDS, new ArrayBlockingQueue<>(20));
-		for (int i = 0; i < 8; i++) {
-			threadPool.execute(new MyRunnable());
-		}
-		threadPool.shutdown();
-	}
+    public static void main(String[] args) {
+        ThreadPoolExecutor threadPool = new ThreadPoolExecutor(0, 5, 5, TimeUnit.SECONDS, new ArrayBlockingQueue<>(20));
+        for (int i = 0; i < 8; i++) {
+            threadPool.execute(new MyRunnable());
+        }
+        threadPool.shutdown();
+    }
 }
 
 class MyRunnable implements Runnable {
 
-	@Override
-	public void run() {
-		System.out.println(Thread.currentThread().getName());
-	}
+    @Override
+    public void run() {
+        System.out.println(Thread.currentThread().getName());
+    }
 }

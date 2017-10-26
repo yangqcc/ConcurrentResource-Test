@@ -35,7 +35,7 @@ public class TestCallable {
 }
 
 class MyCallable implements Callable<Integer> {
-	private final int a[]; // 设为私有变量，避免不安全发布
+	private final int a[]; // 璁句负绉佹湁鍙橀噺锛岄伩鍏嶄笉瀹夊叏鍙戝竷
 
 	public MyCallable(int a[]) {
 		this.a = a;

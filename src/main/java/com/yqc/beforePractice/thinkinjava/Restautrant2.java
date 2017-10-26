@@ -6,9 +6,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * Éú²úÕß£¬Ïû·ÑÕßÎÊÌâ
+ * ç”Ÿäº§è€…ï¼Œæ¶ˆè´¹è€…é—®é¢˜
  *
- * @author yangqc 2016Äê9ÔÂ16ÈÕ
+ * @author yangqc 2016å¹´9æœˆ16æ—¥
  */
 class MyMealsContainer {
 	private LinkedList<Meal> meals;
@@ -16,7 +16,7 @@ class MyMealsContainer {
 
 	public MyMealsContainer(int mealNum) {
 		if ((this.mealNum = mealNum) < 0) {
-			throw new IllegalArgumentException("ÊıÁ¿²»ÄÜÎª0!");
+			throw new IllegalArgumentException("æ•°é‡ä¸èƒ½ä¸º0!");
 		}
 		meals = new LinkedList<>();
 	}

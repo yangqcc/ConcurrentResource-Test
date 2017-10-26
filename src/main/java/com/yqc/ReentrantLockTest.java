@@ -7,8 +7,8 @@ import java.util.concurrent.locks.ReentrantLock;
 
 
 public class ReentrantLockTest {
-    private static Lock fairLock = new ReentrantLock(true); // ¹«Æ½Ëø
-    private static Lock unfairLock = new ReentrantLock(false); // ·Ç¹«Æ½Ëø
+    private static Lock fairLock = new ReentrantLock(true); // å…¬å¹³é”
+    private static Lock unfairLock = new ReentrantLock(false); // éå…¬å¹³é”
 
     @Test
     public void fair() {

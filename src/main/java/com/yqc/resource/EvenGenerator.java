@@ -3,17 +3,17 @@ package com.yqc.resource;
 import java.util.concurrent.TimeUnit;
 
 /**
- * javaµİÔö²»ÊÇÔ­×ÓĞÔµÄ
+ * javaé€’å¢ä¸æ˜¯åŸå­æ€§çš„
  *
  * @author yangqc
- * 2016Äê7ÔÂ21ÈÕ
+ * 2016å¹´7æœˆ21æ—¥
  */
 public class EvenGenerator extends IntGenerator{
 	private int currentEvenValue=0;
 
 	@Override
 	public int next() {
-		++currentEvenValue;   //ÕâÀï»á³öÏÖ´íÎó
+		++currentEvenValue;   //è¿™é‡Œä¼šå‡ºç°é”™è¯¯
 		Thread.yield();
 		try {
 			TimeUnit.MICROSECONDS.sleep(100);

@@ -3,10 +3,10 @@ package com.yqc;
 import java.util.concurrent.locks.LockSupport;
 
 /**
- * LockSupport»áÏìÓ¦ÖĞ¶Ï£¬Ò²¾ÍÊÇËµ£¬µ÷ÓÃpark£¬¸ÃÏß³Ì×èÈû£¬Èç¹û´ËÆÚ¼ä Ïß³Ì±»ÖĞ¶Ï£¬ÄÇÃ´»á´Ó×èÈûÖĞ»Ö¸´£¬µ«ÊÇÖ»»áÉèÖÃÖĞ¶Ï±êÖ¾Î»£¬²»»áÅ×³öÒì³£
- * ÕâÊ±ºòĞèÒªÎÒÃÇÉèÖÃÖĞ¶ÏÏìÓ¦²ßÂÔ
+ * LockSupportä¼šå“åº”ä¸­æ–­ï¼Œä¹Ÿå°±æ˜¯è¯´ï¼Œè°ƒç”¨parkï¼Œè¯¥çº¿ç¨‹é˜»å¡ï¼Œå¦‚æœæ­¤æœŸé—´ çº¿ç¨‹è¢«ä¸­æ–­ï¼Œé‚£ä¹ˆä¼šä»é˜»å¡ä¸­æ¢å¤ï¼Œä½†æ˜¯åªä¼šè®¾ç½®ä¸­æ–­æ ‡å¿—ä½ï¼Œä¸ä¼šæŠ›å‡ºå¼‚å¸¸
+ * è¿™æ—¶å€™éœ€è¦æˆ‘ä»¬è®¾ç½®ä¸­æ–­å“åº”ç­–ç•¥
  *
- * @author yangqc 2016Äê9ÔÂ21ÈÕ
+ * @author yangqc 2016å¹´9æœˆ21æ—¥
  */
 public class TestLockSupport {
 	public static void main(String[] args) throws InterruptedException {
@@ -31,7 +31,7 @@ class LockSupportTask implements Runnable {
 				if(i==0){
 					Thread.sleep(100);
 				}
-				System.out.println("°¥£¬ÎÒÒª±»×èÈûÁË£¡");
+				System.out.println("å“ï¼Œæˆ‘è¦è¢«é˜»å¡äº†ï¼");
 				if (i == 0) {
 					LockSupport.park();
 				}
@@ -41,6 +41,6 @@ class LockSupportTask implements Runnable {
 			}
 			System.out.println("xixi");
 		}
-//		System.out.println("ÄïµÄ£¬ÀÏ×Ó±»ÖĞ¶ÏÁË!");
+//		System.out.println("å¨˜çš„ï¼Œè€å­è¢«ä¸­æ–­äº†!");
 	}
 }

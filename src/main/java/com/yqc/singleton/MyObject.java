@@ -3,16 +3,16 @@ package com.yqc.singleton;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 /**
- * µ¥ÀıÄ£Ê½  Á¢¼´¼ÓÔØ
+ * å•ä¾‹æ¨¡å¼  ç«‹å³åŠ è½½
  *
  * @author yangqc
- * 2016Äê8ÔÂ24ÈÕ
+ * 2016å¹´8æœˆ24æ—¥
  */
 public class MyObject {
-	private static MyObject myObject = new MyObject();   //Àà¼ÓÔØÊ±±ä´´½¨
+	private static MyObject myObject = new MyObject();   //ç±»åŠ è½½æ—¶å˜åˆ›å»º
 
 	private MyObject() {
-		System.out.println("´´½¨!");
+		System.out.println("åˆ›å»º!");
 	}
 
 	public static MyObject getInstance() {

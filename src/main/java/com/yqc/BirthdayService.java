@@ -6,9 +6,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * ³­À´µÄ´úÂë£¬Ğ´µÃºÜ²î
+ * æŠ„æ¥çš„ä»£ç ï¼Œå†™å¾—å¾ˆå·®
  *
- * @author yangqc 2016Äê9ÔÂ21ÈÕ
+ * @author yangqc 2016å¹´9æœˆ21æ—¥
  */
 public class BirthdayService {
 	public static void main(String[] args) {

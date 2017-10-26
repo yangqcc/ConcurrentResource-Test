@@ -5,9 +5,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 /**
- * ½â¾öËÀËø£¬×îºóÒ»¸öÕÜÑ§¼ÒÏÈÄÃ×ó±ß£¬ÔÙÄÃÓÒ±ß£¬ÆäËûÕÜÑ§¼ÒÏÈÄÃÓÒ±ß£¬ÔÙÄÃ×ó±ß
+ * è§£å†³æ­»é”ï¼Œæœ€åä¸€ä¸ªå“²å­¦å®¶å…ˆæ‹¿å·¦è¾¹ï¼Œå†æ‹¿å³è¾¹ï¼Œå…¶ä»–å“²å­¦å®¶å…ˆæ‹¿å³è¾¹ï¼Œå†æ‹¿å·¦è¾¹
  *
- * @author yangqc 2016Äê7ÔÂ26ÈÕ
+ * @author yangqc 2016å¹´7æœˆ26æ—¥
  */
 public class FixedDiningPhilosophers {
 	public static void main(String[] args) throws InterruptedException {

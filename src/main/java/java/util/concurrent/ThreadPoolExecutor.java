@@ -400,26 +400,26 @@ public class ThreadPoolExecutor extends AbstractExecutorService {
 
     // Packing and unpacking ctl
     /**
-     * ÅĞ¶ÏÏß³ÌÊÇ·ñÔËĞĞ»¹ÊÇ¹Ø±Õ
+     * åˆ¤æ–­çº¿ç¨‹æ˜¯å¦è¿è¡Œè¿˜æ˜¯å…³é—­
      * @param c
      * @return
      */
-	private static int runStateOf(int c) {
-		return c & ~CAPACITY;
-	}
+    private static int runStateOf(int c) {
+        return c & ~CAPACITY;
+    }
 
-	/**
-	 * workerµÄÊıÁ¿
-	 * @param c
-	 * @return
-	 */
-	private static int workerCountOf(int c) {
-		return c & CAPACITY;
-	}
+    /**
+     * workerçš„æ•°é‡
+     * @param c
+     * @return
+     */
+    private static int workerCountOf(int c) {
+        return c & CAPACITY;
+    }
 
-	private static int ctlOf(int rs, int wc) {
-		return rs | wc;
-	}
+    private static int ctlOf(int rs, int wc) {
+        return rs | wc;
+    }
 
     /*
      * Bit field accessors that don't require unpacking ctl.
@@ -453,15 +453,15 @@ public class ThreadPoolExecutor extends AbstractExecutorService {
     }
 
     /**
-     * ¼õÉÙ×Ö¶Îctl£¨´ú±íworkerµÄÊıÁ¿£©µÄÖµ
+     * å‡å°‘å­—æ®µctlï¼ˆä»£è¡¨workerçš„æ•°é‡ï¼‰çš„å€¼
      * Decrements the workerCount field of ctl. This is called only on
      * abrupt termination of a thread (see processWorkerExit). Other
      * decrements are performed within getTask.
      */
-	private void decrementWorkerCount() {
-		do {
-		} while (!compareAndDecrementWorkerCount(ctl.get()));
-	}
+    private void decrementWorkerCount() {
+        do {
+        } while (!compareAndDecrementWorkerCount(ctl.get()));
+    }
 
     /**
      * The queue used for holding tasks and handing off to worker
@@ -577,7 +577,7 @@ public class ThreadPoolExecutor extends AbstractExecutorService {
      * The default rejected execution handler
      */
     private static final RejectedExecutionHandler defaultHandler =
-        new AbortPolicy();
+            new AbortPolicy();
 
     /**
      * Permission required for callers of shutdown and shutdownNow.
@@ -600,7 +600,7 @@ public class ThreadPoolExecutor extends AbstractExecutorService {
      * configuration changes so is not handled exceptionally.
      */
     private static final RuntimePermission shutdownPerm =
-        new RuntimePermission("modifyThread");
+            new RuntimePermission("modifyThread");
 
     /**
      * Class Worker mainly maintains interrupt control state for
@@ -618,28 +618,28 @@ public class ThreadPoolExecutor extends AbstractExecutorService {
      * state to a negative value, and clear it upon start (in
      * runWorker).
      */
-	private final class Worker extends AbstractQueuedSynchronizer implements Runnable {
+    private final class Worker extends AbstractQueuedSynchronizer implements Runnable {
         /**
          * This class will never be serialized, but we provide a
          * serialVersionUID to suppress a javac warning.
          */
         private static final long serialVersionUID = 6138294804551838833L;
 
-		/**
-		 * ÕâÊÇworkerÕıÔÚÔËĞĞµÄÏß³Ì£¬Èç¹ûÏß³Ì¹¤³§²Ù×÷Ê§°Ü£¬½«·µ»Ønull 
-		 * Thread this worker is running in. Null if factory fails.
-		 */
-        final Thread thread;
-        
         /**
-         * ÔËĞĞµÄ³õÊ¼»¯ÈÎÎñ£¬¿ÉÄÜÊÇ¿ÕµÄ 
-         * Initial task to run.  Possibly null. 
+         * è¿™æ˜¯workeræ­£åœ¨è¿è¡Œçš„çº¿ç¨‹ï¼Œå¦‚æœçº¿ç¨‹å·¥å‚æ“ä½œå¤±è´¥ï¼Œå°†è¿”å›null
+         * Thread this worker is running in. Null if factory fails.
+         */
+        final Thread thread;
+
+        /**
+         * è¿è¡Œçš„åˆå§‹åŒ–ä»»åŠ¡ï¼Œå¯èƒ½æ˜¯ç©ºçš„
+         * Initial task to run.  Possibly null.
          */
         Runnable firstTask;
         /**
-         * Ïß³ÌÈÎÎñ¼ÆÊıÆ÷ £¬¸ÃworkerÒÑÖ´ĞĞÍê¶àÉÙ¸öÈÎÎñ
-         * Per-thread task counter 
-         * 
+         * çº¿ç¨‹ä»»åŠ¡è®¡æ•°å™¨ ï¼Œè¯¥workerå·²æ‰§è¡Œå®Œå¤šå°‘ä¸ªä»»åŠ¡
+         * Per-thread task counter
+         *
          */
         volatile long completedTasks;
 
@@ -681,21 +681,21 @@ public class ThreadPoolExecutor extends AbstractExecutorService {
             return true;
         }
 
-		public void lock() {
-			acquire(1);
-		}
+        public void lock() {
+            acquire(1);
+        }
 
-		public boolean tryLock() {
-			return tryAcquire(1);
-		}
+        public boolean tryLock() {
+            return tryAcquire(1);
+        }
 
-		public void unlock() {
-			release(1);
-		}
+        public void unlock() {
+            release(1);
+        }
 
-		public boolean isLocked() {
-			return isHeldExclusively();
-		}
+        public boolean isLocked() {
+            return isHeldExclusively();
+        }
 
         void interruptIfStarted() {
             Thread t;
@@ -721,10 +721,10 @@ public class ThreadPoolExecutor extends AbstractExecutorService {
      */
     private void advanceRunState(int targetState) {
         for (;;) {
-			int c = ctl.get();
-			if (runStateAtLeast(c, targetState) || ctl.compareAndSet(c, ctlOf(targetState, workerCountOf(c))))
-				break;
-		}
+            int c = ctl.get();
+            if (runStateAtLeast(c, targetState) || ctl.compareAndSet(c, ctlOf(targetState, workerCountOf(c))))
+                break;
+        }
     }
 
     /**
@@ -741,8 +741,8 @@ public class ThreadPoolExecutor extends AbstractExecutorService {
         for (;;) {
             int c = ctl.get();
             if (isRunning(c) ||
-                runStateAtLeast(c, TIDYING) ||
-                (runStateOf(c) == SHUTDOWN && ! workQueue.isEmpty()))
+                    runStateAtLeast(c, TIDYING) ||
+                    (runStateOf(c) == SHUTDOWN && ! workQueue.isEmpty()))
                 return;
             if (workerCountOf(c) != 0) { // Eligible to terminate
                 interruptIdleWorkers(ONLY_ONE);
@@ -803,7 +803,7 @@ public class ThreadPoolExecutor extends AbstractExecutorService {
         final ReentrantLock mainLock = this.mainLock;
         mainLock.lock();
         try {
-            for (Worker w : workers)  //ÖĞ¶ÏËùÓĞµÄÏß³Ì
+            for (Worker w : workers)  //ä¸­æ–­æ‰€æœ‰çš„çº¿ç¨‹
                 w.interruptIfStarted();
         } finally {
             mainLock.unlock();
@@ -835,9 +835,9 @@ public class ThreadPoolExecutor extends AbstractExecutorService {
         try {
             for (Worker w : workers) {
                 Thread t = w.thread;
-                if (!t.isInterrupted() && w.tryLock()) {  //Èç¹ûÃ»ÓĞ±»ÖĞ¶ÏÇÒÇëÇó³É¹¦£¨ÖĞ¶ÏµÈ´ıÈÎÎñµÄÏß³Ì£©
+                if (!t.isInterrupted() && w.tryLock()) {  //å¦‚æœæ²¡æœ‰è¢«ä¸­æ–­ä¸”è¯·æ±‚æˆåŠŸï¼ˆä¸­æ–­ç­‰å¾…ä»»åŠ¡çš„çº¿ç¨‹ï¼‰
                     try {
-                        t.interrupt();   //ÖĞ¶Ï
+                        t.interrupt();   //ä¸­æ–­
                     } catch (SecurityException ignore) {
                     } finally {
                         w.unlock();
@@ -917,7 +917,7 @@ public class ThreadPoolExecutor extends AbstractExecutorService {
      */
 
     /**
-     * ·´Õı¾ÍÊÇÓÃÓÚÌí¼ÓworkerµÄ
+     * åæ­£å°±æ˜¯ç”¨äºæ·»åŠ workerçš„
      * Checks if a new worker can be added with respect to current
      * pool state and the given bound (either core or maximum). If so,
      * the worker count is adjusted accordingly, and, if possible, a
@@ -946,26 +946,26 @@ public class ThreadPoolExecutor extends AbstractExecutorService {
     private boolean addWorker(Runnable firstTask, boolean core) {
         retry:
         for (;;) {
-            int c = ctl.get();    //»ñÈ¡µ±Ç°Ïß³Ì³ØÊıÁ¿
-            int rs = runStateOf(c);    //ÅĞ¶ÏÏß³Ì³ØÊÇ·ñ¹Ø±Õ
+            int c = ctl.get();    //è·å–å½“å‰çº¿ç¨‹æ± æ•°é‡
+            int rs = runStateOf(c);    //åˆ¤æ–­çº¿ç¨‹æ± æ˜¯å¦å…³é—­
 
             // Check if queue empty only if necessary.
-			if (rs >= SHUTDOWN && !(rs == SHUTDOWN && firstTask == null && !workQueue.isEmpty()))
-				return false;
+            if (rs >= SHUTDOWN && !(rs == SHUTDOWN && firstTask == null && !workQueue.isEmpty()))
+                return false;
 
-			for (;;) {
-				int wc = workerCountOf(c);
-				//ÊıÁ¿ÒÑÂú£¬·µ»Øfalse
-				if (wc >= CAPACITY || wc >= (core ? corePoolSize : maximumPoolSize))
-					return false;
-				if (compareAndIncrementWorkerCount(c))
-					break retry;
-				c = ctl.get(); // Re-read ctl
-				if (runStateOf(c) != rs)
-					continue retry;
-				// else CAS failed due to workerCount change; retry inner loop
-			}
-		}
+            for (;;) {
+                int wc = workerCountOf(c);
+                //æ•°é‡å·²æ»¡ï¼Œè¿”å›false
+                if (wc >= CAPACITY || wc >= (core ? corePoolSize : maximumPoolSize))
+                    return false;
+                if (compareAndIncrementWorkerCount(c))
+                    break retry;
+                c = ctl.get(); // Re-read ctl
+                if (runStateOf(c) != rs)
+                    continue retry;
+                // else CAS failed due to workerCount change; retry inner loop
+            }
+        }
 
         boolean workerStarted = false;
         boolean workerAdded = false;
@@ -983,7 +983,7 @@ public class ThreadPoolExecutor extends AbstractExecutorService {
                     int rs = runStateOf(ctl.get());
 
                     if (rs < SHUTDOWN ||
-                        (rs == SHUTDOWN && firstTask == null)) {
+                            (rs == SHUTDOWN && firstTask == null)) {
                         if (t.isAlive()) // precheck that t is startable
                             throw new IllegalThreadStateException();
                         workers.add(w);
@@ -1028,7 +1028,7 @@ public class ThreadPoolExecutor extends AbstractExecutorService {
     }
 
     /**
-     * ¶ÔÒ»¸ö½«ÒªËÀÍöµÄµÄworker½øĞĞÇåÀíºÍ¹ÜÀí
+     * å¯¹ä¸€ä¸ªå°†è¦æ­»äº¡çš„çš„workerè¿›è¡Œæ¸…ç†å’Œç®¡ç†
      * Performs cleanup and bookkeeping for a dying worker. Called
      * only from worker threads. Unless completedAbruptly is set,
      * assumes that workerCount has already been adjusted to account
@@ -1049,7 +1049,7 @@ public class ThreadPoolExecutor extends AbstractExecutorService {
         mainLock.lock();
         try {
             completedTaskCount += w.completedTasks;
-            workers.remove(w);   //ÒÆ³ı½«ÒªËÀÍöµÄÏß³Ì
+            workers.remove(w);   //ç§»é™¤å°†è¦æ­»äº¡çš„çº¿ç¨‹
         } finally {
             mainLock.unlock();
         }
@@ -1105,7 +1105,7 @@ public class ThreadPoolExecutor extends AbstractExecutorService {
             boolean timed = allowCoreThreadTimeOut || wc > corePoolSize;
 
             if ((wc > maximumPoolSize || (timed && timedOut))
-                && (wc > 1 || workQueue.isEmpty())) {
+                    && (wc > 1 || workQueue.isEmpty())) {
                 if (compareAndDecrementWorkerCount(c))
                     return null;
                 continue;
@@ -1113,8 +1113,8 @@ public class ThreadPoolExecutor extends AbstractExecutorService {
 
             try {
                 Runnable r = timed ?
-                    workQueue.poll(keepAliveTime, TimeUnit.NANOSECONDS) :
-                    workQueue.take();
+                        workQueue.poll(keepAliveTime, TimeUnit.NANOSECONDS) :
+                        workQueue.take();
                 if (r != null)
                     return r;
                 timedOut = true;
@@ -1125,7 +1125,7 @@ public class ThreadPoolExecutor extends AbstractExecutorService {
     }
 
     /**
-     * Ñ­»·ÔËĞĞ
+     * å¾ªç¯è¿è¡Œ
      * Main worker run loop.  Repeatedly gets tasks from queue and
      * executes them, while coping with a number of issues:
      *
@@ -1137,24 +1137,24 @@ public class ThreadPoolExecutor extends AbstractExecutorService {
      * external code, in which case completedAbruptly holds, which
      * usually leads processWorkerExit to replace this thread.
      *
-     * ÔÚÔËĞĞÈÎºÎÈÎÎñÖ®Ç°£¬Òª»ñÈ¡Ëø·ÀÖ¹ÈÎÎñÔÚÖ´ĞĞµÄÊ±ºò±»ÆäËûÏß³Ì³ØÖĞ¶Ï£¬³ı·ÇÏß³Ì
-     * ³Ø±»Í£Ö¹£¬Ïß³ÌÃ»ÓĞËüµÄÖĞ¶Ï¼¯ºÏ
+     * åœ¨è¿è¡Œä»»ä½•ä»»åŠ¡ä¹‹å‰ï¼Œè¦è·å–é”é˜²æ­¢ä»»åŠ¡åœ¨æ‰§è¡Œçš„æ—¶å€™è¢«å…¶ä»–çº¿ç¨‹æ± ä¸­æ–­ï¼Œé™¤éçº¿ç¨‹
+     * æ± è¢«åœæ­¢ï¼Œçº¿ç¨‹æ²¡æœ‰å®ƒçš„ä¸­æ–­é›†åˆ
      * 2. Before running any task, the lock is acquired to prevent
      * other pool interrupts while the task is executing, and then we
      * ensure that unless pool is stopping, this thread does not have
      * its interrupt set.
      *
-     *3.Ã¿¸öÈÎÎñÔËĞĞÇ°£¬½«»áµ÷ÓÃ£¬beforeExecute·½·¨£¬¸Ã·½·¨¿ÉÄÜ»áÅ×³öÒì³££¬
-     *Õâ»áµ¼ÖÂÏß³Ì»¹Ã»¿ªÊ¼´¦ÀíÈÎÎñ¾Í±»ÖĞ¶Ï
+     *3.æ¯ä¸ªä»»åŠ¡è¿è¡Œå‰ï¼Œå°†ä¼šè°ƒç”¨ï¼ŒbeforeExecuteæ–¹æ³•ï¼Œè¯¥æ–¹æ³•å¯èƒ½ä¼šæŠ›å‡ºå¼‚å¸¸ï¼Œ
+     *è¿™ä¼šå¯¼è‡´çº¿ç¨‹è¿˜æ²¡å¼€å§‹å¤„ç†ä»»åŠ¡å°±è¢«ä¸­æ–­
      * 3. Each task run is preceded by a call to beforeExecute, which
      * might throw an exception, in which case we cause thread to die
      * (breaking loop with completedAbruptly true) without processing
      * the task.
      *
-     *4.¼ÙÉèbeforeExecuteÕı³£Íê³Éºó£¬ÎÒÃÇ¿ªÊ¼Ö´ĞĞÈÎÎñ£¬»áËÑ¼¯Ö´ĞĞÖ®¼äÈÎÎñÅ×³öµÄÒì³£
-     *µ½afterExecute¡£ÎÒÃÇ·Ö¿ª´¦ÀíRuntimeException,ErrorºÍÈÎºÎÆäËûµÄThrowables
-     *ÒòÎªÎÒÃÇ²»ÄÜÔÚRunnableµÄrun·½·¨ÖĞÅ×³öÒì³£¡£ÎÒÃÇ½«Òì³£°ü×°£¬ÒÔUncaughtExceptionHandler
-     *µÄ·½Ê½Å×³ö¡£
+     *4.å‡è®¾beforeExecuteæ­£å¸¸å®Œæˆåï¼Œæˆ‘ä»¬å¼€å§‹æ‰§è¡Œä»»åŠ¡ï¼Œä¼šæœé›†æ‰§è¡Œä¹‹é—´ä»»åŠ¡æŠ›å‡ºçš„å¼‚å¸¸
+     *åˆ°afterExecuteã€‚æˆ‘ä»¬åˆ†å¼€å¤„ç†RuntimeException,Errorå’Œä»»ä½•å…¶ä»–çš„Throwables
+     *å› ä¸ºæˆ‘ä»¬ä¸èƒ½åœ¨Runnableçš„runæ–¹æ³•ä¸­æŠ›å‡ºå¼‚å¸¸ã€‚æˆ‘ä»¬å°†å¼‚å¸¸åŒ…è£…ï¼Œä»¥UncaughtExceptionHandler
+     *çš„æ–¹å¼æŠ›å‡ºã€‚
      *
      * 4. Assuming beforeExecute completes normally, we run the task,
      * gathering any of its thrown exceptions to send to afterExecute.
@@ -1165,8 +1165,8 @@ public class ThreadPoolExecutor extends AbstractExecutorService {
      * UncaughtExceptionHandler).  Any thrown exception also
      * conservatively causes thread to die.
      *
-     *5.ÔÚÈÎÎñµÄrun·½·¨Ö´ĞĞÍêºó£¬Èç¹ûÏß³ÌÓĞÒì³£Å×³ö£¬±ã»áµ÷ÓÃafterExecute·½·¨£¬
-     *µ«¸Ã·½·¨ÈÎÈ»¿ÉÄÜÅ×³öÒì³££¬Òì³£µÄÅ×³öÈÎÈ»»áµ¼ÖÂÏß³ÌËÀÍö¡£
+     *5.åœ¨ä»»åŠ¡çš„runæ–¹æ³•æ‰§è¡Œå®Œåï¼Œå¦‚æœçº¿ç¨‹æœ‰å¼‚å¸¸æŠ›å‡ºï¼Œä¾¿ä¼šè°ƒç”¨afterExecuteæ–¹æ³•ï¼Œ
+     *ä½†è¯¥æ–¹æ³•ä»»ç„¶å¯èƒ½æŠ›å‡ºå¼‚å¸¸ï¼Œå¼‚å¸¸çš„æŠ›å‡ºä»»ç„¶ä¼šå¯¼è‡´çº¿ç¨‹æ­»äº¡ã€‚
      *
      * 5. After task.run completes, we call afterExecute, which may
      * also throw an exception, which will also cause thread to
@@ -1189,36 +1189,36 @@ public class ThreadPoolExecutor extends AbstractExecutorService {
         try {
             while (task != null || (task = getTask()) != null) {
                 w.lock();
-                // If pool is stopping, ensure thread is interrupted; 
+                // If pool is stopping, ensure thread is interrupted;
                 // if not, ensure thread is not interrupted.  This
-                // requires a recheck in second case to deal with  
+                // requires a recheck in second case to deal with
                 // shutdownNow race while clearing interrupt
-				if ((runStateAtLeast(ctl.get(), STOP) || (Thread.interrupted() && runStateAtLeast(ctl.get(), STOP))) && !wt.isInterrupted())
-					wt.interrupt();
+                if ((runStateAtLeast(ctl.get(), STOP) || (Thread.interrupted() && runStateAtLeast(ctl.get(), STOP))) && !wt.isInterrupted())
+                    wt.interrupt();
                 try {
                     beforeExecute(wt, task);
                     Throwable thrown = null;
-					try {
-						task.run();   //ÈÎÎñµÄrun·½·¨ÔÚÕâÀïÖ´ĞĞ
-					} catch (RuntimeException x) {
-						thrown = x;
-						throw x;
-					} catch (Error x) {
-						thrown = x;
-						throw x;
-					} catch (Throwable x) {
-						thrown = x;
-						throw new Error(x);
-					} finally {
-						afterExecute(task, thrown);   //Òì³£Å×³ö»áÖ´ĞĞafterExecute·½·¨
-					}
+                    try {
+                        task.run();   //ä»»åŠ¡çš„runæ–¹æ³•åœ¨è¿™é‡Œæ‰§è¡Œ
+                    } catch (RuntimeException x) {
+                        thrown = x;
+                        throw x;
+                    } catch (Error x) {
+                        thrown = x;
+                        throw x;
+                    } catch (Throwable x) {
+                        thrown = x;
+                        throw new Error(x);
+                    } finally {
+                        afterExecute(task, thrown);   //å¼‚å¸¸æŠ›å‡ºä¼šæ‰§è¡ŒafterExecuteæ–¹æ³•
+                    }
                 } finally {
                     task = null;
                     w.completedTasks++;
                     w.unlock();
                 }
             }
-            completedAbruptly = false;  //ÈÎÎñÖ´ĞĞÍê³É£¬completedAbruptlyÎªfales£¬Ê§°ÜÎªtrue
+            completedAbruptly = false;  //ä»»åŠ¡æ‰§è¡Œå®Œæˆï¼ŒcompletedAbruptlyä¸ºfalesï¼Œå¤±è´¥ä¸ºtrue
         } finally {
             processWorkerExit(w, completedAbruptly);
         }
@@ -1256,7 +1256,7 @@ public class ThreadPoolExecutor extends AbstractExecutorService {
                               TimeUnit unit,
                               BlockingQueue<Runnable> workQueue) {
         this(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue,
-             Executors.defaultThreadFactory(), defaultHandler);
+                Executors.defaultThreadFactory(), defaultHandler);
     }
 
     /**
@@ -1291,7 +1291,7 @@ public class ThreadPoolExecutor extends AbstractExecutorService {
                               BlockingQueue<Runnable> workQueue,
                               ThreadFactory threadFactory) {
         this(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue,
-             threadFactory, defaultHandler);
+                threadFactory, defaultHandler);
     }
 
     /**
@@ -1326,7 +1326,7 @@ public class ThreadPoolExecutor extends AbstractExecutorService {
                               BlockingQueue<Runnable> workQueue,
                               RejectedExecutionHandler handler) {
         this(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue,
-             Executors.defaultThreadFactory(), handler);
+                Executors.defaultThreadFactory(), handler);
     }
 
     /**
@@ -1364,9 +1364,9 @@ public class ThreadPoolExecutor extends AbstractExecutorService {
                               ThreadFactory threadFactory,
                               RejectedExecutionHandler handler) {
         if (corePoolSize < 0 ||
-            maximumPoolSize <= 0 ||
-            maximumPoolSize < corePoolSize ||
-            keepAliveTime < 0)
+                maximumPoolSize <= 0 ||
+                maximumPoolSize < corePoolSize ||
+                keepAliveTime < 0)
             throw new IllegalArgumentException();
         if (workQueue == null || threadFactory == null || handler == null)
             throw new NullPointerException();
@@ -1417,11 +1417,11 @@ public class ThreadPoolExecutor extends AbstractExecutorService {
          */
         int c = ctl.get();
         if (workerCountOf(c) < corePoolSize) {
-            if (addWorker(command, true))  //Ìí¼Ó³É¹¦
+            if (addWorker(command, true))  //æ·»åŠ æˆåŠŸ
                 return;
             c = ctl.get();
         }
-        if (isRunning(c) && workQueue.offer(command)) {   //Ìí¼Óµ½¶ÓÁĞ
+        if (isRunning(c) && workQueue.offer(command)) {   //æ·»åŠ åˆ°é˜Ÿåˆ—
             int recheck = ctl.get();
             if (! isRunning(recheck) && remove(command))
                 reject(command);
@@ -1433,8 +1433,8 @@ public class ThreadPoolExecutor extends AbstractExecutorService {
     }
 
     /**
-     * Æô¶¯shutdownÇ°½«»áÊÇÒÑÌá½»µÄ¶ÓÁĞÓĞĞòÖ´ĞĞ£¬µ«ÊÇ²¢²»»á½ÓÊÕĞÂµÄÈÎÎñ
-     * ¸Ã²Ù×÷½«²»»á¶ÔÔÚÖ´ĞĞµÄÏß³Ì½øĞĞÈÎºÎ¸ÉÔ¤¡£
+     * å¯åŠ¨shutdownå‰å°†ä¼šæ˜¯å·²æäº¤çš„é˜Ÿåˆ—æœ‰åºæ‰§è¡Œï¼Œä½†æ˜¯å¹¶ä¸ä¼šæ¥æ”¶æ–°çš„ä»»åŠ¡
+     * è¯¥æ“ä½œå°†ä¸ä¼šå¯¹åœ¨æ‰§è¡Œçš„çº¿ç¨‹è¿›è¡Œä»»ä½•å¹²é¢„ã€‚
      * Initiates an orderly shutdown in which previously submitted
      * tasks are executed, but no new tasks will be accepted.
      * Invocation has no additional effect if already shut down.
@@ -1517,7 +1517,7 @@ public class ThreadPoolExecutor extends AbstractExecutorService {
     }
 
     public boolean awaitTermination(long timeout, TimeUnit unit)
-        throws InterruptedException {
+            throws InterruptedException {
         long nanos = unit.toNanos(timeout);
         final ReentrantLock mainLock = this.mainLock;
         mainLock.lock();
@@ -1639,7 +1639,7 @@ public class ThreadPoolExecutor extends AbstractExecutorService {
      */
     public boolean prestartCoreThread() {
         return workerCountOf(ctl.get()) < corePoolSize &&
-            addWorker(null, true);
+                addWorker(null, true);
     }
 
     /**
@@ -1862,7 +1862,7 @@ public class ThreadPoolExecutor extends AbstractExecutorService {
             // Remove rare and surprising possibility of
             // isTerminated() && getPoolSize() > 0
             return runStateAtLeast(ctl.get(), TIDYING) ? 0
-                : workers.size();
+                    : workers.size();
         } finally {
             mainLock.unlock();
         }
@@ -1976,15 +1976,15 @@ public class ThreadPoolExecutor extends AbstractExecutorService {
         }
         int c = ctl.get();
         String rs = (runStateLessThan(c, SHUTDOWN) ? "Running" :
-                     (runStateAtLeast(c, TERMINATED) ? "Terminated" :
-                      "Shutting down"));
+                (runStateAtLeast(c, TERMINATED) ? "Terminated" :
+                        "Shutting down"));
         return super.toString() +
-            "[" + rs +
-            ", pool size = " + nworkers +
-            ", active threads = " + nactive +
-            ", queued tasks = " + workQueue.size() +
-            ", completed tasks = " + ncompleted +
-            "]";
+                "[" + rs +
+                ", pool size = " + nworkers +
+                ", active threads = " + nactive +
+                ", queued tasks = " + workQueue.size() +
+                ", completed tasks = " + ncompleted +
+                "]";
     }
 
     /* Extension hooks */
@@ -2108,8 +2108,8 @@ public class ThreadPoolExecutor extends AbstractExecutorService {
          */
         public void rejectedExecution(Runnable r, ThreadPoolExecutor e) {
             throw new RejectedExecutionException("Task " + r.toString() +
-                                                 " rejected from " +
-                                                 e.toString());
+                    " rejected from " +
+                    e.toString());
         }
     }
 

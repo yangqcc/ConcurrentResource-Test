@@ -6,10 +6,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 /**
- * Ê¹ÓÃAutoIntegerÏû³ıÏß³Ì°²È«ÎÊÌâ
+ * ä½¿ç”¨AutoIntegeræ¶ˆé™¤çº¿ç¨‹å®‰å…¨é—®é¢˜
  *
  * @author yangqc
- * 2016Äê7ÔÂ23ÈÕ
+ * 2016å¹´7æœˆ23æ—¥
  */
 public class AtomicIntegerTest implements Runnable {
 

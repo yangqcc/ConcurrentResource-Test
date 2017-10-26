@@ -5,16 +5,16 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * ÒøÐÐÀà
- * 
+ * é“¶è¡Œç±»
+ *
  * @author yangqc
- * 
+ *
  */
 public class Bank {
 	private final double[] accounts;
 	private Lock bankLock = new ReentrantLock();
-    private Condition sufficientFunds;
-	
+	private Condition sufficientFunds;
+
 	public Bank(int n, double initialBalance) {
 		accounts = new double[n];
 		for (int i = 0; i < accounts.length; i++) {

@@ -11,7 +11,7 @@ public class MyEnumObject {
 
 	private MyEnumObject() {
 		try {
-			System.out.println("µ÷ÓÃMyEnumObjectµÄ¹¹Ôì!");
+			System.out.println("è°ƒç”¨MyEnumObjectçš„æž„é€ !");
 			String url = "";
 			String username = "ds";
 			String password = "";
@@ -31,7 +31,7 @@ public class MyEnumObject {
 	public static Connection getConnection() {
 		return connection;
 	}
-	
+
 	public static void main(String[] args) {
 		Runnable runnable=new MyRunnable3();
 		ExecutorService exec=Executors.newCachedThreadPool();
