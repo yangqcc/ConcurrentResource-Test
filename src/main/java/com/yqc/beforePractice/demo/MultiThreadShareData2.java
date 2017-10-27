@@ -14,18 +14,8 @@ public class MultiThreadShareData2 {
 //		final ShareData2 data1=new ShareData2();
 //		new Thread(new MyRunnable1(data1)).start();
 //		new Thread(new MyRunnable2(data1)).start();
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                data1.decrement();
-            }
-        }).start();
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                data1.increment();
-            }
-        }).start();
+        new Thread(() -> data1.decrement()).start();
+        new Thread(() -> data1.increment()).start();
     }
 }
 

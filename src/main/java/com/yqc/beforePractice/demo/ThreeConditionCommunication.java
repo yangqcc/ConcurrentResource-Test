@@ -7,30 +7,21 @@ import java.util.concurrent.locks.ReentrantLock;
 public class ThreeConditionCommunication {
     public static void main(String[] args) {
         final Business business = new Business();
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                for (int i = 0; i < 50; i++) {
-                    business.sub1(i);
-                }
+        new Thread(() -> {
+            for (int i = 0; i < 50; i++) {
+                business.sub1(i);
             }
         }).start();
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                for (int i = 0; i < 50; i++) {
-                    business.sub2(i);
-                }
+        new Thread(() -> {
+            for (int i = 0; i < 50; i++) {
+                business.sub2(i);
             }
         }).start();
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                for (int i = 0; i < 50; i++) {
-                    business.sub3(i);
-                }
+        new Thread(() -> {
+            for (int i = 0; i < 50; i++) {
+                business.sub3(i);
             }
         }).start();
     }

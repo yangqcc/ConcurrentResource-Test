@@ -12,26 +12,11 @@ public class ReadWriteLockTest {
     public static void main(String[] args) {
         final Queue3 queue = new Queue3();
         for (int i = 0; i < 10; i++) {
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    queue.get();
-                }
-            }).start();
+            new Thread(() -> queue.get()).start();
 
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    queue.get();
-                }
-            }).start();
+            new Thread(() -> queue.get()).start();
 
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    queue.put("期成!");
-                }
-            }).start();
+            new Thread(() -> queue.put("期成!")).start();
         }
     }
 }

@@ -8,15 +8,10 @@ import java.util.concurrent.locks.ReentrantLock;
 public class ConditionCommunication {
     public static void main(String[] args) {
         final Business business = new Business();
-        new Thread(new Runnable() {
-
-            @Override
-            public void run() {
-                for (int i = 0; i < 50; i++) {
-                    business.sub(i);
-                }
+        new Thread(() -> {
+            for (int i = 0; i < 50; i++) {
+                business.sub(i);
             }
-
         }).start();
         for (int i = 0; i < 50; i++) {
             business.main(i);

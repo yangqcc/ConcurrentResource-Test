@@ -3,7 +3,7 @@ package com.yqc.forkJoin;
 import java.util.Random;
 
 public class Document {
-    private String words[] = {"the", "hello", "goodbye", "packt", "java", "thread", "pool", "random", "class", "main"};
+    private String words[] = {"the", "hello", "goodbye", "pack", "java", "thread", "pool", "random", "class", "main"};
 
     public String[][] generateDocument(int numLines, int numWords, String word) {   //行数，列数，指定单词数
         int counter = 0;

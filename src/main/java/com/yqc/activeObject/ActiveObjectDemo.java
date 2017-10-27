@@ -23,7 +23,7 @@ public class ActiveObjectDemo {
         for (int i = 0; i < 5; i++) {
             results.add(d1.calculateInt(i, i));
         }
-        System.out.println("All asynch calls made");
+        System.out.println("All ansy calls made");
         while (results.size() > 0) {
             for (Future<?> f : results) {
                 if (f.isDone()) {
@@ -58,7 +58,7 @@ public class ActiveObjectDemo {
 
     public Future<Float> calculateFloat(final float x, final float y) {
         return ex.submit(() -> {
-            System.out.println("starting " + x + " + " + y);
+            System.out.print("starting " + x + " + " + y);
             pause(2000);
             return x + y;
         });

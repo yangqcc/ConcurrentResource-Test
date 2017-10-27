@@ -11,17 +11,14 @@ public class ThreadPoolTest2 {
         ExecutorService threadPool = Executors.newSingleThreadExecutor();
         for (int l = 1; l <= 10; l++) {
             final int task = l;
-            threadPool.execute(new Runnable() {
-                @Override
-                public void run() {
-                    for (int i = 0; i < 10; i++) {
-                        try {
-                            Thread.sleep(20);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                        System.out.println(Thread.currentThread().getName() + " is loop of " + i + " task of " + task);
+            threadPool.execute(() -> {
+                for (int i = 0; i < 10; i++) {
+                    try {
+                        Thread.sleep(20);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
                     }
+                    System.out.println(Thread.currentThread().getName() + " is loop of " + i + " task of " + task);
                 }
             });
         }

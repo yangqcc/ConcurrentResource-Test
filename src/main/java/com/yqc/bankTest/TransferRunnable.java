@@ -8,6 +8,12 @@ public class TransferRunnable implements Runnable {
     private double maxAccount;
     private int DELAY = 10;
 
+    /**
+     * 转账任务
+     *
+     * @param bank 银行
+     * @param max  每次转账的金额
+     */
     public TransferRunnable(Bank bank, double max) {
         this.bank = bank;
         maxAccount = max;

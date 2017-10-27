@@ -22,33 +22,27 @@ public class CreateThread {
 
 
         //第二种线程创建方式
-        Thread thread2 = new Thread(new Runnable() {
-
-            @Override
-            public void run() {
-                while (true) {
-                    try {
-                        Thread.sleep(500);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    System.out.println("1:" + Thread.currentThread().getName());
+        Thread thread2 = new Thread(() -> {
+            while (true) {
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
+                System.out.println("1:" + Thread.currentThread().getName());
             }
         });
 //		thread2.start();
 
 
-        new Thread(new Runnable() {
-            public void run() {
-                while (true) {
-                    try {
-                        Thread.sleep(500);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    System.out.println("runnable:" + Thread.currentThread().getName());
+        new Thread(() -> {
+            while (true) {
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
+                System.out.println("runnable:" + Thread.currentThread().getName());
             }
         }) {
             @Override
