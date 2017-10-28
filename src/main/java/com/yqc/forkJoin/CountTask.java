@@ -25,7 +25,9 @@ public class CountTask extends RecursiveTask<Integer> {
         try {
             System.out.println(result.get());
         } catch (InterruptedException e) {
+            e.printStackTrace();
         } catch (ExecutionException e) {
+            e.printStackTrace();
         }
     }
 
