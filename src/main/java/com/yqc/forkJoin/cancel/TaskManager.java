@@ -8,7 +8,7 @@ import java.util.concurrent.ForkJoinTask;
  * Created by yangqc on 2017/10/29
  */
 public class TaskManager {
-
+    //存放任务
     private List<ForkJoinTask<Integer>> tasks;
 
     public TaskManager() {
@@ -20,11 +20,11 @@ public class TaskManager {
     }
 
     public void cancelTasks(ForkJoinTask<Integer> cancelTask) {
-        tasks.forEach(task->{
-            if(task!=cancelTask){
+        for (ForkJoinTask<Integer> task : tasks) {
+            if (task != cancelTask) {
                 task.cancel(true);
-                ((SearchN)task).w
+                ((SearchNumberTask) task).writeCancelMessage();
             }
-        });
+        }
     }
 }

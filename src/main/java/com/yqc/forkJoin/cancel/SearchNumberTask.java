@@ -15,7 +15,7 @@ public class SearchNumberTask extends RecursiveTask<Integer> {
     private TaskManager taskManager;
     private final static int NOT_FOUND = -1;
 
-    private SearchNumberTask(int[] array, int start, int end, int number, TaskManager taskManager) {
+    public SearchNumberTask(int[] array, int start, int end, int number, TaskManager taskManager) {
         this.array = array;
         this.start = start;
         this.end = end;
@@ -44,12 +44,16 @@ public class SearchNumberTask extends RecursiveTask<Integer> {
         //采用异步的方式
         task1.fork();
         task2.fork();
-        int ret;
-        ret = task1.join();
-        if (ret != -1) {
-            return ret;
+        int ret = 0;
+        if (!task1.isCancelled()) {
+            ret = task1.join();
+            if (ret != -1) {
+                return ret;
+            }
         }
-        ret = task2.join();
+        if (!task2.isCancelled()) {
+            ret = task2.join();
+        }
         return ret;
     }
 
@@ -57,11 +61,11 @@ public class SearchNumberTask extends RecursiveTask<Integer> {
         try {
             for (int i = start; i < end; i++) {
                 if (array[i] == number) {
-                    System.out.printf("SearchNumberTask: Number %d found in position %d\n", number, i);
+                    System.out.printf("SearchNumberTask: Number %d found in position %d and Thread name is %s\n", number, i, Thread.currentThread().getName());
                     taskManager.cancelTasks(this);
                     return i;
                 }
-                TimeUnit.SECONDS.sleep(1);
+                TimeUnit.MILLISECONDS.sleep(1);
             }
         } catch (InterruptedException e) {
             e.printStackTrace();
