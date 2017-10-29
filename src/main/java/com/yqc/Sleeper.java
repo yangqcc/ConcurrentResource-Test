@@ -1,5 +1,8 @@
 package com.yqc;
 
+/**
+ * join等待线程
+ */
 public class Sleeper extends Thread {
     private int duration;
 
@@ -7,12 +10,6 @@ public class Sleeper extends Thread {
         super(name);
         duration = sleepTime;
         start();
-    }
-
-    public static void main(String[] args) {
-        Sleeper sleepy = new Sleeper("Spleepy", 1500), grumpy = new Sleeper("Grumpy", 1500);
-        Joiner dopey = new Joiner("Dopey", sleepy), doc = new Joiner("Doc", grumpy);
-        grumpy.interrupt(); //睡眠被中断
     }
 
     public void run() {
@@ -26,6 +23,7 @@ public class Sleeper extends Thread {
 }
 
 class Joiner extends Thread {
+
     private Sleeper sleeper;
 
     public Joiner(String name, Sleeper sleeper) {
@@ -41,5 +39,13 @@ class Joiner extends Thread {
             e.printStackTrace();
         }
         System.out.println(getName() + " join Completed");
+    }
+}
+
+class Main {
+    public static void main(String[] args) {
+        Sleeper sleepy = new Sleeper("Sleepy", 15000), grumpy = new Sleeper("Grumpy", 15000);
+        Joiner joiner1 = new Joiner("Joiner1", sleepy), joiner2 = new Joiner("Joiner2", grumpy);
+        grumpy.interrupt(); //睡眠被中断
     }
 }

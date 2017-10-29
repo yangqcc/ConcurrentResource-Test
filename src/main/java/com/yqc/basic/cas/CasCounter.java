@@ -7,6 +7,7 @@ package com.yqc.basic.cas;
  * 2016年9月10日
  */
 public class CasCounter {
+    
     private SimulatedCAS value;
 
     public int getValue() {

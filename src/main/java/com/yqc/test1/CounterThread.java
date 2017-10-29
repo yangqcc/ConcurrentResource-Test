@@ -1,5 +1,8 @@
 package com.yqc.test1;
 
+/**
+ * 并发修改对象状态
+ */
 class Counter {
     long count = 0;
 
@@ -10,6 +13,7 @@ class Counter {
 }
 
 public class CounterThread extends Thread {
+
     protected Counter counter = null;
 
     public CounterThread(Counter counter) {
@@ -18,9 +22,8 @@ public class CounterThread extends Thread {
 
     public static void main(String[] args) {
         Counter counter1 = new Counter();
-        Counter counter2 = new Counter();
         Thread threadA = new CounterThread(counter1);
-        Thread threadB = new CounterThread(counter2);
+        Thread threadB = new CounterThread(counter1);
         threadA.start();
         threadB.start();
     }

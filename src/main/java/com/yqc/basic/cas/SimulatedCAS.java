@@ -1,6 +1,10 @@
 package com.yqc.basic.cas;
 
+/**
+ * synchronized实现的CAS操作
+ */
 public class SimulatedCAS {
+
     private int value;
 
     public synchronized int get() {
