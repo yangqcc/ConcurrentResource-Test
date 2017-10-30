@@ -44,10 +44,12 @@ class TestMain {
 
         String result = "";
         try {
+            //如果线程没有执行完成，get方法会一直阻塞在这里
             result = ft.get();
         } catch (Exception e) {
             e.printStackTrace();
         }
         System.out.println(result);
+        System.out.println("restart");
     }
 }
