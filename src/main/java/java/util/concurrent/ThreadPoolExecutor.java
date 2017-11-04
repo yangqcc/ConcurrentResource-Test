@@ -1157,6 +1157,7 @@ public class ThreadPoolExecutor extends AbstractExecutorService {
      * workerCount is decremented
      */
     private Runnable getTask() {
+        //最后一次获取任务是否超时
         boolean timedOut = false; // Did the last poll() time out?
 
         for (; ; ) {
@@ -1164,6 +1165,7 @@ public class ThreadPoolExecutor extends AbstractExecutorService {
             int rs = runStateOf(c);
 
             // Check if queue empty only if necessary.
+            // 如果线程池已停止, 或者线程池被关闭并且线程池内的阻塞队列为空, 则结束该方法并返回 null.
             if (rs >= SHUTDOWN && (rs >= STOP || workQueue.isEmpty())) {
                 decrementWorkerCount();
                 return null;
@@ -1171,20 +1173,33 @@ public class ThreadPoolExecutor extends AbstractExecutorService {
 
             int wc = workerCountOf(c);
 
+            // 如果 allowCoreThreadTimeOut 这个字段设置为 true(也就是允许核心线程受超时机制的控制), 则
+            // 直接设置 timed 为 true. 反之, 则再看当前线程池中的有效线程数是否已经超过了核心线程数, 也
+            // 就是是否存在非核心线程. 如果存在非核心线程, 那么也会设置 timed 为true.
+            // 如果 wc <= corePoolSize (线程池中的有效线程数少于核心线程数, 即: 线程池内运行着的都是核心线程),
+            // 并且 allowCoreThreadTimeOut 为 false(即: 核心线程即使空闲, 也不会受超时机制的限制),
+            // 那么就设置 timed 为 false.
             // Are workers subject to culling?
             boolean timed = allowCoreThreadTimeOut || wc > corePoolSize;
 
-            if ((wc > maximumPoolSize || (timed && timedOut))
-                    && (wc > 1 || workQueue.isEmpty())) {
+            // 当线程池处于 RUNNING (运行)状态但阻塞队列内已经没有任务(为空)时, 将导致有线程接下来会一直
+            // 处于空闲状态. 如果空闲的是核心线程并且设置核心线程不受超时机制的影响(默认情况下就是这个设置),
+            // 那么这些核心线程将一直在线程池中处于空闲状态, 等待着新任务的到来, 只要线程池处于 RUNNING
+            // (运行)状态, 那么, 这些空闲的核心线程将一直在池子中而不会被销毁. 如果空闲的是非核心线程, 或者
+            // 虽然是核心线程但是设置了核心线程受超时机制的限制, 那么当空闲达到超时时间时, 这就满足了这里的
+            // if条件而去执行 if内部的代码, 通过返回 null 结束掉该 getTask()方法, 也最终结束掉 runWorker()方法.
+            if ((wc > maximumPoolSize || (timed && timedOut)) && (wc > 1 || workQueue.isEmpty())) {
                 if (compareAndDecrementWorkerCount(c))
                     return null;
                 continue;
             }
 
             try {
+                // 从阻塞队列中取出队首的那个任务, 设置给 r. 如果空闲线程等待超时或者该队列已经为空, 则 r为 null.
                 Runnable r = timed ?
                         workQueue.poll(keepAliveTime, TimeUnit.NANOSECONDS) :
                         workQueue.take();
+                // 如果阻塞队列不为空并且未发生超时的情况, 那么取出的任务就不为 null, 就直接返回该任务对象.
                 if (r != null)
                     return r;
                 timedOut = true;
@@ -1255,7 +1270,7 @@ public class ThreadPoolExecutor extends AbstractExecutorService {
      */
     final void runWorker(Worker w) {
         Thread wt = Thread.currentThread();
-        //获取worker的第一个任务
+        //获取worker的第一个任务，将firstTask赋值给task
         Runnable task = w.firstTask;
         w.firstTask = null;
         w.unlock(); // allow interrupts
@@ -1293,6 +1308,8 @@ public class ThreadPoolExecutor extends AbstractExecutorService {
                         afterExecute(task, thrown);   //异常抛出会执行afterExecute方法
                     }
                 } finally {
+                    // 将 task 置为 null, 这样使得 while循环是否继续执行的判断, 就只能依赖于判断
+                    // 第二个条件, 也就是 (task = getTask()) != null 这个条件, 是否满足.
                     task = null;
                     w.completedTasks++;
                     w.unlock();
@@ -1361,7 +1378,11 @@ public class ThreadPoolExecutor extends AbstractExecutorService {
             int recheck = ctl.get();
             if (!isRunning(recheck) && remove(command)) {
               reject(command);
-            } else if (workerCountOf(recheck) == 0) {
+            }
+            // 再次计算线程池内的有效线程数 workerCount, 一旦发现该数量变为0,
+            // 就将线程池内的线程数上限值设置为最大线程数 maximumPoolSize, 然后
+            // 只是创建一个线程而不去启动它, 并结束整个 execute()方法的执行.
+            else if (workerCountOf(recheck) == 0) {
               addWorker(null, false);
             }
         }
@@ -2177,7 +2198,8 @@ public class ThreadPoolExecutor extends AbstractExecutorService {
         }
 
         /**
-         * 通过外部类的{@link ThreadPoolExecutor#runWorker}方法循环调用当前的run方法
+         * 通过外部类的{@link ThreadPoolExecutor#runWorker}方法循环调用当前的run方法，
+         * 这个使用当前worker内部的线程执行当前方法的
          * Delegates main run loop to outer runWorker
          */
         @Override
