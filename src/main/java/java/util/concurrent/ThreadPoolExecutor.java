@@ -362,6 +362,9 @@ public class ThreadPoolExecutor extends AbstractExecutorService {
             new RuntimePermission("modifyThread");
     private static final boolean ONLY_ONE = true;
     /**
+     * ctl，线程状态控制，一个包装了两个字段的原子变量。
+     * 1.线程池当前工作线程，当前有用的工作线程的数量
+     * 2.运行状态，判断当前线程池是否处于运行状态，还是SHUT DOWN状态
      * The main pool control state, ctl, is an atomic integer packing
      * two conceptual fields
      * workerCount, indicating the effective number of threads
@@ -373,6 +376,9 @@ public class ThreadPoolExecutor extends AbstractExecutorService {
      * the future, the variable can be changed to be an AtomicLong,
      * and the shift/mask constants below adjusted. But until the need
      * arises, this code is a bit faster and simpler using an int.
+     * 为了将两个字段整合到一个int类型，我们限制worker的数量为2^29-1而不是
+     * 2^31-1.如果在未来会出现问题，可能会用AtomicLong来替代，位移和屏蔽常数
+     * 将会被调整。但是在需要升级之前，用int类型会稍微快一点并且简单一点。
      * <p>
      * The workerCount is the number of workers that have been
      * permitted to start and not permitted to stop.  The value may be
@@ -381,8 +387,13 @@ public class ThreadPoolExecutor extends AbstractExecutorService {
      * asked, and when exiting threads are still performing
      * bookkeeping before terminating. The user-visible pool size is
      * reported as the current size of the workers set.
+     * workerCount就是允许启动但是不允许停止的worker的数量。但是这个值可能在某个时刻会和实际
+     * 存活的线程数量有差异。例如，当请求ThreadFactory创建一个线程但是却失败时，退出的线程
+     * 在终止前仍然会被记录数量。这时用户访问的线程池的线程数量仍然是之前设置的线程池的数量。
+     * (因为在创建线程时，会先去增加线程的记录数量，然后再去创建新的worker，创建worker时可能会失败)
      * <p>
      * The runState provides the main lifecycle control, taking on values:
+     * runState提供了主要的生命周期的控制，对于不同值所表现的含义如下：
      * <p>
      * RUNNING:  Accept new tasks and process queued tasks
      * SHUTDOWN: Don't accept new tasks, but process queued tasks
@@ -391,7 +402,10 @@ public class ThreadPoolExecutor extends AbstractExecutorService {
      * TIDYING:  All tasks have terminated, workerCount is zero,
      * the thread transitioning to state TIDYING
      * will run the terminated() hook method
-     * TERMINATED: terminated() has completed
+     *
+     *(TIDYING：所有的任务已经结束，workerCount的值为0，线程转为TIDYING状态是将会
+     * 运行 terminated()钩子方法)
+     * TERMINATED: terminated() has completed (TIDYING到terminated()运行结束后，线程池便会转变为TERMINATED状态)
      * <p>
      * The numerical order among these values matters, to allow
      * ordered comparisons. The runState monotonically increases over
@@ -399,18 +413,19 @@ public class ThreadPoolExecutor extends AbstractExecutorService {
      * <p>
      * RUNNING -> SHUTDOWN
      * On invocation of shutdown(), perhaps implicitly in finalize()
-     * (RUNNING or SHUTDOWN) -> STOP
+     * (RUNNING or SHUTDOWN) -> STOP (RUNNING或者SHUTDOWN状态转化为STOP状态，因为调用了shutdownNow()方法)
      * On invocation of shutdownNow()
-     * SHUTDOWN -> TIDYING
+     * SHUTDOWN -> TIDYING (队列和线程池同时为空)
      * When both queue and pool are empty
-     * STOP -> TIDYING
+     * STOP -> TIDYING     (线程为空)
      * When pool is empty
-     * TIDYING -> TERMINATED
+     * TIDYING -> TERMINATED (当terminated()钩子方法完成时，TIDYING状态便会转化为TERMINATED状态)
      * When the terminated() hook method has completed
      * <p>
      * Threads waiting in awaitTermination() will return when the
      * state reaches TERMINATED.
      * <p>
+     *  TODO 有待理解
      * Detecting the transition from SHUTDOWN to TIDYING is less
      * straightforward than you'd like because the queue may become
      * empty after non-empty and vice versa during SHUTDOWN state, but
@@ -694,7 +709,7 @@ public class ThreadPoolExecutor extends AbstractExecutorService {
     }
 
     /**
-     * worker的数量
+     * 计算线程池的有效线程数
      *
      * @param c
      * @return
