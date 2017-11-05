@@ -1391,6 +1391,7 @@ public class ThreadPoolExecutor extends AbstractExecutorService {
             if (!isRunning(recheck) && remove(command)) {
               reject(command);
             }
+            // 如果线程池仍然处于运行状态，并且任务提交到阻塞队列成功
             // 再次计算线程池内的有效线程数 workerCount, 一旦发现该数量变为0,
             // 就将线程池内的线程数上限值设置为最大线程数 maximumPoolSize, 然后
             // 只是创建一个线程而不去启动它, 并结束整个 execute()方法的执行.
@@ -1401,8 +1402,8 @@ public class ThreadPoolExecutor extends AbstractExecutorService {
         // 如果该方法能够执行到这里, 那么结合分析1和分析2可知, 线程池此时必定是
         // 下面两种情况中的一种:
         // ① 已经不处于RUNNING(运行)状态
-        // ② 处于RUNNING(运行)状态, 并且线程池内的有效线程数 workerCount已经
-        //   >= 核心线程数 corePoolSize, 并且线程池内的阻塞队列 workQueue已满
+        // ② 处于RUNNING(运行)状态, 并且线程池内的有效线程数 workerCount已经>= 核心线程数 corePoolSize,
+        // 并且线程池内的阻塞队列 workQueue已满
         // 再次执行addWorker() 方法, 将线程池内的线程数上限值设置为最大线程数
         // maximumPoolSize, 并将提交的任务 command作为被执行的对象, 尝试创建并
         // 启动一个线程来执行该任务. 如果此时线程池的状态为如下两种中的一种,
