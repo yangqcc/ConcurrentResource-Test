@@ -322,9 +322,13 @@ public class ThreadPoolExecutor extends AbstractExecutorService {
     //线程容量
     private static final int CAPACITY = (1 << COUNT_BITS) - 1;
     // runState is stored in the high-order bits
+    // 状态由小到大排列，状态效益SHUTDOWN时，那么线程池就处于RUNNING状态，一定为运行状态
     private static final int RUNNING = -1 << COUNT_BITS;
+    //只有在调用 shutdown方法时，才会将线程池状态修改为SHUTDOWN状态
     private static final int SHUTDOWN = 0 << COUNT_BITS;
+    //只有在调用 shutdownNow方法时，才会将线程池状态修改为STOP状态
     private static final int STOP = 1 << COUNT_BITS;
+    //
     private static final int TIDYING = 2 << COUNT_BITS;
     private static final int TERMINATED = 3 << COUNT_BITS;
     /**
@@ -738,7 +742,7 @@ public class ThreadPoolExecutor extends AbstractExecutorService {
     }
 
     /**
-     * 减少字段ctl（代表worker的数量）的值
+     * 原子性减少字段ctl（代表worker的数量）的值
      * Decrements the workerCount field of ctl. This is called only on
      * abrupt termination of a thread (see processWorkerExit). Other
      * decrements are performed within getTask.
@@ -833,6 +837,8 @@ public class ThreadPoolExecutor extends AbstractExecutorService {
      */
 
     /**
+     * 中断所有的线程，及时任然在运行的线程，忽略SecurityException，但是有些线程
+     * 仍然可能不会被终止掉
      * Interrupts all threads, even if active. Ignores SecurityExceptions
      * (in which case some threads may remain uninterrupted).
      */
@@ -954,7 +960,9 @@ public class ThreadPoolExecutor extends AbstractExecutorService {
      * 它的第一个任务。如果当前线程池停止或者将要被关闭的话便会返回false。如果
      * thread factory创建线程失败也将会返回false。如果一个线程创建失败，或者
      * thread factory返回null，或者执行的时候抛出异常（一个比较典型的就是Thread.start()
-     * 抛出OutOfMemoryError),江湖干净的回滚回去。
+     * 抛出OutOfMemoryError),将会干净的回滚回去。
+     *
+     * 该方法先增加worker的数量，然后再去创建worker，如果创建worker失败，再递减worker的数量
      *
      * Checks if a new worker can be added with respect to current
      * pool state and the given bound (either core or maximum). If so,
@@ -994,8 +1002,9 @@ public class ThreadPoolExecutor extends AbstractExecutorService {
             int rs = runStateOf(c);
 
             // Check if queue empty only if necessary.
-            //线程池被关闭，返回true
-            //TODO 待理解
+            //线程池的状态大于SHUTDOWN且不含以下状态，返回false
+            //线程池的状态为SHUTDOWN且firstTask且workQueue不为空时，也会创建worker
+            //因为SHUTDOWN状态仍然会执行已经提交的任务
             if (rs >= SHUTDOWN && !(rs == SHUTDOWN && firstTask == null && !workQueue.isEmpty())) {
               return false;
             }
@@ -1018,6 +1027,7 @@ public class ThreadPoolExecutor extends AbstractExecutorService {
               // Re-read ctl
                 c = ctl.get();
                 if (runStateOf(c) != rs) {
+                    //线程池状态如果有改变，那么重新计算线程池状态
                   continue retry;
                 }
                 //如果因为workerCount的改变导致CAS失败，将再次进行循环
@@ -1140,6 +1150,7 @@ public class ThreadPoolExecutor extends AbstractExecutorService {
     }
 
     /**
+     * 通过getTask返回空，来结束掉当前worker
      * Performs blocking or timed wait for a task, depending on
      * current configuration settings, or returns null if this worker
      * must exit because of any of:
@@ -1157,6 +1168,7 @@ public class ThreadPoolExecutor extends AbstractExecutorService {
      * workerCount is decremented
      */
     private Runnable getTask() {
+        //没有修改状态就不用加锁
         //最后一次获取任务是否超时
         boolean timedOut = false; // Did the last poll() time out?
 
@@ -2246,6 +2258,7 @@ public class ThreadPoolExecutor extends AbstractExecutorService {
             return isHeldExclusively();
         }
 
+        //终止当前线程
         void interruptIfStarted() {
             Thread t;
             if (getState() >= 0 && (t = thread) != null && !t.isInterrupted()) {
