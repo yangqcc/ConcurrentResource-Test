@@ -178,6 +178,14 @@ import java.util.Queue;
  * @since 1.5
  */
 public interface BlockingQueue<E> extends Queue<E> {
+
+    /**
+     * {@link #add(Object)}和 {@link #offer(Object)}添加元素，不管是否成功都会立即
+     * 返回。
+     * {@link #put(Object)}添加元素时，如果队列没有空余，会一直阻塞，直到队列有效为止
+     * {@link #offer(Object, long, TimeUnit)} 添加元素时，如果队列无效，会等待指定时间
+     */
+
     /**
      * Inserts the specified element into this queue if it is possible to do
      * so immediately without violating capacity restrictions, returning
@@ -185,6 +193,9 @@ public interface BlockingQueue<E> extends Queue<E> {
      * {@code IllegalStateException} if no space is currently available.
      * When using a capacity-restricted queue, it is generally preferable to
      * use {@link #offer(Object) offer}.
+     *
+     * 如果容量不够，使用该方法添加元素会抛出异常，对于添加元素到容量限制的队列，我们
+     * 更加倾向使用{@link #offer(Object)}
      *
      * @param e the element to add
      * @return {@code true} (as specified by {@link Collection#add})
@@ -221,6 +232,8 @@ public interface BlockingQueue<E> extends Queue<E> {
      * Inserts the specified element into this queue, waiting if necessary
      * for space to become available.
      *
+     * 插入指定元素到队列里面，如果队列没有空间，会一直等待，直到有插入空间为止。
+     *
      * @param e the element to add
      * @throws InterruptedException     if interrupted while waiting
      * @throws ClassCastException       if the class of the specified element
@@ -234,6 +247,8 @@ public interface BlockingQueue<E> extends Queue<E> {
     /**
      * Inserts the specified element into this queue, waiting up to the
      * specified wait time if necessary for space to become available.
+     *
+     * 插入元素到指定队列，如果队列目前没有空间，会等待指定时间。
      *
      * @param e       the element to add
      * @param timeout how long to wait before giving up, in units of
