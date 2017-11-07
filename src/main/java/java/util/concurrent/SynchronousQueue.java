@@ -548,6 +548,7 @@ public class SynchronousQueue<E> extends AbstractQueue<E> implements BlockingQue
 
     /**
      * Shared internal API for dual stacks and queues.
+     * 用于双栈和队列的共享内部API
      */
     abstract static class Transferer<E> {
         /**
