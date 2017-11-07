@@ -552,17 +552,22 @@ public class SynchronousQueue<E> extends AbstractQueue<E> implements BlockingQue
      */
     abstract static class Transferer<E> {
         /**
-         * Performs a put or take.
+         * Performs a put or take. 进行put和take操作
          *
          * @param e     if non-null, the item to be handed to a consumer;
          *              if null, requests that transfer return an item
          *              offered by producer.
-         * @param timed if this operation should timeout
-         * @param nanos the timeout, in nanoseconds
+         *              如果E非空，那么元素将被消费者返回给消费者
+         *              如果为空，请求将转化为生产者返回一个元素
+         * @param timed if this operation should timeout 判断该操作是否有时间限制
+         * @param nanos the timeout, in nanoseconds 超时时间，单位为纳秒
          * @return if non-null, the item provided or received; if null,
          * the operation failed due to timeout or interrupt --
          * the caller can distinguish which of these occurred
          * by checking Thread.interrupted.
+         *
+         * 返回如果非空，元素将被接收或者提供，如果为空，改操作可能会因为超时或者被中断而失败
+         * 调用者通过判断Thread.interrupted来区分以上两个操作
          */
         abstract E transfer(E e, boolean timed, long nanos);
     }
@@ -581,15 +586,22 @@ public class SynchronousQueue<E> extends AbstractQueue<E> implements BlockingQue
 
         /* Modes for SNodes, ORed together in node fields */
         /**
+         * 任何线程的操作都处于以下三种状态其中的一种
+         */
+        /**
          * Node represents an unfulfilled consumer
+         * 节点代表一个未完成的消费者(正在消费数据的消费者)
          */
         static final int REQUEST = 0;
         /**
          * Node represents an unfulfilled producer
+         * 节点代表一个未完成的生产者(正在生产数据的生产者)
          */
         static final int DATA = 1;
         /**
          * Node is fulfilling another unfulfilled DATA or REQUEST
+         * 节点正在完成一个未完成的数据或者请求(表示正在匹配一个生产者或者消费者)
+         *
          */
         static final int FULFILLING = 2;
         // Unsafe mechanics
@@ -826,11 +838,14 @@ public class SynchronousQueue<E> extends AbstractQueue<E> implements BlockingQue
 
         /**
          * Node class for TransferStacks.
+         * TransFerStacks的节点类
          */
         static final class SNode {
             // Unsafe mechanics
             private static final sun.misc.Unsafe UNSAFE;
+            // match域的内存偏移地址
             private static final long matchOffset;
+            // next域偏移地址
             private static final long nextOffset;
 
             static {
@@ -846,13 +861,20 @@ public class SynchronousQueue<E> extends AbstractQueue<E> implements BlockingQue
                 }
             }
 
+            /**
+             * 指向下一个节点
+             */
             volatile SNode next;        // next node in stack
             // Note: item and mode fields don't need to be volatile
             // since they are always written before, and read after,
             // other volatile/atomic operations.
+            // 相匹配的节点
             volatile SNode match;       // the node matched to this
+            //当前等待的线程
             volatile Thread waiter;     // to control park/unpark
+            //元素项
             Object item;                // data; or null for REQUESTs
+            //模式
             int mode;
 
             SNode(Object item) {
@@ -873,6 +895,7 @@ public class SynchronousQueue<E> extends AbstractQueue<E> implements BlockingQue
              * @return true if successfully matched to s
              */
             boolean tryMatch(SNode s) {
+                // 本结点的match域为null并且比较并替换match域成功
                 if (match == null &&
                         UNSAFE.compareAndSwapObject(this, matchOffset, null, s)) {
                     Thread w = waiter;
@@ -899,7 +922,7 @@ public class SynchronousQueue<E> extends AbstractQueue<E> implements BlockingQue
     }
 
     /**
-     * Dual Queue
+     * Dual Queue 双端队列
      */
     static final class TransferQueue<E> extends Transferer<E> {
         /*
