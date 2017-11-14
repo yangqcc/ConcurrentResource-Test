@@ -41,6 +41,7 @@ import java.util.concurrent.locks.LockSupport;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
+ * 公平策略使用的是Queue，非公平策略使用的是Stack
  * A {@linkplain BlockingQueue blocking queue} in which each insert
  * operation must wait for a corresponding remove operation by another
  * thread, and vice versa.  A synchronous queue does not have any
@@ -98,6 +99,9 @@ public class SynchronousQueue<E> extends AbstractQueue<E> implements BlockingQue
      * similar. Fifo usually supports higher throughput under
      * contention but Lifo maintains higher thread locality in common
      * applications.
+     * LIFO(后进先出)堆栈用于非公平模式，而FIFO(先进先出)队列用于公平模式。
+     * 两者的性能差不多。FIFO通常用于支持在竞争中有更高的吞吐量，而一个LIFO
+     * 主要用于普通应用中高度的线程位置。
      *
      * A dual queue (and similarly stack) is one that at any given
      * time either holds "data" -- items provided by put operations,
@@ -115,6 +119,11 @@ public class SynchronousQueue<E> extends AbstractQueue<E> implements BlockingQue
      * so nearly all code can be combined. The resulting transfer
      * methods are on the long side, but are easier to follow than
      * they would be if broken up into nearly-duplicated parts.
+     *
+     * queue和stack都继承了抽象类Transferer类，而抽象类Transferer只定义了
+     * transfer一个方法，该方法用于put或者take方法。两种数据结构统一到一个方法，
+     * 因为put操作和take操作是对称的，所以可以将代码整合到一起。结果就是方法
+     * 可能有些长，但是比拆开分成多个相似的方法要简单很多。
      *
      * The queue and stack data structures share many conceptual
      * similarities but very few concrete details. For simplicity,
@@ -168,17 +177,21 @@ public class SynchronousQueue<E> extends AbstractQueue<E> implements BlockingQue
      * variety of processors and OSes. Empirically, the best value
      * seems not to vary with number of CPUs (beyond 2) so is just
      * a constant.
+     * 在阻塞定时等待之前，自旋的次数。
      */
     static final int maxTimedSpins = (NCPUS < 2) ? 0 : 32;
     /**
      * The number of times to spin before blocking in untimed waits.
      * This is greater than timed value because untimed waits spin
      * faster since they don't need to check times on each spin.
+     * 没有定时等待，在阻塞前自选的次数。这比有定时的次数多，因为在每次旋转
+     * 时不需要检查times，所以这也使得untimed自旋比较快速。
      */
     static final int maxUntimedSpins = maxTimedSpins * 16;
     /**
      * The number of nanoseconds for which it is faster to spin
      * rather than to use timed park. A rough estimate suffices.
+     *
      */
     static final long spinForTimeoutThreshold = 1000L;
     private static final long serialVersionUID = -3223113410248163686L;
@@ -196,6 +209,7 @@ public class SynchronousQueue<E> extends AbstractQueue<E> implements BlockingQue
 
     /**
      * Creates a {@code SynchronousQueue} with nonfair access policy.
+     * 默认使用非公平策略
      */
     public SynchronousQueue() {
         this(false);
@@ -696,6 +710,8 @@ public class SynchronousQueue<E> extends AbstractQueue<E> implements BlockingQue
             SNode s = null; // constructed/reused as needed
             //根据e来判断是处于消费者消费数据模式还是生产者生产数据模式
             int mode = (e == null) ? REQUEST : DATA;
+            //h是头结点，mode为当前操作的模式，timed是一个入参，判断是否要
+            //等待指定时间，nanos是时间单位
 
             for (; ; ) {
                 //h等于头结点
@@ -703,7 +719,7 @@ public class SynchronousQueue<E> extends AbstractQueue<E> implements BlockingQue
                 //如果头结点为空或者头结点不为空但是头结点处于相同请求模式，
                 //此时要么生成头结点或者生成新的节点，作为栈的尾节点的下一个节点
                 if (h == null || h.mode == mode) {  // empty or same-mode
-                    //判断能否继续等待
+                    //判断能否继续等待(timed是一个入参)
                     if (timed && nanos <= 0) {      // can't wait
                         //如果头结点不为空但是头结点处于取消状态
                         if (h != null && h.isCancelled())
@@ -716,6 +732,7 @@ public class SynchronousQueue<E> extends AbstractQueue<E> implements BlockingQue
                     // 生成一个SNode结点,将原来的节点作为这个节点的下一个节点，当前节点作为头结点
                     else if (casHead(h, s = snode(s, e, h, mode))) {
                         SNode m = awaitFulfill(s, timed, nanos);
+                        //如果匹配节点为节点自己，表示规定时间内匹配失败，清理节点并且退出
                         if (m == s) {               // wait was cancelled
                             clean(s);
                             return null;
@@ -780,9 +797,10 @@ public class SynchronousQueue<E> extends AbstractQueue<E> implements BlockingQue
 
         /**
          * Spins/blocks until node s is matched by a fulfill operation.
+         * 旋转或者阻塞直到fulfill操作匹配到节点，s为将要匹配的节点
          *
          * @param s     the waiting node
-         * @param timed true if timed wait
+         * @param timed true if timed wait {true为超时等待}
          * @param nanos timeout value
          * @return matched node, or s if cancelled
          */
@@ -809,18 +827,23 @@ public class SynchronousQueue<E> extends AbstractQueue<E> implements BlockingQue
              * and don't wait at all, so are trapped in transfer
              * method rather than calling awaitFulfill.
              */
+            //判断是否有截至时间，有的话则返回截至时间
             final long deadline = timed ? System.nanoTime() + nanos : 0L;
             Thread w = Thread.currentThread();
-            int spins = (shouldSpin(s) ?
-                    (timed ? maxTimedSpins : maxUntimedSpins) : 0);
+            //判断自旋时间
+            int spins = (shouldSpin(s) ? (timed ? maxTimedSpins : maxUntimedSpins) : 0);
             for (; ; ) {
                 if (w.isInterrupted())
                     s.tryCancel();
+                //获取匹配节点
                 SNode m = s.match;
+                //匹配节点不为空,返回匹配到的节点
                 if (m != null)
                     return m;
+                //如果有延时
                 if (timed) {
                     nanos = deadline - System.nanoTime();
+                    //如果时间到了，则将匹配节点(match字段)设为自己
                     if (nanos <= 0L) {
                         s.tryCancel();
                         continue;
@@ -899,8 +922,10 @@ public class SynchronousQueue<E> extends AbstractQueue<E> implements BlockingQue
                 try {
                     UNSAFE = sun.misc.Unsafe.getUnsafe();
                     Class<?> k = SNode.class;
+                    //获取match域的偏移地址
                     matchOffset = UNSAFE.objectFieldOffset
                             (k.getDeclaredField("match"));
+                    //获取next域的偏移地址
                     nextOffset = UNSAFE.objectFieldOffset
                             (k.getDeclaredField("next"));
                 } catch (Exception e) {
@@ -917,7 +942,7 @@ public class SynchronousQueue<E> extends AbstractQueue<E> implements BlockingQue
             // other volatile/atomic operations.
             // 相匹配的节点
             volatile SNode match;       // the node matched to this
-            //当前等待的线程
+            //当前等待的线程，通过park或者unpark来控制
             volatile Thread waiter;     // to control park/unpark
             //元素项
             Object item;                // data; or null for REQUESTs
@@ -928,6 +953,12 @@ public class SynchronousQueue<E> extends AbstractQueue<E> implements BlockingQue
                 this.item = item;
             }
 
+            /**
+             *
+             * @param cmp
+             * @param val
+             * @return
+             */
             boolean casNext(SNode cmp, SNode val) {
                 return cmp == next &&
                         UNSAFE.compareAndSwapObject(this, nextOffset, cmp, val);
@@ -938,7 +969,8 @@ public class SynchronousQueue<E> extends AbstractQueue<E> implements BlockingQue
              * Fulfillers call tryMatch to identify their waiters.
              * Waiters block until they have been matched.
              * 当前节点匹配节点S，如果成功，唤醒线程，
-             * 匹配调用tryMatch来识别其他等待的线程，等待的线程在被匹配前将会一直阻塞
+             * Fulfiller操作调用tryMatch来识别其他的等待者，等待的线程将会一直阻塞直到被匹配
+             * 如果该方法返回true表示s匹配成功
              *
              * @param s the node to match 匹配的节点
              * @return true if successfully matched to s
@@ -947,6 +979,7 @@ public class SynchronousQueue<E> extends AbstractQueue<E> implements BlockingQue
                 // 本结点的match域为null并且设置本节点的match域为s
                 if (match == null &&
                         UNSAFE.compareAndSwapObject(this, matchOffset, null, s)) {
+                    //获取当前等待的线程
                     Thread w = waiter;
                     if (w != null) {    // waiters need at most one unpark
                         //将本节点等待的线程重新置为空
@@ -962,11 +995,16 @@ public class SynchronousQueue<E> extends AbstractQueue<E> implements BlockingQue
 
             /**
              * Tries to cancel a wait by matching node to itself.
+             * 通过匹配自己来取消等待
              */
             void tryCancel() {
                 UNSAFE.compareAndSwapObject(this, matchOffset, null, this);
             }
 
+            /**
+             * 判断match域是否等于自己来判断是否取消
+             * @return
+             */
             boolean isCancelled() {
                 return match == this;
             }
@@ -1007,21 +1045,23 @@ public class SynchronousQueue<E> extends AbstractQueue<E> implements BlockingQue
         }
 
         /**
-         * Head of queue
+         * Head of queue，头结点
          */
         transient volatile QNode head;
         /**
-         * Tail of queue
+         * Tail of queue，尾节点
          */
         transient volatile QNode tail;
         /**
          * Reference to a cancelled node that might not yet have been
          * unlinked from queue because it was the last inserted node
          * when it was cancelled.
+         *
          */
         transient volatile QNode cleanMe;
 
         TransferQueue() {
+            //初始化一个虚拟节点
             QNode h = new QNode(null, false); // initialize to dummy node.
             head = h;
             tail = h;
@@ -1030,6 +1070,8 @@ public class SynchronousQueue<E> extends AbstractQueue<E> implements BlockingQue
         /**
          * Tries to cas nh as new head; if successful, unlink
          * old head's next node to avoid garbage retention.
+         * 用cas的将nh设置为新的头结点，如果设置成功，
+         * 断开之前头结点的下一个节点来避免垃圾的存在。
          */
         void advanceHead(QNode h, QNode nh) {
             if (h == head &&
@@ -1039,6 +1081,7 @@ public class SynchronousQueue<E> extends AbstractQueue<E> implements BlockingQue
 
         /**
          * Tries to cas nt as new tail.
+         * 通过cas的方式是nt成为尾节点
          */
         void advanceTail(QNode t, QNode nt) {
             if (tail == t)
@@ -1090,9 +1133,10 @@ public class SynchronousQueue<E> extends AbstractQueue<E> implements BlockingQue
             for (; ; ) {
                 QNode t = tail;
                 QNode h = head;
+                //如果头结点或者尾节点为空，说明初始化未完成，自旋等待初始化完成
                 if (t == null || h == null)         // saw uninitialized value
                     continue;                       // spin
-
+                //队列为空或者是相同模式
                 if (h == t || t.isData == isData) { // empty or same-mode
                     QNode tn = t.next;
                     if (t != tail)                  // inconsistent read
