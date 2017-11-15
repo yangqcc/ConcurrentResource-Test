@@ -642,6 +642,7 @@ public class SynchronousQueue<E> extends AbstractQueue<E> implements BlockingQue
 
         /**
          * Returns true if m has fulfilling bit set.
+         * 返回true表示当前节点已经被设置FULFILLING状态
          */
         static boolean isFulfilling(int m) {
             return (m & FULFILLING) != 0;
@@ -795,10 +796,11 @@ public class SynchronousQueue<E> extends AbstractQueue<E> implements BlockingQue
                         SNode mn = m.next;
                         //尝试将m匹配头结点
                         if (m.tryMatch(h))          // help match
-                            //如果头结点和m匹配成功，那么同时弹出头结点和m
+                            //如果头结点和m匹配成功，那么同时弹出头结点和m，继续循环
                             casHead(h, mn);         // pop both h and m
                         else                        // lost match
-                            //匹配失败，将h的下一个节点设置为mn(m的下一个节点)
+                            //匹配失败，将h的下一个节点设置为mn(m的下一个节点)，继续循环
+                            //此时h还是头结点，只是h的下一个节点称为了mn
                             h.casNext(m, mn);       // help unlink
                     }
                 }
