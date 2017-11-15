@@ -653,6 +653,9 @@ public class SynchronousQueue<E> extends AbstractQueue<E> implements BlockingQue
          * reused when possible to help reduce intervals between reads
          * and CASes of head and to avoid surges of garbage when CASes
          * to push nodes fail due to contention.
+         * 创建节点或者重置一个节点的字段。
+         * 如果节点s为空，那么s就作为新的一个节点，新节点的mode为mode，
+         * 新节点的下一个节点就为next字段信息。
          */
         static SNode snode(SNode s, Object e, SNode next, int mode) {
             if (s == null) s = new SNode(e);
@@ -662,14 +665,13 @@ public class SynchronousQueue<E> extends AbstractQueue<E> implements BlockingQue
         }
 
         /**
-         * h为头结点，并且将nh和h交换位置成功
+         * h为头结点，并且头结点设置为nh，如果以上成功，返回true
          * @param h
          * @param nh
          * @return
          */
         boolean casHead(SNode h, SNode nh) {
-            return h == head &&
-                    UNSAFE.compareAndSwapObject(this, headOffset, h, nh);
+            return h == head && UNSAFE.compareAndSwapObject(this, headOffset, h, nh);
         }
 
         /**
@@ -719,44 +721,48 @@ public class SynchronousQueue<E> extends AbstractQueue<E> implements BlockingQue
                 //如果头结点为空或者头结点不为空但是头结点处于相同请求模式，
                 //此时要么生成头结点或者生成新的节点，作为栈的尾节点的下一个节点
                 if (h == null || h.mode == mode) {  // empty or same-mode
-                    //判断能否继续等待(timed是一个入参)
+                    //判断能否继续等待(timed是一个入参)，如果有截至时间并且等待时间到了
                     if (timed && nanos <= 0) {      // can't wait
                         //如果头结点不为空但是头结点处于取消状态
                         if (h != null && h.isCancelled())
-                            //弹出取消的头节点，将头结点的下一个节点作为头结点
+                            //将头结点设置为当前头结点的下一个节点
                             casHead(h, h.next);     // pop cancelled node
                         else
-                            //如果头结点为空或者没有取消，那么则返回空
+                            //如果头结点为空或者头结点不为空但是头结点没有被取消，那么则返回空
                             return null;
                     }
-                    // 生成一个SNode结点,将原来的节点作为这个节点的下一个节点，当前节点作为头结点
+                    // 生成一个SNode结点,则将当前节点作为头结点，传入当前的mode，并将头结点作为当前节点的下一个节点
                     else if (casHead(h, s = snode(s, e, h, mode))) {
+                        //开始了匹配节点，自旋或者阻塞，可能会有时间限制,times参数
                         SNode m = awaitFulfill(s, timed, nanos);
                         //如果匹配节点为节点自己，表示规定时间内匹配失败，清理节点并且退出
                         if (m == s) {               // wait was cancelled
                             clean(s);
                             return null;
                         }
+                        //如果匹配成功，且头结点不为空，且头节点的下一个节点是s
                         if ((h = head) != null && h.next == s)
+                            //将s的下一个节点设置头结点
                             casHead(h, s.next);     // help s's fulfiller
+                        //根据不同模式返回数据
                         return (E) ((mode == REQUEST) ? m.item : s.item);
                     }
                 }
                 //如果头结点不为空，而且模式不相同，没有FULFILLING标记，尝试匹配
                 else if (!isFulfilling(h.mode)) { // try to fulfill
-                    //被取消
+                    //此时h为头节点，判断h是否已经取消
                     if (h.isCancelled())            // already cancelled
-                        // 比较并替换head域（弹出头结点）
+                        // 如果头结点被取消，那么则将头结点的下一个节点作为头结点
                         casHead(h, h.next);         // pop and retry
-                    //生成一个SNode结点；将原来的head头结点设置为该结点的next结点；将head头结点设置为该结点
+                    //如果头结点没有被取消，生成一个SNode结点，头结点作为s节点的下一个节点
                     else if (casHead(h, s = snode(s, e, h, FULFILLING | mode))) {
                         //无限循环一直等到匹配或者等待者消失
                         for (; ; ) { // loop until matched or waiters disappear
                             //保存s的下一个节点
                             SNode m = s.next;       // m is s's match
-                            //如果next节点为空
+                            //如果next节点为空，表示已经没有等待者了
                             if (m == null) {        // all waiters are gone
-                                //比较替换s接待你
+                                //比较替换s，将头结点设置null
                                 casHead(s, null);   // pop fulfill node
                                 //s赋值为空
                                 s = null;           // use new node next time
@@ -766,14 +772,14 @@ public class SynchronousQueue<E> extends AbstractQueue<E> implements BlockingQue
                             SNode mn = m.next;
                             // 尝试匹配，并且成功
                             if (m.tryMatch(s)) {
-                                // 比较并替换head域（弹出s结点和m结点）
+                                // 如果m和s匹配成功，将头结点设置为mn，此时s节点和mn节点都从stack取出
                                 casHead(s, mn);     // pop both s and m
-                                //根据从此请求模式返回元素
+                                //根据从此请求模式返回元素的数据
                                 return (E) ((mode == REQUEST) ? m.item : s.item);
                             }
-                            //m的下一个节点匹配失败
+                            //如果m和s匹配失败
                             else                  // lost match
-                                // 比较并替换next域（弹出m结点）
+                                //则将s的下一个节点设置mn
                                 s.casNext(m, mn);   // help unlink
                         }
                     }
@@ -783,12 +789,16 @@ public class SynchronousQueue<E> extends AbstractQueue<E> implements BlockingQue
                     //寻找下一个节点
                     SNode m = h.next;               // m is h's match
                     if (m == null)                  // waiter is gone
+                        //如果下一个节点为null，那么表示stack里面的等待者为空，继续循环
                         casHead(h, null);           // pop fulfilling node
                     else {
                         SNode mn = m.next;
+                        //尝试将m匹配头结点
                         if (m.tryMatch(h))          // help match
+                            //如果头结点和m匹配成功，那么同时弹出头结点和m
                             casHead(h, mn);         // pop both h and m
                         else                        // lost match
+                            //匹配失败，将h的下一个节点设置为mn(m的下一个节点)
                             h.casNext(m, mn);       // help unlink
                     }
                 }
@@ -871,6 +881,7 @@ public class SynchronousQueue<E> extends AbstractQueue<E> implements BlockingQue
 
         /**
          * Unlinks s from the stack.
+         * 从stack断开节点
          */
         void clean(SNode s) {
             s.item = null;   // forget item
@@ -885,9 +896,15 @@ public class SynchronousQueue<E> extends AbstractQueue<E> implements BlockingQue
              * which case we try the node one past. We don't check any
              * further because we don't want to doubly traverse just to
              * find sentinel.
+             * 断开节点s的连接，最坏的情况下可能要遍历整个stack。如果多个线程并发
+             * 引用clean函数，我们可能看不到s节点，如果其他的线程已经移除掉了该节点。
+             * 但是我们可以停止s节点的下一个节点。我们在尝试下一个节点是，我们会使用s.next。
+             * 我们将不会更进一步的验证，因为我们不想为了找到哨兵而遍历两次。
              */
 
+            //past赋值为s的下一个节点
             SNode past = s.next;
+            //如果s的下一个节点不为空且s的下一个节点被取消了，则将past设置为s的下一个节点的下一个节点
             if (past != null && past.isCancelled())
                 past = past.next;
 
@@ -949,11 +966,17 @@ public class SynchronousQueue<E> extends AbstractQueue<E> implements BlockingQue
             //模式
             int mode;
 
+            /**
+             * 传入的是该节点保存的数据
+             * @param item
+             */
             SNode(Object item) {
                 this.item = item;
             }
 
             /**
+             * 如果该节点的下一个节点是cmp，那么就将下一个节点设置为val
+             * nextOffset为下一个节点的偏移量
              *
              * @param cmp
              * @param val
@@ -969,16 +992,15 @@ public class SynchronousQueue<E> extends AbstractQueue<E> implements BlockingQue
              * Fulfillers call tryMatch to identify their waiters.
              * Waiters block until they have been matched.
              * 当前节点匹配节点S，如果成功，唤醒线程，
-             * Fulfiller操作调用tryMatch来识别其他的等待者，等待的线程将会一直阻塞直到被匹配
+             * Fulfiller操作调用tryMatch来识别其他的等待者，waiter将会一直阻塞直到被匹配
              * 如果该方法返回true表示s匹配成功
              *
              * @param s the node to match 匹配的节点
              * @return true if successfully matched to s
              */
             boolean tryMatch(SNode s) {
-                // 本结点的match域为null并且设置本节点的match域为s
-                if (match == null &&
-                        UNSAFE.compareAndSwapObject(this, matchOffset, null, s)) {
+                // 本结点的match域为null并且设置当前节点的match域为s成功
+                if (match == null && UNSAFE.compareAndSwapObject(this, matchOffset, null, s)) {
                     //获取当前等待的线程
                     Thread w = waiter;
                     if (w != null) {    // waiters need at most one unpark
@@ -989,13 +1011,13 @@ public class SynchronousQueue<E> extends AbstractQueue<E> implements BlockingQue
                     }
                     return true;
                 }
-                // 如果match不为null或者CAS设置失败，则比较match域是否等于s结点，若相等，则表示已经完成匹配，匹配成功
+                // 如果match不为null或者CAS设置失败，则比较match域是否等于将要匹配的s结点，若相等，则表示已经完成匹配，匹配成功
                 return match == s;
             }
 
             /**
              * Tries to cancel a wait by matching node to itself.
-             * 通过匹配自己来取消等待
+             * 通过匹配自己来取消等待，如果没有匹配节点，那么则将匹配节点设置为自己
              */
             void tryCancel() {
                 UNSAFE.compareAndSwapObject(this, matchOffset, null, this);
