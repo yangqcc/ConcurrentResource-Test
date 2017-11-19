@@ -54,27 +54,41 @@ import java.util.concurrent.TimeUnit;
  * state fields, but only the atomically updated {@code int} value manipulated
  * using methods {@link #getState}, {@link #setState} and
  * {@link #compareAndSetState} is tracked with respect to synchronization.
+ * 子类更新int值只能使用getState，setState以及compareAnsSetState方法来进行同步有关的操作。
  * <p>
  * <p>
  * Subclasses should be defined as non-public internal helper classes that are
  * used to implement the synchronization properties of their enclosing class.
+ * 子类应该定义一个内部类，作为类的封闭类来进行操作。
  * Class {@code AbstractQueuedSynchronizer} does not implement any
- * synchronization interface. Instead it defines methods such as
+ * synchronization interface.
+ * 当前类没有继承任何同步接口。
+ * Instead it defines methods such as
  * {@link #acquireInterruptibly} that can be invoked as appropriate by concrete
  * locks and related synchronizers to implement their public methods.
+ * 取而代之的是像acquireInterruptibly之类的方法，在进行锁和同步操作时的共有方法中来引用这个方法
  * <p>
  * <p>
  * This class supports either or both a default <em>exclusive</em> mode and a
- * <em>shared</em> mode. When acquired in exclusive mode, attempted acquires by
- * other threads cannot succeed. Shared mode acquires by multiple threads may
- * (but need not) succeed. This class does not &quot;understand&quot; these
+ * <em>shared</em> mode.
+ * 独占模式和共享模式
+ * When acquired in exclusive mode, attempted acquires by
+ * other threads cannot succeed.
+ * 独占模式请求成功，其他线程请求时就会失败。
+ * Shared mode acquires by multiple threads may
+ * (but need not) succeed.
+ * 共享模式，多个线程同时请求，可能成功，也可能不成功
+ * This class does not &quot;understand&quot; these
  * differences except in the mechanical sense that when a shared mode acquire
  * succeeds, the next waiting thread (if one exists) must also determine whether
  * it can acquire as well. Threads waiting in the different modes share the same
  * FIFO queue. Usually, implementation subclasses support only one of these
  * modes, but both can come into play for example in a {@link ReadWriteLock}.
+ * 子类只能实现一种模式，但是两种模式可以混合到一起进行操作。
  * Subclasses that support only exclusive or only shared modes need not define
  * the methods supporting the unused mode.
+ * 子类要么只支持独占模式，或者共享模式，但是选择所支持的一种模式后，并不需要定义支持另一只模式的
+ * 方法。
  * <p>
  * <p>
  * This class defines a nested {@link ConditionObject} class that can be used as
@@ -100,10 +114,15 @@ import java.util.concurrent.TimeUnit;
  * maintaining state, so deserialized objects have empty thread queues. Typical
  * subclasses requiring serializability will define a {@code readObject} method
  * that restores this to a known initial state upon deserialization.
+ *
+ * 当前类序列化只会保存内部integer类型变量的信息，所以反序列化得到的对象将包含一个空的队列。
+ * 一个子类要定义readObject来保存这些信息。
  * <p>
  * <h3>Usage</h3>
  * <p>
  * <p>
+ *   要使用这个类，需要定义以下的方法，内部修改状态通过getState以及setState和compareAndSetState
+ *   进行操作。
  * To use this class as the basis of a synchronizer, redefine the following
  * methods, as applicable, by inspecting and/or modifying the synchronization
  * state using {@link #getState}, {@link #setState} and/or
@@ -123,18 +142,23 @@ import java.util.concurrent.TimeUnit;
  * <em>only</em> supported means of using this class. All other methods are
  * declared {@code final} because they cannot be independently varied.
  * <p>
+ *   当前类只支持定义这几个方法，但是必须是线程安全的，通常比较短并且不会阻塞，因为其他的方法都被设置成了final。
  * <p>
  * You may also find the inherited methods from
  * {@link AbstractOwnableSynchronizer} useful to keep track of the thread owning
  * an exclusive synchronizer. You are encouraged to use them -- this enables
  * monitoring and diagnostic tools to assist users in determining which threads
  * hold locks.
+ * 你可能会发现当前类类继承的方法来保证独占的同步，非常有用。
+ * 鼓励你使用它们，这些也包含了监控的工作，来来分析决定具体哪一个线程包含了锁。
  * <p>
  * <p>
  * Even though this class is based on an internal FIFO queue, it does not
  * automatically enforce FIFO acquisition policies. The core of exclusive
  * synchronization takes the form:
  * <p>
+ *   尽管这个类基于内部的FIFO队列，但是他不会自动执行先进先出的策略，下面这种形式就是
+ *   独占策略的主要方式。
  * <pre>
  * Acquire:
  *     while (!tryAcquire(arg)) {
@@ -148,25 +172,38 @@ import java.util.concurrent.TimeUnit;
  * </pre>
  * <p>
  * (Shared mode is similar but may involve cascading signals.)
+ * 共享模式可能是差不多的，但是可能会涉及到级联信号。
  * <p>
  * <p id="barging">
  * Because checks in acquire are invoked before enqueuing, a newly acquiring
  * thread may <em>barge</em> ahead of others that are blocked and queued.
+ * 在进队列前，要判断请求调用，一个新请求的线程可能会在在其他线程前被阻塞和进队列。
  * However, you can, if desired, define {@code tryAcquire} and/or
  * {@code tryAcquireShared} to disable barging by internally invoking one or
  * more of the inspection methods, thereby providing a <em>fair</em> FIFO
- * acquisition order. In particular, most fair synchronizers can define
+ * acquisition order.
+ * 但是，如果你需要，或者希望，定义一个tryAcquire或者tryAcquireShared来
+ * In particular, most fair synchronizers can define
  * {@code tryAcquire} to return {@code false} if {@link #hasQueuedPredecessors}
  * (a method specifically designed to be used by fair synchronizers) returns
  * {@code true}. Other variations are possible.
+ *
+ * 特别的是，很多公平的同步在可以定义tryAcquire来返回false,如果hasQueuedPredecessors(
+ * 一个针对公平同步这特别设计的方法)返回true.其他的变化也可能出现。
  * <p>
  * <p>
  * Throughput and scalability are generally highest for the default barging
  * (also known as <em>greedy</em>, <em>renouncement</em>, and
- * <em>convoy-avoidance</em>) strategy. While this is not guaranteed to be fair
+ * <em>convoy-avoidance</em>) strategy.
+ *
+ * While this is not guaranteed to be fair
  * or starvation-free, earlier queued threads are allowed to recontend before
  * later queued threads, and each recontention has an unbiased chance to succeed
- * against incoming threads. Also, while acquires do not &quot;spin&quot; in the
+ * against incoming threads.
+ * 当没有公平或者无饥饿，早入队列的线程将被允许和后进队列的线程竞争，而每一次竞争都有一个公平
+ * 的机会赢过刚进来的线程。
+ *
+ * Also, while acquires do not &quot;spin&quot; in the
  * usual sense, they may perform multiple invocations of {@code tryAcquire}
  * interspersed with other computations before blocking. This gives most of the
  * benefits of spins when exclusive synchronization is only briefly held,
@@ -174,6 +211,8 @@ import java.util.concurrent.TimeUnit;
  * this by preceding calls to acquire methods with "fast-path" checks, possibly
  * prechecking {@link #hasContended} and/or {@link #hasQueuedThreads} to only do
  * so if the synchronizer is likely not to be contended.
+ * 同样的，当请求不需要自旋。按平常的来看，它们可能在阻塞前多次调用tryAcquire和其他的计算。
+ *
  * <p>
  * <p>
  * This class provides an efficient and scalable basis for synchronization in
@@ -183,15 +222,23 @@ import java.util.concurrent.TimeUnit;
  * level using {@link java.util.concurrent.atomic atomic} classes, your own
  * custom {@link java.util.Queue} classes, and {@link LockSupport} blocking
  * support.
+ * 这个类给同步提供了一个有用的可以扩展的基础，依赖于int状态，请求和释放参数，以及内部的FIFO等待队列，
+ * 来指定同步者的范围，如果这还不够的话，你可以通过更底层的atomic来，有自己定制的Queue类，以及LockSupport
+ * 阻塞支持来构造你自己的同步者。
  * <p>
  * <h3>Usage Examples</h3>
  * <p>
  * <p>
  * Here is a non-reentrant mutual exclusion lock class that uses the value zero
- * to represent the unlocked state, and one to represent the locked state. While
+ * to represent the unlocked state, and one to represent the locked state.
+ * 这里一个非重入的独占锁的类，通过使用0来代表非锁状态，1来代表锁状态。
+ * While
  * a non-reentrant lock does not strictly require recording of the current owner
- * thread, this class does so anyway to make usage easier to monitor. It also
+ * thread, this class does so anyway to make usage easier to monitor.
+ *这个非重入锁并没有严格要求记录当前线程，但是这个类有很多方法让监控更贱容易。
+ * It also
  * supports conditions and exposes one of the instrumentation methods:
+ * 这还支持暴露其中的工具方法。
  * <p>
  * <pre>
  * {
@@ -200,12 +247,12 @@ import java.util.concurrent.TimeUnit;
  *
  * 		// Our internal helper class
  * 		private static class Sync extends AbstractQueuedSynchronizer {
- * 			// Reports whether in locked state
+ * 			// Reports whether in locked state 判断是否在阻塞状态
  * 			protected boolean isHeldExclusively() {
  * 				return getState() == 1;
  *            }
  *
- * 			// Acquires the lock if state is zero
+ * 			// Acquires the lock if state is zero 如果状态是0，请求锁
  * 			public boolean tryAcquire(int acquires) {
  * 				assert acquires == 1; // Otherwise unused
  * 				if (compareAndSetState(0, 1)) {
@@ -215,7 +262,7 @@ import java.util.concurrent.TimeUnit;
  * 				return false;
  *            }
  *
- * 			// Releases the lock by setting state to zero
+ * 			// Releases the lock by setting state to zero 通过设置state为0,来释放锁
  * 			protected boolean tryRelease(int releases) {
  * 				assert releases == 1; // Otherwise unused
  * 				if (getState() == 0)
@@ -230,7 +277,7 @@ import java.util.concurrent.TimeUnit;
  * 				return new ConditionObject();
  *            }
  *
- * 			// Deserializes properly
+ * 			// Deserializes properly 反序列化参数
  * 			private void readObject(ObjectInputStream s) throws IOException, ClassNotFoundException {
  * 				s.defaultReadObject();
  * 				setState(0); // reset to unlocked state
@@ -278,8 +325,11 @@ import java.util.concurrent.TimeUnit;
  * <p>
  * Here is a latch class that is like a
  * {@link java.util.concurrent.CountDownLatch CountDownLatch} except that it
- * only requires a single {@code signal} to fire. Because a latch is
+ * only requires a single {@code signal} to fire.
+ * 这里有一个类似于CountDownLatch的门闩类，除了它只需要一个信号来进行触发。
+ * Because a latch is
  * non-exclusive, it uses the {@code shared} acquire and release methods.
+ * 因为一个门闩是非独占的，它使用共享模式来请求和释放锁。
  * <p>
  * <pre>
  * {
@@ -287,7 +337,9 @@ import java.util.concurrent.TimeUnit;
  * 	class BooleanLatch {
  *
  * 		private static class Sync extends AbstractQueuedSynchronizer {
- * 			boolean isSignalled() {
+ *
+ *      //有没有被通知
+ * 	    boolean isSignalled() {
  * 				return getState() != 0;
  *            }
  *
@@ -327,6 +379,7 @@ public abstract class AbstractQueuedSynchronizer extends AbstractOwnableSynchron
      * The number of nanoseconds for which it is faster to spin rather than to
      * use timed park. A rough estimate suffices to improve responsiveness with
      * very short timeouts.
+     * 纳秒的值，使用更快的自旋来代替超时park，再短的超时范围内用于提高响应速度的。
      */
     static final long spinForTimeoutThreshold = 1000L;
     private static final long serialVersionUID = 7373984972572414691L;
@@ -364,31 +417,37 @@ public abstract class AbstractQueuedSynchronizer extends AbstractOwnableSynchron
      * Head of the wait queue, lazily initialized. Except for initialization, it
      * is modified only via method setHead. Note: If head exists, its waitStatus
      * is guaranteed not to be CANCELLED.
+     * 等待队列头结点，懒初始化，除了初始化，它只能通过setHead方法进行修改。注意:如果一个头结点存在，
+     * 它的等待状态不能被设置为CANCELLED、
      */
     private transient volatile Node head;
     /**
      * Tail of the wait queue, lazily initialized. Modified only via method enq
      * to add new wait node.
+     * 尾节点，懒初始化，只能通过enq方法来添加一个新的尾节点。
      */
     private transient volatile Node tail;
     /**
      * The synchronization state.
+     * 同步状态
      */
     private volatile int state;
 
     /**
      * Creates a new {@code AbstractQueuedSynchronizer} instance with initial
      * synchronization state of zero.
+     * 创建一个新的AbstractQueuedSynchronizer实例，此时内部同步变量的状态为0.
      */
     protected AbstractQueuedSynchronizer() {
     }
 
     /**
+     * 节点acquire失败后，判断是否需要阻塞。如果线程需要被阻塞返回true。
+     * 这里是所有的acquire循环主要信号控制的地方，需要的条件是pred==node.prev，返回true表示应该被park
      * Checks and updates status for a node that failed to acquire. Returns true
      * if thread should block. This is the main signal control in all acquire
      * loops. Requires that pred == node.prev.
-     *
-     * @param pred node's predecessor holding status
+     * @param pred node's predecessor holding status 当前节点的上一个节点
      * @param node the node
      * @return {@code true} if thread should block
      */
@@ -406,6 +465,7 @@ public abstract class AbstractQueuedSynchronizer extends AbstractOwnableSynchron
 			 * retry.
 			 */
             do {
+                //循环去掉被取消的节点
                 node.prev = pred = pred.prev;
             } while (pred.waitStatus > 0);
             pred.next = node;
@@ -415,6 +475,7 @@ public abstract class AbstractQueuedSynchronizer extends AbstractOwnableSynchron
 			 * signal, but don't park yet. Caller will need to retry to make
 			 * sure it cannot acquire before parking.
 			 */
+            //如果前驱正常，那就把前驱的状态设置成SIGNAL，告诉它拿完号后通知自己一下。有可能失败，人家说不定刚刚释放完呢！
             compareAndSetWaitStatus(pred, ws, Node.SIGNAL); // 将前继节点的waitStatus设为SIGNAL，为了当前节点以后能够唤醒
         }
         return false;
@@ -487,8 +548,8 @@ public abstract class AbstractQueuedSynchronizer extends AbstractOwnableSynchron
 	 */
 
     /**
-     * 节点进入队列操作 Inserts node into queue, initializing if necessary. See picture
-     * above.
+     * 节点进入队列操作
+     * Inserts node into queue, initializing if necessary. See picture above.
      *
      * @param node the node to insert
      * @return node's predecessor
@@ -576,9 +637,12 @@ public abstract class AbstractQueuedSynchronizer extends AbstractOwnableSynchron
     }
 
     /**
-     * Release action for shared mode -- signals successor and ensures   在共享模式下，实现唤醒操作，唤醒后继节点，并且保证信号的传递
+     * shared模式下的Release操作，唤醒后继节点并且保证信号传递。
+     * Release action for shared mode -- signals successor and ensures
      * propagation. (Note: For exclusive mode,release just amounts to
-     * calling unparkSuccessor of head if it needs signal.)
+     * calling unparkSuccessor of head if it needs signal.
+     * 对于独占模式，释放只需要head节点调用unparkSuccessor如果需要被唤醒
+     * )
      */
     private void doReleaseShared() {
 		/*
@@ -595,8 +659,9 @@ public abstract class AbstractQueuedSynchronizer extends AbstractOwnableSynchron
             if (h != null && h != tail) {
                 int ws = h.waitStatus;
                 if (ws == Node.SIGNAL) { // 如果waitStatus值为SIGNAL
-                    if (!compareAndSetWaitStatus(h, Node.SIGNAL, 0)) // 如果将waitStatus信号设置为0失败或者当前节点不是signal信号，那么继续自旋
+                    if (!compareAndSetWaitStatus(h, Node.SIGNAL, 0)) // 如果将waitStatus信号设置为0失败，那么继续自旋
                         continue; // loop to recheck cases
+                    //设置成功，唤醒下一个节点
                     unparkSuccessor(h);
                 } else if (ws == 0 && !compareAndSetWaitStatus(h, 0, Node.PROPAGATE)) // 如果waitStatus为0切将信号设置为PROPAGATE失败，还是自旋
                     continue; // loop on failed CAS
@@ -607,6 +672,8 @@ public abstract class AbstractQueuedSynchronizer extends AbstractOwnableSynchron
     }
 
     /**
+     * 设置queue的头结点，在共享模式中判断后继节点是否需要等待，要么propagate>0
+     * 要么节点的状态被设置为PROPAGATE，表示是传播状态.
      * Sets head of queue, and checks if successor may be waiting in shared
      * mode, if so propagating if either propagate > 0 or PROPAGATE status was
      * set.
@@ -615,7 +682,9 @@ public abstract class AbstractQueuedSynchronizer extends AbstractOwnableSynchron
      * @param propagate the return value from a tryAcquireShared
      */
     private void setHeadAndPropagate(Node node, int propagate) {
+        //记录以前的头结点
         Node h = head; // Record old head for check below
+        //设置头结点为当前节点
         setHead(node);
 		/*
 		 * Try to signal next queued node if: Propagation was indicated by
@@ -639,7 +708,8 @@ public abstract class AbstractQueuedSynchronizer extends AbstractOwnableSynchron
     // Main exported methods
 
     /**
-     * 取消请求（会将节点状态设为CANCELLED） Cancels an ongoing attempt to acquire.
+     * 取消一个正在尝试的acquire（会将节点状态设为CANCELLED）
+     * Cancels an ongoing attempt to acquire.
      *
      * @param node the node
      */
@@ -686,8 +756,8 @@ public abstract class AbstractQueuedSynchronizer extends AbstractOwnableSynchron
     }
 
     /**
-     * 阻塞当前线程 如果此过程中，线程已被中断，那么返回true，清除标志位 如果线程唤醒，没有被中断，返回false Convenience
-     * method to park and then check if interrupted
+     * 阻塞当前线程 如果此过程中，线程已被中断，那么返回true，清除标志位 如果线程唤醒，没有被中断，返回false
+     * Convenience method to park and then check if interrupted
      *
      * @return {@code true} if interrupted
      */
@@ -705,8 +775,8 @@ public abstract class AbstractQueuedSynchronizer extends AbstractOwnableSynchron
     }
 
     /**
-     * 等待队列上获取锁，失败（阻塞），成功（继续执行） 获取锁过程中被中断，返回true，没被中断，返回false Acquires in
-     * exclusive uninterruptible mode for thread already in queue. Used by
+     * 等待队列上获取锁，失败（阻塞），成功（继续执行） 获取锁过程中被中断，返回true，没被中断，返回false
+     * Acquires in exclusive uninterruptible mode for thread already in queue. Used by
      * condition wait methods as well as acquire.
      *
      * @param node the node
@@ -718,17 +788,26 @@ public abstract class AbstractQueuedSynchronizer extends AbstractOwnableSynchron
         try {
             boolean interrupted = false;
             for (; ; ) {
-                final Node p = node.predecessor(); // p是该节点的前继节点
+                // 拿到当前节点的前继节点
+                final Node p = node.predecessor();
+                //如果前驱是head，即该结点已成老二，那么便有资格去尝试获取资源（可能是老大释放完资源唤醒自己的，当然也可能被interrupt了）。
                 if (p == head && tryAcquire(arg)) {
+                    //设置头结点为当前节点
                     setHead(node);
+                    //当前节点的next字段设置为null，帮助GC，当前节点请求成功，说明前继节点已经被释放
                     p.next = null; // help GC
                     failed = false;
                     return interrupted;
                 }
+                //如果自己可以休息了，就进入waiting状态，直到被unpark()
+                //(*)节点就是在这里被阻塞的，也是在这里去掉被Canceled的节点
+                //先判断是否需要park，然后再park，unpark后，如果线程被中断，则进入if语句，设置interrupted为true
+                //唤醒过后，继续for循环，再次使用tryAcquire获取，直到获取成功或者抛出异常，才退出循环。
                 if (shouldParkAfterFailedAcquire(p, node) && parkAndCheckInterrupt())
                     interrupted = true; // 如果当前线程被中断，中断标志会被清除，interrupted设为true，而interrupted是局部变量
             }
         } finally {
+            //fialed到这里，抛出异常，请求失败，那么取消请求
             if (failed)
                 cancelAcquire(node);
         }
@@ -798,19 +877,26 @@ public abstract class AbstractQueuedSynchronizer extends AbstractOwnableSynchron
     }
 
     /**
-     * 将节点加入到等待队列，尝试获取锁，如果获取是失败，则阻塞 但是不会响应中断，程序会继续执行 Acquires in shared
-     * uninterruptible mode.
+     * 将节点加入到等待队列，尝试获取锁，如果获取是失败，则阻塞 但是不会响应中断，程序会继续执行
+     * Acquires in shared uninterruptible mode.
      *
      * @param arg the acquire argument
      */
     private void doAcquireShared(int arg) {
-        final Node node = addWaiter(Node.SHARED); // 将节点以SHARED模式加入到等待队列里
+        // 将节点以SHARED模式加入到等待队列里
+        final Node node = addWaiter(Node.SHARED);
         boolean failed = true;
         try {
             boolean interrupted = false;
+            //自旋
             for (; ; ) {
+                //前继节点
                 final Node p = node.predecessor();
+                //前继节点是头结点
                 if (p == head) {
+                    //tryAcquireShared由子类实现
+                    //返回负数，表示请求资源失败
+                    //返回0或者正式表示请求成功
                     int r = tryAcquireShared(arg); // 再次尝试获取锁
                     if (r >= 0) {
                         setHeadAndPropagate(node, r);
@@ -821,6 +907,7 @@ public abstract class AbstractQueuedSynchronizer extends AbstractOwnableSynchron
                         return;
                     }
                 }
+                //获取失败判断是否需要阻塞
                 if (shouldParkAfterFailedAcquire(p, node) && parkAndCheckInterrupt()) // 获取失败则阻塞
                     interrupted = true;
             }
@@ -831,8 +918,8 @@ public abstract class AbstractQueuedSynchronizer extends AbstractOwnableSynchron
     }
 
     /**
-     * 再次尝试获取锁，如果失败，那么阻塞当前线程 会响应中断，并将节点状态设为CANCELLED Acquires in shared
-     * interruptible mode.
+     * 再次尝试获取锁，如果失败，那么阻塞当前线程 会响应中断，并将节点状态设为CANCELLED
+     * Acquires in shared interruptible mode.
      *
      * @param arg the acquire argument
      */
@@ -1082,6 +1169,7 @@ public abstract class AbstractQueuedSynchronizer extends AbstractOwnableSynchron
      */
     public final void acquireShared(int arg) {
         if (tryAcquireShared(arg) < 0)
+            //还会再尝试获取资源一次
             doAcquireShared(arg);
     }
 
@@ -1668,20 +1756,27 @@ public abstract class AbstractQueuedSynchronizer extends AbstractOwnableSynchron
      * instead use them for blocking synchronizers, but use the same basic
      * tactic of holding some of the control information about a thread in the
      * predecessor of its node. A "status" field in each node keeps track of
-     * whether a thread 每个节点的status字段用来保存该节点的状态信息，以判断该节点持有的该线程是否应该阻塞 should
-     * block. A node is signalled when its predecessor 当一个节点的前继节点被释放后，该节点就应该被唤醒
-     * releases. Each node of the queue otherwise serves as a
+     * whether a thread should block.
+     * 每个节点的status字段用来保存该节点的状态信息，以判断该节点持有的该线程是否应该阻塞
+     * A node is signalled when its predecessor releases.
+     * 当一个节点的前继节点被释放后，该节点就应该被唤醒
+     * Each node of the queue otherwise serves as a
      * specific-notification-style monitor holding a single waiting thread. The
      * status field does NOT control whether threads are granted locks etc
-     * though. A thread may try to acquire if it is 如果线程是队列的头结点（head），那么就应该请求锁
-     * first in the queue. But being first does not guarantee success;
-     * 但是并不保证头结点的请求一定会成功 it only gives the right to contend. So the currently
+     * though.
+     *
+     * A thread may try to acquire if it is first in the queue.
+     * 如果线程是队列的头结点（head），那么就应该请求锁
+     * But being first does not guarantee success;
+     * 但是并不保证头结点的请求一定会成功
+     * it only gives the right to contend. So the currently
      * released contender thread may need to rewait.
+     * 它只是给与竞争的权利，所以当前释放的竞争者可能需要再次等待。
      * <p>
      * <p>
-     * To enqueue into a CLH lock, you atomically splice it in as new
-     * 入队列时，你只能原子性的添加到队列末尾，出队列时，只能操作头结点 tail. To dequeue, you just set the head
-     * field.
+     * To enqueue into a CLH lock, you atomically splice it in as new tail.
+     * To dequeue, you just set the head field.
+     * 入队列时，你只能原子性的添加到队列末尾。出队列时，只能设置头结点字段。
      * <p>
      * <pre>
      *      +------+  prev +-----+       +-----+
@@ -1745,65 +1840,74 @@ public abstract class AbstractQueuedSynchronizer extends AbstractOwnableSynchron
     static final class Node {
         /**
          * Marker to indicate a node is waiting in shared mode
+         * 作为表示节点处于共享模式的等待状态的标记
          */
         static final Node SHARED = new Node();
         /**
          * Marker to indicate a node is waiting in exclusive mode
+         * 节点处于独占状态的标记
          */
         static final Node EXCLUSIVE = null;
 
         /**
          * waitStatus value to indicate thread has cancelled
+         * 等待状态的值用于表示节点已经取消了。
          */
         static final int CANCELLED = 1;
         /**
-         * waitStatus value to indicate successor's thread needs unparking
          * 表示该节点的后继节点的应该被unpark
+         * waitStatus value to indicate successor's thread needs unparking
          */
         static final int SIGNAL = -1;
         /**
-         * waitStatus value to indicate thread is waiting on condition
          * 表示该节点在condition上阻塞
+         * waitStatus value to indicate thread is waiting on condition
          */
         static final int CONDITION = -2;
         /**
-         * waitStatus value to indicate the next acquireShared should 该状态表示下一个
-         * 共享请求 应该向下传播 unconditionally propagate
+         * 该状态表示下一个共享请求 应该向下传播
+         * waitStatus value to indicate the next acquireShared should unconditionally propagate
          */
         static final int PROPAGATE = -3;
 
         /**
-         * Status field, taking on only the values: SIGNAL: The successor of
-         * this node is (or will soon be) blocked (via park), so the current node                  (-1)如果后继节点被阻塞(或者将要被阻塞，通过park进行阻塞)，当前节点被唤醒或者被取消，必须
-         * must                                                                                       唤醒它的后继节点。为了避免竞争，acquire必须首先指示他们需要一个信号，然后重试进行原子 unpark its
-         * successor when it releases or 请求，然后失败了，再阻塞 cancels. To avoid races,
-         * acquire methods must first indicate they need a signal, then retry
-         * the atomic acquire, and then, on failure, block. CANCELLED: This node
-         * is cancelled due to timeout or interrupt. (1)
-         * 节点由于请求时间到了或者被中断，便会取消，节点将停留在取消状态将不会再改变， Nodes never leave this state.
-         * In particular, 特别是，一个被取消的节点的线程不会再次阻塞 a thread with cancelled node
-         * never again blocks. CONDITION: This node is currently on a condition
-         * queue. (-2) 表示当前节点在条件队列中。在当前节点被转移出条件队列前，该节点将不会作为同步队列 It will not be
-         * used as a sync queue node
-         * 中的节点使用。将节点从条件队列移动到同步队列里后，状态位将会被修改为0.使用此值与字段的其他用途无关 until transferred,
-         * at which time the status 但简化了操作 will be set to 0. (Use of this value
-         * here has nothing to do with the other uses of the field, but
-         * simplifies mechanics.) PROPAGATE: A releaseShared should be
-         * propagated to other
-         * (-3)一个releaseShared将会被传递到其他节点。设置头结点，共享释放操作将保证信号的传递。 nodes. This is
-         * set (for head node only) in doReleaseShared to ensure propagation
-         * continues, even if other operations have since intervened. 0: None of
-         * the above 除以上情况为，状态字段将会被设为0
-         * <p>
-         * The values are arranged numerically to simplify use. Non-negative
-         * values mean that a node doesn't need to 数值用来简化使用。非负值意味着一个节点不需要信号。
+         * Status field, taking on only the values:
+         *   SIGNAL:     The successor of this node is (or will soon be)
+         *               blocked (via park), so the current node must
+         *               unpark its successor when it releases or
+         *               cancels. To avoid races, acquire methods must
+         *               first indicate they need a signal,
+         *               then retry the atomic acquire, and then,
+         *               on failure, block.
+         *   CANCELLED:  This node is cancelled due to timeout or interrupt.
+         *               Nodes never leave this state. In particular,
+         *               a thread with cancelled node never again blocks.
+         *               节点timeout或者interrupt便会设置为CANCELLED状态.
+         *               节点一旦设置为CANCELLED状态后将不会改变，另外，一个
+         *               线程如果是CANCELLED状态将不会阻塞，会从队列里面清除。
+         *   CONDITION:  This node is currently on a condition queue.
+         *               It will not be used as a sync queue node
+         *               until transferred, at which time the status
+         *               will be set to 0. (Use of this value here has
+         *               nothing to do with the other uses of the
+         *               field, but simplifies mechanics.)
+         *               这个节点当前在一个条件队列里面。直到被传输前，它将不会作为
+         *               一个同步队列。
+         *   PROPAGATE:  A releaseShared should be propagated to other
+         *               nodes. This is set (for head node only) in
+         *               doReleaseShared to ensure propagation
+         *               continues, even if other operations have
+         *               since intervened.
+         *   0:          None of the above
+         *
+         * The values are arranged numerically to simplify use.
+         * Non-negative values mean that a node doesn't need to
          * signal. So, most code doesn't need to check for particular
-         * 因此，大多数代码不需要检查特定的值，只是为标志。 values, just for sign.
-         * <p>
+         * values, just for sign.
+         *
          * The field is initialized to 0 for normal sync nodes, and
-         * 同步节点的状态位初始化为0，condition操作将会被初始化为-3(Condition)，一律用CAS修改 CONDITION for
-         * condition nodes. It is modified using CAS (or when possible,
-         * unconditional volatile writes).
+         * CONDITION for condition nodes.  It is modified using CAS
+         * (or when possible, unconditional volatile writes).
          */
         volatile int waitStatus;
 
@@ -1877,12 +1981,15 @@ public abstract class AbstractQueuedSynchronizer extends AbstractOwnableSynchron
 
         /**
          * Returns true if node is waiting in shared mode.
+         * 如果节点是在共享模式下等待，那么返回true
          */
         final boolean isShared() {
             return nextWaiter == SHARED;
         }
 
         /**
+         * 返回当前节点的前一个节点，如果前一个节点为nll那么抛出NullPointerException异常。
+         * 使用时前一个节点不能为空，检查null可以省略，但是目前为了帮助虚拟机。
          * Returns previous node, or throws NullPointerException if null. Use
          * when predecessor cannot be null. The null check could be elided, but
          * is present to help the VM.
@@ -1901,6 +2008,8 @@ public abstract class AbstractQueuedSynchronizer extends AbstractOwnableSynchron
     /**
      * Condition implementation for a {@link AbstractQueuedSynchronizer} serving
      * as the basis of a {@link Lock} implementation.
+     *
+     * Condition实现作在AbstractQueuedSynchronizer中作为Lock一个基础服务。
      * <p>
      * <p>
      * Method documentation for this class describes mechanics, not behavioral
@@ -1942,8 +2051,8 @@ public abstract class AbstractQueuedSynchronizer extends AbstractOwnableSynchron
 
         /**
          * 该方法在Condition的await()方法中使用，由于Condition的await()方法
-         * 必须在持有锁的情况下调用，所以这里已经是单线程执行情况，所有没有实现线程安全机制 使用了线程封闭策略 Adds a new waiter
-         * to wait queue.
+         * 必须在持有锁的情况下调用，所以这里已经是单线程执行情况，所有没有实现线程安全机制 使用了线程封闭策略
+         * Adds a new waiter to wait queue.
          *
          * @return its new wait node
          */

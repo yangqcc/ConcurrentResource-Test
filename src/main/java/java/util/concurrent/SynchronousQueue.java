@@ -875,6 +875,7 @@ public class SynchronousQueue<E> extends AbstractQueue<E> implements BlockingQue
         /**
          * Returns true if node s is at head or there is an active
          * fulfiller.
+         * 如果为头结点或者节点为空或者当前节点为fulfilling状态，那么则可以自旋
          */
         boolean shouldSpin(SNode s) {
             SNode h = head;
