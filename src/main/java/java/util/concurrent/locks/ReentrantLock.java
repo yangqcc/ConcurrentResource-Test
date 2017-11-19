@@ -65,6 +65,9 @@ import java.util.concurrent.TimeUnit;
  * fair lock may obtain it multiple times in succession while other
  * active threads are not progressing and not currently holding the
  * lock.
+ * 因此，多个线程中的一个线程在请求锁成功的情况下，可以多次获取锁，然而其他的
+ * 活跃线程却没有进展，也没有持有锁。
+ *
  * Also note that the untimed {@link #tryLock()} method does not
  * honor the fairness setting. It will succeed if the lock
  * is available even if other threads are waiting.
@@ -626,6 +629,8 @@ public class ReentrantLock implements Lock, java.io.Serializable {
     }
 
     /**
+     * 当前锁同步控制的基础。子类分为fair和nonfair版本，使用AQS状态
+     * 来代表获取锁的数量。
      * Base of synchronization control for this lock. Subclassed
      * into fair and nonfair versions below. Uses AQS state to
      * represent the number of holds on the lock.
@@ -640,8 +645,7 @@ public class ReentrantLock implements Lock, java.io.Serializable {
         abstract void lock();
 
         /**
-         * 非公平获取
-         * 只是判断能否获取锁，获取不到锁只返回false，并不会阻塞当前线程
+         * 非公平获取只是判断能否获取锁，获取不到锁只返回false，并不会阻塞当前线程
          * Performs non-fair tryLock.  tryAcquire is implemented in
          * subclasses, but both need nonfair try for trylock method.   tryLock方法否需要nonfair
          */
@@ -668,6 +672,7 @@ public class ReentrantLock implements Lock, java.io.Serializable {
             if (Thread.currentThread() != getExclusiveOwnerThread())  //没有获取锁直接释放
                 throw new IllegalMonitorStateException();
             boolean free = false;
+            //释放锁
             if (c == 0) {
                 free = true;
                 setExclusiveOwnerThread(null);
@@ -711,6 +716,7 @@ public class ReentrantLock implements Lock, java.io.Serializable {
     }
 
     /**
+     * 同步类用于非公平锁
      * Sync object for non-fair locks
      */
     static final class NonfairSync extends Sync {
