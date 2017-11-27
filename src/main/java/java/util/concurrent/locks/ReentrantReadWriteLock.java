@@ -65,6 +65,10 @@ import java.util.concurrent.TimeUnit;
  * either the longest-waiting single writer thread will be assigned the write
  * lock, or if there is a group of reader threads waiting longer than all
  * waiting writer threads, that group will be assigned the read lock.
+ * 公平模式
+ * 当使用公平模式构造，线程使用近似到达的策略进入。当获取的锁被释放，要么是等待时间最长
+ * 的单独的写线程获取锁，或者是超过所有写线程等待时间的是所有的读锁获取读锁，这个所有读锁
+ * 的群组将会获得到读锁。
  * <p>
  * <p>
  * A thread that tries to acquire a fair read lock (non-reentrantly) will block
@@ -74,6 +78,7 @@ import java.util.concurrent.TimeUnit;
  * a waiting writer abandons its wait, leaving one or more reader threads as the
  * longest waiters in the queue with the write lock free, then those readers
  * will be assigned the read lock.
+ * 写锁被释放，所有的读锁等待上的线程将会获得读锁。这是在公平模式下。
  * <p>
  * <p>
  * A thread that tries to acquire a fair write lock (non-reentrantly) will block
@@ -82,6 +87,7 @@ import java.util.concurrent.TimeUnit;
  * {@link WriteLock#tryLock()} methods do not honor this fair setting and will
  * immediately acquire the lock if it is possible, regardless of waiting
  * threads.)
+ *
  * <p>
  * </dl>
  * <p>
@@ -93,47 +99,66 @@ import java.util.concurrent.TimeUnit;
  * until all write locks held by the writing thread have been released.
  * <p>
  * <p>
- * Additionally, a writer can acquire the read lock, but not vice-versa. Among
+ * Additionally, a writer can acquire the read lock, but not vice-versa.
+ * 一个写锁看可以请求一个读锁，但是返过来则不行。
+ * Among
  * other applications, reentrancy can be useful when write locks are held during
  * calls or callbacks to methods that perform reads under read locks. If a
  * reader tries to acquire the write lock it will never succeed.
+ * 一些其他的程序，重入是很有用的，当在一个方法引用或者回调方法中持有一个写锁，它任然能够获取
+ * 到一个读锁。如果一个读锁在请求一个写锁，那么就会失败。
  * <p>
  * <li><b>Lock downgrading</b>
+ * 锁降级
  * <p>
  * Reentrancy also allows downgrading from the write lock to a read lock, by
  * acquiring the write lock, then the read lock and then releasing the write
  * lock. However, upgrading from a read lock to the write lock is <b>not</b>
  * possible.
+ *
+ * 重入任然允许一个写锁降级为一个读锁，当持有一个写锁，然后再获取读锁此会释放写锁。然后
+ * 从一个读锁降级到一个写锁则不可能。
  * <p>
  * <li><b>Interruption of lock acquisition</b>
+ * 闭锁获取的中断
  * <p>
  * The read lock and write lock both support interruption during lock
  * acquisition.
+ * 读锁和写锁再请求锁的同时，都支持中断。
  * <p>
  * <li><b>{@link Condition} support</b>
+ * Condition支持
  * <p>
  * The write lock provides a {@link Condition} implementation that behaves in
  * the same way, with respect to the write lock, as the {@link Condition}
  * implementation provided by {@link ReentrantLock#newCondition} does for
  * {@link ReentrantLock}. This {@link Condition} can, of course, only be used
  * with the write lock.
+ * 写锁支持Condition操作，动作从Condition继承过来的。为了支持写锁，从 {@link ReentrantLock#newCondition}
+ * 提供的的操作来自ReentrantLock。当然Condition只支持写锁。
  * <p>
  * <p>
  * The read lock does not support a {@link Condition} and
  * {@code readLock().newCondition()} throws
  * {@code UnsupportedOperationException}.
+ * 写锁不自持Condition，{@code readLock().newCondition()} 抛出
+ * {@code UnsupportedOperationException}异常。
  * <p>
  * <li><b>Instrumentation</b>
+ * 仪器，仪表
  * <p>
  * This class supports methods to determine whether locks are held or contended.
  * These methods are designed for monitoring system state, not for
  * synchronization control.
+ * 这个类任然支持获取具体哪个线程持有锁或者是竞争锁。这些方法将被设计为监控系统状态，
+ * 而不是同步控制。
  * </ul>
  * <p>
  * <p>
  * Serialization of this class behaves in the same way as built-in locks: a
  * deserialized lock is in the unlocked state, regardless of its state when
  * serialized.
+ * 序列化操作任然支持锁，反序列化的锁都将是释放锁的状态，序列化时将不管她的状态。
  * <p>
  * <p>
  * <b>Sample usages</b>. Here is a code sketch showing how to perform lock
@@ -151,6 +176,7 @@ import java.util.concurrent.TimeUnit;
  *     rwl.readLock().lock();
  *     if (!cacheValid) {
  *       // Must release read lock before acquiring write lock   请求写锁前，必须释放读锁
+ *       //因为读锁不能降级为写锁。读锁是共享锁，写锁是独占锁。
  *       rwl.readLock().unlock();
  *       rwl.writeLock().lock();
  *       try {

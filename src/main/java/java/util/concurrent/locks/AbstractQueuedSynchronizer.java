@@ -548,7 +548,7 @@ public abstract class AbstractQueuedSynchronizer extends AbstractOwnableSynchron
 	 */
 
     /**
-     * 节点进入队列操作
+     * 节点进入队列操作，返回node节点的前一个节点
      * Inserts node into queue, initializing if necessary. See picture above.
      *
      * @param node the node to insert
@@ -611,6 +611,7 @@ public abstract class AbstractQueuedSynchronizer extends AbstractOwnableSynchron
      * @param node the node
      */
     private void unparkSuccessor(Node node) { // 该方法是用于唤醒后继节点
+
         /*
 		 * If status is negative (i.e., possibly needing signal) try to clear in
 		 * anticipation of signalling. It is OK if this fails or if status is
@@ -1236,7 +1237,9 @@ public abstract class AbstractQueuedSynchronizer extends AbstractOwnableSynchron
     }
 
     /**
-     * Releases in exclusive mode. Implemented by unblocking one or 用于独占模型 more
+     * 独占模式下释放锁。如果{@link #tryRelease(int)}返回true，便可取消一个或者多个
+     * 线程额阻塞。
+     * Releases in exclusive mode. Implemented by unblocking one or more
      * threads if {@link #tryRelease} returns true. This method can be used to
      * implement method {@link Lock#unlock}.
      *
@@ -1544,8 +1547,8 @@ public abstract class AbstractQueuedSynchronizer extends AbstractOwnableSynchron
     }
 
     /**
-     * 如果节点在等待队列上，返回true，否则返回false （如果节点状态为CONDITION或节点头为null，返回false
-     * 如果next不为null，那么节点肯定在等待队列里面）
+     * 判断节点是否在同步队列上面，false为没有，true表示有。
+     * （如果节点状态为CONDITION或节点头为null，返回false，如果next不为null，那么节点肯定在等待队列里面）
      * <p>
      * Returns true if a node, always one that was initially placed on a
      * condition queue, is now waiting to reacquire on sync queue.
@@ -1569,8 +1572,9 @@ public abstract class AbstractQueuedSynchronizer extends AbstractOwnableSynchron
     }
 
     /**
-     * 从等待节点向前搜索，如果节点在等待队列上，那么返回true，否则返回false Returns true if node is on sync
-     * queue by searching backwards from tail. Called only when needed by
+     * 同步队列(syc)由末尾向前搜索，如果节点在同步队列上，那么返回true，否则返回false，
+     * 这个方法只会在{@link #isOnSyncQueue}需要的时候被引用
+     * Returns true if node is on sync queue by searching backwards from tail. Called only when needed by
      * isOnSyncQueue.
      *
      * @return true if present
@@ -1587,7 +1591,8 @@ public abstract class AbstractQueuedSynchronizer extends AbstractOwnableSynchron
     }
 
     /**
-     * 将条件队列中的节点放入等待队列中 Transfers a node from a condition queue onto sync queue.
+     * 将节点从condition队列中sync队列中
+     * Transfers a node from a condition queue onto sync queue.
      * Returns true if successful.
      *
      * @param node the node
@@ -1639,7 +1644,8 @@ public abstract class AbstractQueuedSynchronizer extends AbstractOwnableSynchron
     }
 
     /**
-     * （特殊情况会设置状态为CANCELLED，记住，只是特殊情况） Invokes release with current state value;
+     * （特殊情况会设置状态为CANCELLED，记住，只是特殊情况）
+     * Invokes release with current state value;
      * returns saved state. Cancels node and throws exception on failure.
      *
      * @param node the condition node for this wait
@@ -2025,10 +2031,12 @@ public abstract class AbstractQueuedSynchronizer extends AbstractOwnableSynchron
     public class ConditionObject implements Condition, java.io.Serializable {
         private static final long serialVersionUID = 1173984872572414699L;
         /**
+         * 改模式表示从wait退出后，再次进行中断
          * Mode meaning to reinterrupt on exit from wait
          */
         private static final int REINTERRUPT = 1;
         /**
+         * 该模式表示从等待退出后直接抛出异常
          * Mode meaning to throw InterruptedException on exit from wait
          */
         private static final int THROW_IE = -1;
@@ -2195,9 +2203,11 @@ public abstract class AbstractQueuedSynchronizer extends AbstractOwnableSynchron
         }
 
         /**
-         * （1）如果节点被中断{ 1.如果节点状态为CONDITION，返回THROW_IE
-         * 2.如果节点状态不为CONDITION，返货REINTERRUPT } （2）没被中断，返回0 Checks for interrupt,
-         * returning THROW_IE if interrupted before signalled, REINTERRUPT if
+         * （1）如果节点被中断{
+         *   1.如果节点状态为CONDITION，返回THROW_IE
+         *   2.如果节点状态不为CONDITION，返回REINTERRUPT }
+         * （2）没被中断，返回0
+         * Checks for interrupt,returning THROW_IE if interrupted before signalled, REINTERRUPT if
          * after signalled, or 0 if not interrupted.
          */
         private int checkInterruptWhileWaiting(Node node) { // 如果被中断，返回THROW_IE,否则返回0（如果加入到等待队列成功，返回THROW_IE）
@@ -2237,7 +2247,7 @@ public abstract class AbstractQueuedSynchronizer extends AbstractOwnableSynchron
             Node node = addConditionWaiter(); // 将线程添加到waiter队列
             int savedState = fullyRelease(node); // 释放锁，不然其他线程无法获取锁（注意这里是独占模型），将该节点从等待队列移出
             int interruptMode = 0;
-            while (!isOnSyncQueue(node)) { // 如果当前节点在等待队列上，跳出循环
+            while (!isOnSyncQueue(node)) { // 如果当前节点在同步队列上，跳出循环
                 LockSupport.park(this); // 阻塞当前线程
                 if ((interruptMode = checkInterruptWhileWaiting(node)) != 0) // 如果被唤醒后，发现当前线程被中断，则跳出循环，没有中断则继续
                     break;
