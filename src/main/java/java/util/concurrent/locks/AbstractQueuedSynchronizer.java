@@ -442,6 +442,12 @@ public abstract class AbstractQueuedSynchronizer extends AbstractOwnableSynchron
     }
 
     /**
+     * 这个方法的目的：若上家非头节点，通过shouldParkAfterFailedAcquire()确保上家的节点状态被置为SIGNAL
+     * （其中还包含去掉已取消的节点的过程）
+     * 此函数return true表示允许当前节点（线程）休眠。return false表示需要重入无限for循环检查
+     * （可能在修改状态的过程中当前节点已经来到了队首，那么在休眠之前再tryAcquire()一次，可提高性能）。
+     * 该方法返回false就是为了再进行以此判断，要不要再来次tryAcquire
+     *
      * 节点acquire失败后，判断是否需要阻塞。如果线程需要被阻塞返回true。
      * 这里是所有的acquire循环主要信号控制的地方，需要的条件是pred==node.prev，返回true表示应该被park
      * Checks and updates status for a node that failed to acquire. Returns true

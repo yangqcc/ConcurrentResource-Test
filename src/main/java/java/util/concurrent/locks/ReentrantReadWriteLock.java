@@ -623,7 +623,7 @@ public class ReentrantReadWriteLock implements ReadWriteLock, java.io.Serializab
          * Initialized only in constructor and readObject.
          * Removed whenever a thread's read hold count drops to 0.
          * 当前线程持有的可重入读锁的数量，只能通过构造函数和readObject初始化。
-         * 一个线程持有读锁的数量减到0时便会移除对象。
+         * 一个线程持有读锁的数量减到0时便会移除该对象。
          */
         private transient ThreadLocalHoldCounter readHolds;
         /**
@@ -632,7 +632,9 @@ public class ReentrantReadWriteLock implements ReadWriteLock, java.io.Serializab
          * 保存最后一个请求读锁成功的线程的请求数量
          * This saves ThreadLocal lookup in the common case
          * where the next thread to release is the last one to
-         * acquire. This is non-volatile since it is just used
+         * acquire.
+         * 这节省了左后一个请求的线程作为下一个线程释放
+         * This is non-volatile since it is just used
          * as a heuristic, and would be great for threads to cache.
          * <p>
          * <p>Can outlive the Thread for which it is caching the read
@@ -831,7 +833,7 @@ public class ReentrantReadWriteLock implements ReadWriteLock, java.io.Serializab
                 if (r == 0) {  //没有线程持有共享锁,设置firstReader
                     firstReader = current;
                     firstReaderHoldCount = 1;
-                } else if (firstReader == current) {  //
+                } else if (firstReader == current) {  //判断firstReader是否是当前线程
                     firstReaderHoldCount++;
                 } else {
                     HoldCounter rh = cachedHoldCounter;
@@ -949,6 +951,7 @@ public class ReentrantReadWriteLock implements ReadWriteLock, java.io.Serializab
                         firstReaderHoldCount++;
                     } else {
                         HoldCounter rh = cachedHoldCounter;
+                        //如果th为空，或者获取锁的线程不是当前线程，那么则再次获取一个HoldCounter
                         if (rh == null || rh.tid != getThreadId(current))
                             cachedHoldCounter = rh = readHolds.get();
                         else if (rh.count == 0)
@@ -1023,12 +1026,13 @@ public class ReentrantReadWriteLock implements ReadWriteLock, java.io.Serializab
         }
 
         /**
-         * 用于每个线程保存计数的计数器
+         * 用于每个线程保存计数的计数器,主要用于ThreadLocal,缓存到cachedHoldCounter
          * A counter for per-thread read hold counts.
          * Maintained as a ThreadLocal; cached in cachedHoldCounter
          */
         static final class HoldCounter {
             // Use id, not reference, to avoid garbage retention
+            // 使用id,而不是引用,来避免保持垃圾回收,当期线程的id
             final long tid = getThreadId(Thread.currentThread());
             int count = 0;
         }
@@ -1036,6 +1040,7 @@ public class ReentrantReadWriteLock implements ReadWriteLock, java.io.Serializab
         /**
          * ThreadLocal subclass. Easiest to explicitly define for sake
          * of deserialization mechanics.
+         * ThreadLocal的子类，为了反序列化机制非常方便的显示定义
          */
         static final class ThreadLocalHoldCounter extends ThreadLocal<HoldCounter> {
             public HoldCounter initialValue() {  //初始化
