@@ -22,7 +22,7 @@ public class CalculateTask implements Callable<Integer> {
     }
 
     @Override
-    public Integer call() throws Exception {
+    public Integer call() {
         for (int i = start; i < end; i++) {
             sum += i;
             System.out.println("current thread name is" + Thread.currentThread().getName() + ", and current sum is " + sum);
