@@ -406,7 +406,6 @@ public class FutureTask<V> implements RunnableFuture<V> {
         // assert state > COMPLETING;
         for (WaitNode q; (q = waiters) != null; ) {
             if (UNSAFE.compareAndSwapObject(this, waitersOffset, q, null)) {
-                //循环唤醒等待的对象
                 for (; ; ) {
                     Thread t = q.thread;
                     if (t != null) {

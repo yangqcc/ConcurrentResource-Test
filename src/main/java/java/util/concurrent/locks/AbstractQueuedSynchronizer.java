@@ -380,7 +380,6 @@ public abstract class AbstractQueuedSynchronizer extends AbstractOwnableSynchron
      * use timed park. A rough estimate suffices to improve responsiveness with
      * very short timeouts.
      * 纳秒的值，使用更快的自旋来代替超时park，再短的超时范围内用于提高响应速度的。
-     * 如果小于这个时间，那么则使用自旋，如果大于这个时间，使用LookSupport的parkNanos(Object blocker, long nanos)方法
      */
     static final long spinForTimeoutThreshold = 1000L;
     private static final long serialVersionUID = 7373984972572414691L;
@@ -613,8 +612,7 @@ public abstract class AbstractQueuedSynchronizer extends AbstractOwnableSynchron
     }
 
     /**
-     * 如果存在后继节点，那么便唤醒后继节点(唤醒node节点的后继节点)
-     * Wakes up node's successor, if one exists.
+     * Wakes up node's successor, if one exists. 如果存在后继节点，那么便唤醒后继节点
      *
      * @param node the node
      */
@@ -634,7 +632,6 @@ public abstract class AbstractQueuedSynchronizer extends AbstractOwnableSynchron
 		 * next node. But if cancelled or apparently null, traverse backwards
 		 * from tail to find the actual non-cancelled successor.
 		 */
-		//一直找到下一个满足被唤醒的节点为止
         Node s = node.next; // s等于头结点的下一个节点
         if (s == null || s.waitStatus > 0) { // CANCALED
             s = null;
@@ -642,15 +639,11 @@ public abstract class AbstractQueuedSynchronizer extends AbstractOwnableSynchron
                 if (t.waitStatus <= 0)
                     s = t;
         }
-        //唤醒下一个节点
         if (s != null)
             LockSupport.unpark(s.thread);
     }
 
     /**
-     * 代码意图是，若队首节点存在，则唤醒它。ws == Node.SIGNAL
-     * 表示队首有节点在等候（入队节点会确保prev节点的状态为SIGNAL后入眠）
-     *
      * shared模式下的Release操作，唤醒后继节点并且保证信号传递。
      * Release action for shared mode -- signals successor and ensures
      * propagation. (Note: For exclusive mode,release just amounts to
@@ -670,20 +663,14 @@ public abstract class AbstractQueuedSynchronizer extends AbstractOwnableSynchron
 		 */
         for (; ; ) {
             Node h = head;
-            //头结点不为空或者头结点不是尾节点
             if (h != null && h != tail) {
-                //头结点状态
                 int ws = h.waitStatus;
-                // 如果waitStatus值为SIGNAL
-                if (ws == Node.SIGNAL) {
-                    //将SIGNAL状态设置为0
+                if (ws == Node.SIGNAL) { // 如果waitStatus值为SIGNAL
                     if (!compareAndSetWaitStatus(h, Node.SIGNAL, 0)) // 如果将waitStatus信号设置为0失败，那么继续自旋
                         continue; // loop to recheck cases
-                    //设置成功，唤醒下一个节点，该方法会将h的状态设置为0
+                    //设置成功，唤醒下一个节点
                     unparkSuccessor(h);
-                }
-                //上一步将头结点设置为0，然后再将头结点设置为PROPAGATE
-                else if (ws == 0 && !compareAndSetWaitStatus(h, 0, Node.PROPAGATE)) // 如果waitStatus为0切将信号设置为PROPAGATE失败，还是自旋
+                } else if (ws == 0 && !compareAndSetWaitStatus(h, 0, Node.PROPAGATE)) // 如果waitStatus为0切将信号设置为PROPAGATE失败，还是自旋
                     continue; // loop on failed CAS
             }
             if (h == head) // loop if head changed 如果h变成头结点，那么停止
@@ -912,16 +899,13 @@ public abstract class AbstractQueuedSynchronizer extends AbstractOwnableSynchron
             for (; ; ) {
                 //前继节点
                 final Node p = node.predecessor();
-                //如果当前加入的节点的前继节点是头结点，那么则再尝试获取一次
+                //前继节点是头结点
                 if (p == head) {
                     //tryAcquireShared由子类实现
                     //返回负数，表示请求资源失败
                     //返回0或者正式表示请求成功
-                    //返回整数表示还有资源可以请求，所以尝试唤醒后继节点
                     int r = tryAcquireShared(arg); // 再次尝试获取锁
-                    //表示获取锁成功，进行后继节点的释放操作
                     if (r >= 0) {
-                        //用于设置头结点以及唤醒下一个节点
                         setHeadAndPropagate(node, r);
                         p.next = null; // help GC
                         if (interrupted)
@@ -930,8 +914,7 @@ public abstract class AbstractQueuedSynchronizer extends AbstractOwnableSynchron
                         return;
                     }
                 }
-                //如果当前加入的节点的前继节点不是头结点，那么则阻塞
-                //当前节点被唤醒后，从这里快开始执行，继续获取锁
+                //获取失败判断是否需要阻塞
                 if (shouldParkAfterFailedAcquire(p, node) && parkAndCheckInterrupt()) // 获取失败则阻塞
                     interrupted = true;
             }
@@ -962,7 +945,6 @@ public abstract class AbstractQueuedSynchronizer extends AbstractOwnableSynchron
                         return;
                     }
                 }
-                //检测到了被中断直接抛出异常，相比于doAcquireShared,只是保存中断状态
                 if (shouldParkAfterFailedAcquire(p, node) && parkAndCheckInterrupt())
                     throw new InterruptedException();
             }

@@ -38,7 +38,7 @@ class MyCallable implements Callable<Integer> {
     }
 
     @Override
-    public Integer call() {
+    public Integer call() throws Exception {
         int sum = 0;
         synchronized (this) {
             for (int i = 0; i < a.length; i++) {
