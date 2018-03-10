@@ -10,20 +10,15 @@ package com.yqc.producerconsumer.type2;
  */
 
 import java.util.LinkedList;
+import lombok.Getter;
 
 public class Storage {
 
   // 仓库最大存储量
+  @Getter
   private final int MAX_SIZE = 100;
 
   // 仓库存储的载体
+  @Getter
   private LinkedList<Object> list = new LinkedList<>();
-
-  public LinkedList<Object> getList() {
-    return list;
-  }
-
-  public int getMAX_SIZE() {
-    return MAX_SIZE;
-  }
 }
