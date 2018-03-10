@@ -379,7 +379,7 @@ public abstract class AbstractQueuedSynchronizer extends AbstractOwnableSynchron
      * The number of nanoseconds for which it is faster to spin rather than to
      * use timed park. A rough estimate suffices to improve responsiveness with
      * very short timeouts.
-     * 纳秒的值，使用更快的自旋来代替超时park，再短的超时范围内用于提高响应速度的。
+     * 纳秒的值，使用更快的自旋来代替超时park，在短的超时范围内用于提高响应速度的。
      */
     static final long spinForTimeoutThreshold = 1000L;
     private static final long serialVersionUID = 7373984972572414691L;
