@@ -1,4 +1,4 @@
-package com.yqc.notify;
+package com.yqc.producerconsumer.type1;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
