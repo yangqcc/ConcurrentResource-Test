@@ -10,7 +10,7 @@ import java.util.LinkedList;
  * @date Created in 2018-03-10
  * @modified By yangqc
  */
-public class Producer extends Thread {
+public class Producer implements Runnable {
 
   private final String producerName;
   private final Storage storage;

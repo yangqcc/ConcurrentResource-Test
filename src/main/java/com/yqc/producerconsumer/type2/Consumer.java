@@ -10,7 +10,7 @@ import java.util.LinkedList;
  * @date Created in 2018-03-10
  * @modified By yangqc
  */
-public class Consumer extends Thread {
+public class Consumer implements Runnable {
 
   private String consumerName;
   private Storage storage;
@@ -29,7 +29,7 @@ public class Consumer extends Thread {
     consume(consumerName);
   }
 
-  public void consume(String consumerName) {
+  private void consume(String consumerName) {
     synchronized (list) {
       while (true) {
         //如果仓库存储量不足
@@ -43,6 +43,7 @@ public class Consumer extends Thread {
           }
         } else {
           //对于LinkedList来说,查询并且返回,删除第一个元素
+          //从头去元素,对于生产者来说,从尾部放入元素
           list.remove();
           System.out.println("【" + consumerName + "】：消费了一个产品\t【现仓储量为】:" + list.size());
           list.notifyAll();

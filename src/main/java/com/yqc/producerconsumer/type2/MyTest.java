@@ -1,5 +1,8 @@
 package com.yqc.producerconsumer.type2;
 
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+
 /**
  * <p>title:</p>
  * <p>description:</p>
@@ -11,16 +14,17 @@ package com.yqc.producerconsumer.type2;
 public class MyTest {
 
   public static void main(String[] args) {
+    Executor executor = Executors.newCachedThreadPool();
     Storage storage = new Storage();
     Producer producer = new Producer(storage, "produce1");
     Producer producer2 = new Producer(storage, "produce2");
     Consumer consumer = new Consumer(storage, "consumer1");
     Consumer consumer2 = new Consumer(storage, "consumer2");
     Consumer consumer3 = new Consumer(storage, "consumer3");
-    producer.start();
-    producer2.start();
-    consumer.start();
-    consumer2.start();
-    consumer3.start();
+    executor.execute(producer);
+    executor.execute(producer2);
+    executor.execute(consumer);
+    executor.execute(consumer2);
+    executor.execute(consumer3);
   }
 }
