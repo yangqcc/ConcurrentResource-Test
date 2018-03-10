@@ -1,4 +1,4 @@
-package com.yqc;
+package com.yqc.notify;
 
 import java.util.Timer;
 import java.util.TimerTask;

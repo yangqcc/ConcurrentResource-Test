@@ -1,4 +1,4 @@
-package com.yqc;
+package com.yqc.locks;
 
 import org.junit.jupiter.api.Test;
 

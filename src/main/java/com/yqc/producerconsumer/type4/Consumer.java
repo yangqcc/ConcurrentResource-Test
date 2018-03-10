@@ -14,11 +14,8 @@ public class Consumer implements Runnable {
 
   private final Queue<Object> queue;
 
-  private final int MAX_NUM;
-
   public Consumer(Storage storage) {
     this.queue = storage.getQueue();
-    this.MAX_NUM = storage.getMAX_NUM();
   }
 
   @Override

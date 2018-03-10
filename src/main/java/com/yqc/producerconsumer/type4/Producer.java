@@ -1,7 +1,6 @@
 package com.yqc.producerconsumer.type4;
 
 import java.util.Queue;
-import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * <p>title:</p>
