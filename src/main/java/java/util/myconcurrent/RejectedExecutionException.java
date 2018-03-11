@@ -33,10 +33,10 @@
  * http://creativecommons.org/publicdomain/zero/1.0/
  */
 
-package java.util.concurrent;
+package java.util.myconcurrent;
 
 /**
- * Exception thrown by an {@link Executor} when a task cannot be
+ * Exception thrown by an {@link java.util.myconcurrent.Executor} when a task cannot be
  * accepted for execution.
  *
  * @author Doug Lea

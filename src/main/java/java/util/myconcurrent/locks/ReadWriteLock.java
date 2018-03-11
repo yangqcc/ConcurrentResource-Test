@@ -33,18 +33,18 @@
  * http://creativecommons.org/publicdomain/zero/1.0/
  */
 
-package java.util.concurrent.locks;
+package java.util.myconcurrent.locks;
 
 /**
  * A {@code ReadWriteLock} maintains a pair of associated {@link
- * Lock locks}, one for read-only operations and one for writing.
+ * java.util.myconcurrent.locks.Lock locks}, one for read-only operations and one for writing.
  * The {@link #readLock read lock} may be held simultaneously by
  * multiple reader threads, so long as there are no writers.  The
  * {@link #writeLock write lock} is exclusive.
  * <p>
  * <p>All {@code ReadWriteLock} implementations must guarantee that
  * the memory synchronization effects of {@code writeLock} operations
- * (as specified in the {@link Lock} interface) also hold with respect
+ * (as specified in the {@link java.util.myconcurrent.locks.Lock} interface) also hold with respect
  * to the associated {@code readLock}. That is, a thread successfully
  * acquiring the read lock will see all updates made upon previous
  * release of the write lock.
@@ -110,9 +110,9 @@ package java.util.concurrent.locks;
  * of a given implementation for your application.
  *
  * @author Doug Lea
- * @see ReentrantReadWriteLock
- * @see Lock
- * @see ReentrantLock
+ * @see java.util.myconcurrent.locks.ReentrantReadWriteLock
+ * @see java.util.myconcurrent.locks.Lock
+ * @see java.util.myconcurrent.locks.ReentrantLock
  * @since 1.5
  */
 public interface ReadWriteLock {
@@ -121,12 +121,12 @@ public interface ReadWriteLock {
      *
      * @return the lock used for reading
      */
-    Lock readLock();
+    java.util.myconcurrent.locks.Lock readLock();
 
     /**
      * Returns the lock used for writing.
      *
      * @return the lock used for writing
      */
-    Lock writeLock();
+    java.util.myconcurrent.locks.Lock writeLock();
 }

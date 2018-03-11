@@ -33,17 +33,18 @@
  * http://creativecommons.org/publicdomain/zero/1.0/
  */
 
-package java.util.concurrent.locks;
+package java.util.myconcurrent.locks;
 
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
+import java.util.myconcurrent.ArrayBlockingQueue;
 
 /**
  * {@code Condition} factors out the {@code Object} monitor
  * methods ({@link Object#wait() wait}, {@link Object#notify notify}
  * and {@link Object#notifyAll notifyAll}) into distinct objects to
  * give the effect of having multiple wait-sets per object, by
- * combining them with the use of arbitrary {@link Lock} implementations.
+ * combining them with the use of arbitrary {@link java.util.myconcurrent.locks.Lock} implementations.
  * Where a {@code Lock} replaces the use of {@code synchronized} methods
  * and statements, a {@code Condition} replaces the use of the Object
  * monitor methods.
@@ -59,8 +60,8 @@ import java.util.concurrent.TimeUnit;
  * suspends the current thread, just like {@code Object.wait}.
  *
  * <p>A {@code Condition} instance is intrinsically bound to a lock.
- * To obtain a {@code Condition} instance for a particular {@link Lock}
- * instance use its {@link Lock#newCondition newCondition()} method.
+ * To obtain a {@code Condition} instance for a particular {@link java.util.myconcurrent.locks.Lock}
+ * instance use its {@link java.util.myconcurrent.locks.Lock#newCondition newCondition()} method.
  *
  * <p>As an example, suppose we have a bounded buffer which supports
  * {@code put} and {@code take} methods.  If a
@@ -112,7 +113,7 @@ import java.util.concurrent.TimeUnit;
  * }
  * </pre>
  *
- * (The {@link java.util.concurrent.ArrayBlockingQueue} class provides
+ * (The {@link ArrayBlockingQueue} class provides
  * this functionality, so there is no reason to implement this
  * sample usage class.)
  *
@@ -130,7 +131,7 @@ import java.util.concurrent.TimeUnit;
  * {@link Object#notify notification} methods invoked.
  * Acquiring the monitor lock of a {@code Condition} instance, or using its
  * monitor methods, has no specified relationship with acquiring the
- * {@link Lock} associated with that {@code Condition} or the use of its
+ * {@link java.util.myconcurrent.locks.Lock} associated with that {@code Condition} or the use of its
  * {@linkplain #await waiting} and {@linkplain #signal signalling} methods.
  * It is recommended that to avoid confusion you never use {@code Condition}
  * instances in this way, except perhaps within their own implementation.

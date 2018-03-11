@@ -2,6 +2,7 @@ package com.yqc.basic;
 
 import java.util.ArrayList;
 import java.util.concurrent.*;
+import java.util.concurrent.Future;
 
 public class TaskWithResult implements Callable<String> {
     private int id;

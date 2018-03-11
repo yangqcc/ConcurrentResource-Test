@@ -33,15 +33,16 @@
  * http://creativecommons.org/publicdomain/zero/1.0/
  */
 
-package java.util.concurrent;
+package java.util.myconcurrent;
 
 import java.util.*;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.TimeUnit;
+import java.util.myconcurrent.locks.Condition;
+import java.util.myconcurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
 
 /**
- * An optionally-bounded {@linkplain BlockingDeque blocking deque} based on
+ * An optionally-bounded {@linkplain java.util.myconcurrent.BlockingDeque blocking deque} based on
  * linked nodes.
  * <p>
  * <p>The optional capacity bound constructor argument serves as a
@@ -71,7 +72,7 @@ import java.util.function.Consumer;
  */
 public class LinkedBlockingDeque<E>
         extends AbstractQueue<E>
-        implements BlockingDeque<E>, java.io.Serializable {
+        implements java.util.myconcurrent.BlockingDeque<E>, java.io.Serializable {
 
     /*
      * Implemented as a simple doubly-linked list protected by a

@@ -2,8 +2,8 @@ package com.yqc.locks;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.myconcurrent.locks.Lock;
+import java.util.myconcurrent.locks.ReentrantLock;
 
 public class ReentrantLockTest {
     private static Lock fairLock = new ReentrantLock(true); // 公平锁

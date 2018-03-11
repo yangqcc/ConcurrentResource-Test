@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.*;
+import java.util.concurrent.Executors;
 
 /**
  * 一个同步辅助类，它允许一组线程互相等待，直到到达某个公共屏障点 (common barrier
@@ -19,11 +20,11 @@ class Horse implements Runnable {
 
     private static int counter = 0;
     private static Random rand = new Random(47);
-    private static CyclicBarrier barrier;
+    private static java.util.myconcurrent.CyclicBarrier barrier;
     private final int id = counter++;
     private int strides = 0;
 
-    public Horse(CyclicBarrier b) { // 多个对象共用一个CyclicBarrier
+    public Horse(java.util.myconcurrent.CyclicBarrier b) { // 多个对象共用一个CyclicBarrier
         barrier = b;
     }
 
@@ -41,7 +42,7 @@ class Horse implements Runnable {
                 barrier.await();
             }
         } catch (InterruptedException e) {
-        } catch (BrokenBarrierException e) {
+        } catch (java.util.myconcurrent.BrokenBarrierException e) {
             throw new RuntimeException(e);
         }
     }
@@ -64,10 +65,10 @@ public class HorseRace {
     static final int FINISH_LINE = 75;
     private List<Horse> horses = new ArrayList<>(); // 马的数量
     private ExecutorService exec = Executors.newCachedThreadPool();
-    private CyclicBarrier barrier;
+    private java.util.myconcurrent.CyclicBarrier barrier;
 
     public HorseRace(int nHorses, final int pause) {
-        barrier = new CyclicBarrier(nHorses, new Runnable() {
+        barrier = new java.util.myconcurrent.CyclicBarrier(nHorses, new Runnable() {
 
             @Override
             public void run() {

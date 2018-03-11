@@ -33,10 +33,13 @@
  * http://creativecommons.org/publicdomain/zero/1.0/
  */
 
-package java.util.concurrent;
+package java.util.myconcurrent;
 
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.myconcurrent.locks.Condition;
+import java.util.myconcurrent.locks.ReentrantLock;
 
 /**
  * A synchronization aid that allows a set of threads to all wait for
@@ -121,7 +124,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * for failed synchronization attempts: If a thread leaves a barrier
  * point prematurely because of interruption, failure, or timeout, all
  * other threads waiting at that barrier point will also leave
- * abnormally via {@link BrokenBarrierException} (or
+ * abnormally via {@link java.util.myconcurrent.BrokenBarrierException} (or
  * {@link InterruptedException} if they too were interrupted at about
  * the same time).
  * <p>
@@ -220,15 +223,15 @@ public class CyclicBarrier {
      * Main barrier code, covering the various policies.
      */
     private int dowait(boolean timed, long nanos)
-            throws InterruptedException, BrokenBarrierException,
-            TimeoutException {
+            throws InterruptedException, java.util.myconcurrent.BrokenBarrierException,
+        TimeoutException {
         final ReentrantLock lock = this.lock;
         lock.lock();
         try {
             final Generation g = generation;
 
             if (g.broken)
-                throw new BrokenBarrierException();
+                throw new java.util.myconcurrent.BrokenBarrierException();
 
             if (Thread.interrupted()) {
                 breakBarrier();
@@ -271,7 +274,7 @@ public class CyclicBarrier {
                 }
 
                 if (g.broken)
-                    throw new BrokenBarrierException();
+                    throw new java.util.myconcurrent.BrokenBarrierException();
 
                 if (g != generation)
                     return index;
@@ -323,11 +326,11 @@ public class CyclicBarrier {
      * <p>If the barrier is {@link #reset} while any thread is waiting,
      * or if the barrier {@linkplain #isBroken is broken} when
      * {@code await} is invoked, or while any thread is waiting, then
-     * {@link BrokenBarrierException} is thrown.
+     * {@link java.util.myconcurrent.BrokenBarrierException} is thrown.
      * <p>
      * <p>If any thread is {@linkplain Thread#interrupt interrupted} while waiting,
      * then all other waiting threads will throw
-     * {@link BrokenBarrierException} and the barrier is placed in the broken
+     * {@link java.util.myconcurrent.BrokenBarrierException} and the barrier is placed in the broken
      * state.
      * <p>
      * <p>If the current thread is the last thread to arrive, and a
@@ -343,13 +346,13 @@ public class CyclicBarrier {
      * to arrive and zero indicates the last to arrive
      * @throws InterruptedException   if the current thread was interrupted
      *                                while waiting
-     * @throws BrokenBarrierException if <em>another</em> thread was
+     * @throws java.util.myconcurrent.BrokenBarrierException if <em>another</em> thread was
      *                                interrupted or timed out while the current thread was
      *                                waiting, or the barrier was reset, or the barrier was
      *                                broken when {@code await} was called, or the barrier
      *                                action (if present) failed due to an exception
      */
-    public int await() throws InterruptedException, BrokenBarrierException {
+    public int await() throws InterruptedException, java.util.myconcurrent.BrokenBarrierException {
         try {
             return dowait(false, 0L);
         } catch (TimeoutException toe) {
@@ -390,11 +393,11 @@ public class CyclicBarrier {
      * <p>If the barrier is {@link #reset} while any thread is waiting,
      * or if the barrier {@linkplain #isBroken is broken} when
      * {@code await} is invoked, or while any thread is waiting, then
-     * {@link BrokenBarrierException} is thrown.
+     * {@link java.util.myconcurrent.BrokenBarrierException} is thrown.
      * <p>
      * <p>If any thread is {@linkplain Thread#interrupt interrupted} while
      * waiting, then all other waiting threads will throw {@link
-     * BrokenBarrierException} and the barrier is placed in the broken
+     * java.util.myconcurrent.BrokenBarrierException} and the barrier is placed in the broken
      * state.
      * <p>
      * <p>If the current thread is the last thread to arrive, and a
@@ -414,7 +417,7 @@ public class CyclicBarrier {
      *                                while waiting
      * @throws TimeoutException       if the specified timeout elapses.
      *                                In this case the barrier will be broken.
-     * @throws BrokenBarrierException if <em>another</em> thread was
+     * @throws java.util.myconcurrent.BrokenBarrierException if <em>another</em> thread was
      *                                interrupted or timed out while the current thread was
      *                                waiting, or the barrier was reset, or the barrier was broken
      *                                when {@code await} was called, or the barrier action (if
@@ -422,7 +425,7 @@ public class CyclicBarrier {
      */
     public int await(long timeout, TimeUnit unit)
             throws InterruptedException,
-            BrokenBarrierException,
+        java.util.myconcurrent.BrokenBarrierException,
             TimeoutException {
         return dowait(true, unit.toNanos(timeout));
     }
@@ -448,7 +451,7 @@ public class CyclicBarrier {
     /**
      * Resets the barrier to its initial state.  If any parties are
      * currently waiting at the barrier, they will return with a
-     * {@link BrokenBarrierException}. Note that resets <em>after</em>
+     * {@link java.util.myconcurrent.BrokenBarrierException}. Note that resets <em>after</em>
      * a breakage has occurred for other reasons can be complicated to
      * carry out; threads need to re-synchronize in some other way,
      * and choose one to perform the reset.  It may be preferable to

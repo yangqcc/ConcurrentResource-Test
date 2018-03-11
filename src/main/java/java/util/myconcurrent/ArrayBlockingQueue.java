@@ -33,16 +33,17 @@
  * http://creativecommons.org/publicdomain/zero/1.0/
  */
 
-package java.util.concurrent;
+package java.util.myconcurrent;
 
 import java.lang.ref.WeakReference;
 import java.util.*;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.TimeUnit;
+import java.util.myconcurrent.locks.Condition;
+import java.util.myconcurrent.locks.ReentrantLock;
 
 /**
  * 一个基于数组实现的有界阻塞队列
- * A bounded {@linkplain BlockingQueue blocking queue} backed by an
+ * A bounded {@linkplain java.util.myconcurrent.BlockingQueue blocking queue} backed by an
  * array.  This queue orders elements FIFO (first-in-first-out).  The
  * <em>head</em> of the queue is that element that has been on the
  * queue the longest time.  The <em>tail</em> of the queue is that
@@ -76,7 +77,8 @@ import java.util.concurrent.locks.ReentrantLock;
  * @author Doug Lea
  * @since 1.5
  */
-public class ArrayBlockingQueue<E> extends AbstractQueue<E> implements BlockingQueue<E>, java.io.Serializable {
+public class ArrayBlockingQueue<E> extends AbstractQueue<E> implements
+    java.util.myconcurrent.BlockingQueue<E>, java.io.Serializable {
 
     /**
      * Serialization ID. This class relies on default serialization

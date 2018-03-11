@@ -33,11 +33,12 @@
  * http://creativecommons.org/publicdomain/zero/1.0/
  */
 
-package java.util.concurrent;
+package java.util.myconcurrent;
 
 import java.util.Deque;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.concurrent.TimeUnit;
 
 /**
  * A {@link Deque} that additionally supports blocking operations that wait
@@ -119,7 +120,7 @@ import java.util.NoSuchElementException;
  * </tr>
  * </table>
  * <p>
- * <p>Like any {@link BlockingQueue}, a {@code BlockingDeque} is thread safe,
+ * <p>Like any {@link java.util.myconcurrent.BlockingQueue}, a {@code BlockingDeque} is thread safe,
  * does not permit null elements, and may (or may not) be
  * capacity-constrained.
  * <p>
@@ -200,7 +201,7 @@ import java.util.NoSuchElementException;
  * @author Doug Lea
  * @since 1.6
  */
-public interface BlockingDeque<E> extends BlockingQueue<E>, Deque<E> {
+public interface BlockingDeque<E> extends java.util.myconcurrent.BlockingQueue<E>, Deque<E> {
     /*
      * We have "diamond" multiple interface inheritance here, and that
      * introduces ambiguities.  Methods might end up with different

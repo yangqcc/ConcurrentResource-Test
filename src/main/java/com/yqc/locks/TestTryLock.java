@@ -2,8 +2,8 @@ package com.yqc.locks;
 
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.myconcurrent.locks.Lock;
+import java.util.myconcurrent.locks.ReentrantLock;
 
 /**
  * 测试tryLock

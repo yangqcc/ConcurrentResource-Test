@@ -34,15 +34,16 @@
  * http://creativecommons.org/publicdomain/zero/1.0/
  */
 
-package java.util.concurrent;
+package java.util.myconcurrent;
 
 import java.util.*;
-import java.util.concurrent.locks.LockSupport;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.TimeUnit;
+import java.util.myconcurrent.locks.LockSupport;
+import java.util.myconcurrent.locks.ReentrantLock;
 
 /**
  * 公平策略使用的是Queue，非公平策略使用的是Stack
- * A {@linkplain BlockingQueue blocking queue} in which each insert
+ * A {@linkplain java.util.myconcurrent.BlockingQueue blocking queue} in which each insert
  * operation must wait for a corresponding remove operation by another
  * thread, and vice versa.  A synchronous queue does not have any
  * internal capacity, not even a capacity of one.  You cannot
@@ -81,7 +82,8 @@ import java.util.concurrent.locks.ReentrantLock;
  * @author Doug Lea and Bill Scherer and Michael Scott
  * @since 1.5
  */
-public class SynchronousQueue<E> extends AbstractQueue<E> implements BlockingQueue<E>, java.io.Serializable {
+public class SynchronousQueue<E> extends AbstractQueue<E> implements
+    java.util.myconcurrent.BlockingQueue<E>, java.io.Serializable {
     /**
      * The number of CPUs, for spin control
      */

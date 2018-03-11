@@ -33,14 +33,14 @@
  * http://creativecommons.org/publicdomain/zero/1.0/
  */
 
-package java.util.concurrent;
+package java.util.myconcurrent;
 
 /**
  * Exception thrown when a thread tries to wait upon a barrier that is
  * in a broken state, or which enters the broken state while the thread
  * is waiting.
  *
- * @see CyclicBarrier
+ * @see java.util.myconcurrent.CyclicBarrier
  *
  * @since 1.5
  * @author Doug Lea

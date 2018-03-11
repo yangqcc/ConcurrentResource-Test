@@ -33,13 +33,14 @@
  * http://creativecommons.org/publicdomain/zero/1.0/
  */
 
-package java.util.concurrent.locks;
+package java.util.myconcurrent.locks;
 
 import java.util.Collection;
 import java.util.concurrent.TimeUnit;
+import java.util.myconcurrent.locks.AbstractQueuedSynchronizer.ConditionObject;
 
 /**
- * A reentrant mutual exclusion {@link Lock} with the same basic
+ * A reentrant mutual exclusion {@link java.util.myconcurrent.locks.Lock} with the same basic
  * behavior and semantics as the implicit monitor lock accessed using
  * {@code synchronized} methods and statements, but with extended
  * capabilities.
@@ -91,7 +92,7 @@ import java.util.concurrent.TimeUnit;
  *   }
  * }}</pre>
  * <p>
- * <p>In addition to implementing the {@link Lock} interface, this
+ * <p>In addition to implementing the {@link java.util.myconcurrent.locks.Lock} interface, this
  * class defines a number of {@code public} and {@code protected}
  * methods for inspecting the state of the lock.  Some of these
  * methods are only useful for instrumentation and monitoring.
@@ -107,7 +108,7 @@ import java.util.concurrent.TimeUnit;
  * @author Doug Lea
  * @since 1.5
  */
-public class ReentrantLock implements Lock, java.io.Serializable {
+public class ReentrantLock implements java.util.myconcurrent.locks.Lock, java.io.Serializable {
     private static final long serialVersionUID = 7373984872572414699L;
     /**
      * Synchronizer providing all implementation mechanics
@@ -326,10 +327,10 @@ public class ReentrantLock implements Lock, java.io.Serializable {
     }
 
     /**
-     * Returns a {@link Condition} instance for use with this
-     * {@link Lock} instance.
+     * Returns a {@link java.util.myconcurrent.locks.Condition} instance for use with this
+     * {@link java.util.myconcurrent.locks.Lock} instance.
      * <p>
-     * <p>The returned {@link Condition} instance supports the same
+     * <p>The returned {@link java.util.myconcurrent.locks.Condition} instance supports the same
      * usages as do the {@link Object} monitor methods ({@link
      * Object#wait() wait}, {@link Object#notify notify}, and {@link
      * Object#notifyAll notifyAll}) when used with the built-in
@@ -337,12 +338,12 @@ public class ReentrantLock implements Lock, java.io.Serializable {
      * <p>
      * <ul>
      * <p>
-     * <li>If this lock is not held when any of the {@link Condition}
-     * {@linkplain Condition#await() waiting} or {@linkplain
-     * Condition#signal signalling} methods are called, then an {@link
+     * <li>If this lock is not held when any of the {@link java.util.myconcurrent.locks.Condition}
+     * {@linkplain java.util.myconcurrent.locks.Condition#await() waiting} or {@linkplain
+     * java.util.myconcurrent.locks.Condition#signal signalling} methods are called, then an {@link
      * IllegalMonitorStateException} is thrown.
      * <p>
-     * <li>When the condition {@linkplain Condition#await() waiting}
+     * <li>When the condition {@linkplain java.util.myconcurrent.locks.Condition#await() waiting}
      * methods are called the lock is released and, before they
      * return, the lock is reacquired and the lock hold count restored
      * to what it was when the method was called.
@@ -364,7 +365,7 @@ public class ReentrantLock implements Lock, java.io.Serializable {
      *
      * @return the Condition object
      */
-    public Condition newCondition() {
+    public java.util.myconcurrent.locks.Condition newCondition() {
         return sync.newCondition();
     }
 
@@ -557,12 +558,12 @@ public class ReentrantLock implements Lock, java.io.Serializable {
      *                                      not associated with this lock
      * @throws NullPointerException         if the condition is null
      */
-    public boolean hasWaiters(Condition condition) {
+    public boolean hasWaiters(java.util.myconcurrent.locks.Condition condition) {
         if (condition == null)
             throw new NullPointerException();
-        if (!(condition instanceof AbstractQueuedSynchronizer.ConditionObject))
+        if (!(condition instanceof ConditionObject))
             throw new IllegalArgumentException("not owner");
-        return sync.hasWaiters((AbstractQueuedSynchronizer.ConditionObject) condition);
+        return sync.hasWaiters((ConditionObject) condition);
     }
 
     /**
@@ -580,12 +581,12 @@ public class ReentrantLock implements Lock, java.io.Serializable {
      *                                      not associated with this lock
      * @throws NullPointerException         if the condition is null
      */
-    public int getWaitQueueLength(Condition condition) {
+    public int getWaitQueueLength(java.util.myconcurrent.locks.Condition condition) {
         if (condition == null)
             throw new NullPointerException();
-        if (!(condition instanceof AbstractQueuedSynchronizer.ConditionObject))
+        if (!(condition instanceof ConditionObject))
             throw new IllegalArgumentException("not owner");
-        return sync.getWaitQueueLength((AbstractQueuedSynchronizer.ConditionObject) condition);
+        return sync.getWaitQueueLength((ConditionObject) condition);
     }
 
     /**
@@ -605,12 +606,12 @@ public class ReentrantLock implements Lock, java.io.Serializable {
      *                                      not associated with this lock
      * @throws NullPointerException         if the condition is null
      */
-    protected Collection<Thread> getWaitingThreads(Condition condition) {
+    protected Collection<Thread> getWaitingThreads(java.util.myconcurrent.locks.Condition condition) {
         if (condition == null)
             throw new NullPointerException();
-        if (!(condition instanceof AbstractQueuedSynchronizer.ConditionObject))
+        if (!(condition instanceof ConditionObject))
             throw new IllegalArgumentException("not owner");
-        return sync.getWaitingThreads((AbstractQueuedSynchronizer.ConditionObject) condition);
+        return sync.getWaitingThreads((ConditionObject) condition);
     }
 
     /**
@@ -635,11 +636,11 @@ public class ReentrantLock implements Lock, java.io.Serializable {
      * into fair and nonfair versions below. Uses AQS state to
      * represent the number of holds on the lock.
      */
-    abstract static class Sync extends AbstractQueuedSynchronizer {
+    abstract static class Sync extends java.util.myconcurrent.locks.AbstractQueuedSynchronizer {
         private static final long serialVersionUID = -5179523762034025860L;
 
         /**
-         * Performs {@link Lock#lock}. The main reason for subclassing
+         * Performs {@link java.util.myconcurrent.locks.Lock#lock}. The main reason for subclassing
          * is to allow fast path for nonfair version.
          */
         abstract void lock();

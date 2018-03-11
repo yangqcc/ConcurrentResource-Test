@@ -33,16 +33,17 @@
  * http://creativecommons.org/publicdomain/zero/1.0/
  */
 
-package java.util.concurrent;
+package java.util.myconcurrent;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.myconcurrent.locks.Condition;
+import java.util.myconcurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
 
 /**
- * An optionally-bounded {@linkplain BlockingQueue blocking queue} based on
+ * An optionally-bounded {@linkplain java.util.myconcurrent.BlockingQueue blocking queue} based on
  * linked nodes.
  * This queue orders elements FIFO (first-in-first-out).
  * The <em>head</em> of the queue is that element that has been on the
@@ -73,7 +74,7 @@ import java.util.function.Consumer;
  * @since 1.5
  */
 public class LinkedBlockingQueue<E> extends AbstractQueue<E>
-        implements BlockingQueue<E>, java.io.Serializable {
+        implements java.util.myconcurrent.BlockingQueue<E>, java.io.Serializable {
     private static final long serialVersionUID = -6903933977591709194L;
 
     /*
@@ -386,7 +387,7 @@ public class LinkedBlockingQueue<E> extends AbstractQueue<E>
      * returning {@code true} upon success and {@code false} if this queue
      * is full.
      * When using a capacity-restricted queue, this method is generally
-     * preferable to method {@link BlockingQueue#add add}, which can fail to
+     * preferable to method {@link java.util.myconcurrent.BlockingQueue#add add}, which can fail to
      * insert an element only by throwing an exception.
      *
      * @throws NullPointerException if the specified element is null

@@ -33,20 +33,20 @@
  * http://creativecommons.org/publicdomain/zero/1.0/
  */
 
-package java.util.concurrent;
+package java.util.myconcurrent;
 
 /**
- * A {@link Future} that is {@link Runnable}. Successful execution of
+ * A {@link java.util.myconcurrent.Future} that is {@link Runnable}. Successful execution of
  * the {@code run} method causes completion of the {@code Future}
  * and allows access to its results.
  *
  * @param <V> The result type returned by this Future's {@code get} method
  * @author Doug Lea
- * @see FutureTask
- * @see Executor
+ * @see java.util.myconcurrent.FutureTask
+ * @see java.util.myconcurrent.Executor
  * @since 1.6
  */
-public interface RunnableFuture<V> extends Runnable, Future<V> {
+public interface RunnableFuture<V> extends Runnable, java.util.myconcurrent.Future<V> {
     /**
      * Sets this Future to the result of its computation
      * unless it has been cancelled.

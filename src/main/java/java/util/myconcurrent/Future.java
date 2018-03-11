@@ -33,7 +33,12 @@
  * http://creativecommons.org/publicdomain/zero/1.0/
  */
 
-package java.util.concurrent;
+package java.util.myconcurrent;
+
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 /**
  * Future代表了一个异步计算的结果。
@@ -73,7 +78,7 @@ package java.util.concurrent;
  *   }
  * }}</pre>
  * <p>
- * The {@link FutureTask} class is an implementation of {@code Future} that
+ * The {@link java.util.myconcurrent.FutureTask} class is an implementation of {@code Future} that
  * implements {@code Runnable}, and so may be executed by an {@code Executor}.
  * For example, the above construction with {@code submit} could be replaced by:
  * <pre> {@code
@@ -90,8 +95,8 @@ package java.util.concurrent;
  *
  * @param <V> The result type returned by this Future's {@code get} method
  * @author Doug Lea
- * @see FutureTask
- * @see Executor
+ * @see java.util.myconcurrent.FutureTask
+ * @see java.util.myconcurrent.Executor
  * @since 1.5
  */
 public interface Future<V> {

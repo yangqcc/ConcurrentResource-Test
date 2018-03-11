@@ -4,10 +4,10 @@ import com.yqc.basic.execute.executor.LiftOff;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.SynchronousQueue;
+import java.util.myconcurrent.ArrayBlockingQueue;
+import java.util.myconcurrent.BlockingQueue;
+import java.util.myconcurrent.LinkedBlockingQueue;
+import java.util.myconcurrent.SynchronousQueue;
 
 class LiftOffRunner implements Runnable {
 

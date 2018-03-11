@@ -1,7 +1,7 @@
 package com.yqc.beforepractice.test2.lockTest;
 
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.myconcurrent.locks.ReentrantLock;
 
 public class AttemptLocking {
     private ReentrantLock lock = new ReentrantLock();

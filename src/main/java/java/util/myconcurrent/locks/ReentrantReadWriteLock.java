@@ -33,14 +33,15 @@
  * http://creativecommons.org/publicdomain/zero/1.0/
  */
 
-package java.util.concurrent.locks;
+package java.util.myconcurrent.locks;
 
 import java.util.Collection;
 import java.util.concurrent.TimeUnit;
+import java.util.myconcurrent.locks.AbstractQueuedSynchronizer.ConditionObject;
 
 /**
- * An implementation of {@link ReadWriteLock} supporting similar semantics to
- * {@link ReentrantLock}.
+ * An implementation of {@link java.util.myconcurrent.locks.ReadWriteLock} supporting similar semantics to
+ * {@link java.util.myconcurrent.locks.ReentrantLock}.
  * <p>
  * This class has the following properties:
  * <p>
@@ -95,7 +96,7 @@ import java.util.concurrent.TimeUnit;
  * <p>
  * <p>
  * This lock allows both readers and writers to reacquire read or write locks in
- * the style of a {@link ReentrantLock}. Non-reentrant readers are not allowed
+ * the style of a {@link java.util.myconcurrent.locks.ReentrantLock}. Non-reentrant readers are not allowed
  * until all write locks held by the writing thread have been released.
  * <p>
  * <p>
@@ -126,19 +127,19 @@ import java.util.concurrent.TimeUnit;
  * acquisition.
  * 读锁和写锁再请求锁的同时，都支持中断。
  * <p>
- * <li><b>{@link Condition} support</b>
+ * <li><b>{@link java.util.myconcurrent.locks.Condition} support</b>
  * Condition支持
  * <p>
- * The write lock provides a {@link Condition} implementation that behaves in
- * the same way, with respect to the write lock, as the {@link Condition}
- * implementation provided by {@link ReentrantLock#newCondition} does for
- * {@link ReentrantLock}. This {@link Condition} can, of course, only be used
+ * The write lock provides a {@link java.util.myconcurrent.locks.Condition} implementation that behaves in
+ * the same way, with respect to the write lock, as the {@link java.util.myconcurrent.locks.Condition}
+ * implementation provided by {@link java.util.myconcurrent.locks.ReentrantLock#newCondition} does for
+ * {@link java.util.myconcurrent.locks.ReentrantLock}. This {@link java.util.myconcurrent.locks.Condition} can, of course, only be used
  * with the write lock.
- * 写锁支持Condition操作，动作从Condition继承过来的。为了支持写锁，从 {@link ReentrantLock#newCondition}
+ * 写锁支持Condition操作，动作从Condition继承过来的。为了支持写锁，从 {@link java.util.myconcurrent.locks.ReentrantLock#newCondition}
  * 提供的的操作来自ReentrantLock。当然Condition只支持写锁。
  * <p>
  * <p>
- * The read lock does not support a {@link Condition} and
+ * The read lock does not support a {@link java.util.myconcurrent.locks.Condition} and
  * {@code readLock().newCondition()} throws
  * {@code UnsupportedOperationException}.
  * 写锁不自持Condition，{@code readLock().newCondition()} 抛出
@@ -268,7 +269,7 @@ import java.util.concurrent.TimeUnit;
  * @author Doug Lea
  * @since 1.5
  */
-public class ReentrantReadWriteLock implements ReadWriteLock, java.io.Serializable {
+public class ReentrantReadWriteLock implements java.util.myconcurrent.locks.ReadWriteLock, java.io.Serializable {
     private static final long serialVersionUID = -6992448646407690164L;
     // Unsafe mechanics
     private static final sun.misc.Unsafe UNSAFE;
@@ -529,9 +530,9 @@ public class ReentrantReadWriteLock implements ReadWriteLock, java.io.Serializab
     public boolean hasWaiters(Condition condition) {
         if (condition == null)
             throw new NullPointerException();
-        if (!(condition instanceof AbstractQueuedSynchronizer.ConditionObject))
+        if (!(condition instanceof ConditionObject))
             throw new IllegalArgumentException("not owner");
-        return sync.hasWaiters((AbstractQueuedSynchronizer.ConditionObject) condition);
+        return sync.hasWaiters((ConditionObject) condition);
     }
 
     /**
@@ -552,9 +553,9 @@ public class ReentrantReadWriteLock implements ReadWriteLock, java.io.Serializab
     public int getWaitQueueLength(Condition condition) {
         if (condition == null)
             throw new NullPointerException();
-        if (!(condition instanceof AbstractQueuedSynchronizer.ConditionObject))
+        if (!(condition instanceof ConditionObject))
             throw new IllegalArgumentException("not owner");
-        return sync.getWaitQueueLength((AbstractQueuedSynchronizer.ConditionObject) condition);
+        return sync.getWaitQueueLength((ConditionObject) condition);
     }
 
     /**
@@ -577,9 +578,9 @@ public class ReentrantReadWriteLock implements ReadWriteLock, java.io.Serializab
     protected Collection<Thread> getWaitingThreads(Condition condition) {
         if (condition == null)
             throw new NullPointerException();
-        if (!(condition instanceof AbstractQueuedSynchronizer.ConditionObject))
+        if (!(condition instanceof ConditionObject))
             throw new IllegalArgumentException("not owner");
-        return sync.getWaitingThreads((AbstractQueuedSynchronizer.ConditionObject) condition);
+        return sync.getWaitingThreads((ConditionObject) condition);
     }
 
     /**
@@ -605,7 +606,7 @@ public class ReentrantReadWriteLock implements ReadWriteLock, java.io.Serializab
      * Subclassed into fair and nonfair versions.
      * ReentrantReadWriteLock的同步操作，子类用于公平和非公平版本。
      */
-    abstract static class Sync extends AbstractQueuedSynchronizer {
+    abstract static class Sync extends java.util.myconcurrent.locks.AbstractQueuedSynchronizer {
         static final int SHARED_SHIFT = 16;
 
         /*
@@ -1097,7 +1098,7 @@ public class ReentrantReadWriteLock implements ReadWriteLock, java.io.Serializab
     /**
      * The lock returned by method {@link ReentrantReadWriteLock#readLock}.
      */
-    public static class ReadLock implements Lock, java.io.Serializable {
+    public static class ReadLock implements java.util.myconcurrent.locks.Lock, java.io.Serializable {
         private static final long serialVersionUID = -5992448646407690164L;
         private final Sync sync;
 
@@ -1285,7 +1286,7 @@ public class ReentrantReadWriteLock implements ReadWriteLock, java.io.Serializab
          *
          * @throws UnsupportedOperationException always
          */
-        public Condition newCondition() {
+        public java.util.myconcurrent.locks.Condition newCondition() {
             throw new UnsupportedOperationException();
         }
 
@@ -1306,7 +1307,7 @@ public class ReentrantReadWriteLock implements ReadWriteLock, java.io.Serializab
     /**
      * The lock returned by method {@link ReentrantReadWriteLock#writeLock}.
      */
-    public static class WriteLock implements Lock, java.io.Serializable {
+    public static class WriteLock implements java.util.myconcurrent.locks.Lock, java.io.Serializable {
         private static final long serialVersionUID = -4992448646407690164L;
         private final Sync sync;
 
@@ -1528,9 +1529,9 @@ public class ReentrantReadWriteLock implements ReadWriteLock, java.io.Serializab
         }
 
         /**
-         * Returns a {@link Condition} instance for use with this
-         * {@link Lock} instance.
-         * <p>The returned {@link Condition} instance supports the same
+         * Returns a {@link java.util.myconcurrent.locks.Condition} instance for use with this
+         * {@link java.util.myconcurrent.locks.Lock} instance.
+         * <p>The returned {@link java.util.myconcurrent.locks.Condition} instance supports the same
          * usages as do the {@link Object} monitor methods ({@link
          * Object#wait() wait}, {@link Object#notify notify}, and {@link
          * Object#notifyAll notifyAll}) when used with the built-in
@@ -1539,7 +1540,7 @@ public class ReentrantReadWriteLock implements ReadWriteLock, java.io.Serializab
          * <ul>
          * <p>
          * <li>If this write lock is not held when any {@link
-         * Condition} method is called then an {@link
+         * java.util.myconcurrent.locks.Condition} method is called then an {@link
          * IllegalMonitorStateException} is thrown.  (Read locks are
          * held independently of write locks, so are not checked or
          * affected. However it is essentially always an error to
@@ -1548,7 +1549,7 @@ public class ReentrantReadWriteLock implements ReadWriteLock, java.io.Serializab
          * could unblock it will not be able to acquire the write
          * lock.)
          * <p>
-         * <li>When the condition {@linkplain Condition#await() waiting}
+         * <li>When the condition {@linkplain java.util.myconcurrent.locks.Condition#await() waiting}
          * methods are called the write lock is released and, before
          * they return, the write lock is reacquired and the lock hold
          * count restored to what it was when the method was called.
@@ -1570,7 +1571,7 @@ public class ReentrantReadWriteLock implements ReadWriteLock, java.io.Serializab
          *
          * @return the Condition object
          */
-        public Condition newCondition() {
+        public java.util.myconcurrent.locks.Condition newCondition() {
             return sync.newCondition();
         }
 

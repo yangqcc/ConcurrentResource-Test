@@ -33,7 +33,9 @@
  * http://creativecommons.org/publicdomain/zero/1.0/
  */
 
-package java.util.concurrent;
+package java.util.myconcurrent;
+
+import java.util.concurrent.ExecutorService;
 
 /**
  * An object that executes submitted {@link Runnable} tasks. This
@@ -113,8 +115,8 @@ package java.util.concurrent;
  *
  * The {@code Executor} implementations provided in this package
  * implement {@link ExecutorService}, which is a more extensive
- * interface.  The {@link ThreadPoolExecutor} class provides an
- * extensible thread pool implementation. The {@link Executors} class
+ * interface.  The {@link java.util.myconcurrent.ThreadPoolExecutor} class provides an
+ * extensible thread pool implementation. The {@link java.util.myconcurrent.Executors} class
  * provides convenient factory methods for these Executors.
  *
  * <p>Memory consistency effects: Actions in a thread prior to
@@ -133,7 +135,7 @@ public interface Executor {
      * thread, at the discretion of the {@code Executor} implementation.
      *
      * @param command the runnable task
-     * @throws RejectedExecutionException if this task cannot be
+     * @throws java.util.myconcurrent.RejectedExecutionException if this task cannot be
      * accepted for execution
      * @throws NullPointerException if command is null
      */

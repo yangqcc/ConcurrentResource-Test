@@ -33,7 +33,7 @@
  * http://creativecommons.org/publicdomain/zero/1.0/
  */
 
-package java.util.concurrent.locks;
+package java.util.myconcurrent.locks;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -41,14 +41,14 @@ import java.util.concurrent.TimeUnit;
  * operations than can be obtained using {@code synchronized} methods
  * and statements.  They allow more flexible structuring, may have
  * quite different properties, and may support multiple associated
- * {@link Condition} objects.
+ * {@link java.util.myconcurrent.locks.Condition} objects.
  *
  * <p>A lock is a tool for controlling access to a shared resource by
  * multiple threads. Commonly, a lock provides exclusive access to a
  * shared resource: only one thread at a time can acquire the lock and
  * all access to the shared resource requires that the lock be
  * acquired first. However, some locks may allow concurrent access to
- * a shared resource, such as the read lock of a {@link ReadWriteLock}.
+ * a shared resource, such as the read lock of a {@link java.util.myconcurrent.locks.ReadWriteLock}.
  *
  * <p>The use of {@code synchronized} methods or statements provides
  * access to the implicit monitor lock associated with every object, but
@@ -157,9 +157,9 @@ import java.util.concurrent.TimeUnit;
  * shown that the interrupt occurred after another action may have unblocked
  * the thread. An implementation should document this behavior.
  *
- * @see ReentrantLock
- * @see Condition
- * @see ReadWriteLock
+ * @see java.util.myconcurrent.locks.ReentrantLock
+ * @see java.util.myconcurrent.locks.Condition
+ * @see java.util.myconcurrent.locks.ReadWriteLock
  *
  * @since 1.5
  * @author Doug Lea
@@ -335,23 +335,23 @@ public interface Lock {
     void unlock();
 
     /**
-     * Returns a new {@link Condition} instance that is bound to this
+     * Returns a new {@link java.util.myconcurrent.locks.Condition} instance that is bound to this
      * {@code Lock} instance.
      *
      * <p>Before waiting on the condition the lock must be held by the
      * current thread.
-     * A call to {@link Condition#await()} will atomically release the lock
+     * A call to {@link java.util.myconcurrent.locks.Condition#await()} will atomically release the lock
      * before waiting and re-acquire the lock before the wait returns.
      *
      * <p><b>Implementation Considerations</b>
      *
-     * <p>The exact operation of the {@link Condition} instance depends on
+     * <p>The exact operation of the {@link java.util.myconcurrent.locks.Condition} instance depends on
      * the {@code Lock} implementation and must be documented by that
      * implementation.
      *
-     * @return A new {@link Condition} instance for this {@code Lock} instance
+     * @return A new {@link java.util.myconcurrent.locks.Condition} instance for this {@code Lock} instance
      * @throws UnsupportedOperationException if this {@code Lock}
      *         implementation does not support conditions
      */
-    Condition newCondition();
+    java.util.myconcurrent.locks.Condition newCondition();
 }

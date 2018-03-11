@@ -1,6 +1,6 @@
 package com.yqc.beforepractice.demo;
 
-import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.myconcurrent.locks.ReentrantReadWriteLock;
 
 /**
  * 读写锁

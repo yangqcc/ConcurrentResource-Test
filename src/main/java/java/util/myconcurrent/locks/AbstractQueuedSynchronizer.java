@@ -33,12 +33,13 @@
  * http://creativecommons.org/publicdomain/zero/1.0/
  */
 
-package java.util.concurrent.locks;
+package java.util.myconcurrent.locks;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.AbstractOwnableSynchronizer;
 import sun.misc.Unsafe;
 
 /**
@@ -82,7 +83,7 @@ import sun.misc.Unsafe;
  * succeeds, the next waiting thread (if one exists) must also determine whether
  * it can acquire as well. Threads waiting in the different modes share the same
  * FIFO queue. Usually, implementation subclasses support only one of these
- * modes, but both can come into play for example in a {@link ReadWriteLock}.
+ * modes, but both can come into play for example in a {@link java.util.myconcurrent.locks.ReadWriteLock}.
  * 子类只能实现一种模式，但是两种模式可以混合到一起进行操作。
  * Subclasses that support only exclusive or only shared modes need not define
  * the methods supporting the unused mode.
@@ -91,7 +92,7 @@ import sun.misc.Unsafe;
  * <p>
  * <p>
  * This class defines a nested {@link ConditionObject} class that can be used as
- * a {@link Condition} implementation by subclasses supporting exclusive mode
+ * a {@link java.util.myconcurrent.locks.Condition} implementation by subclasses supporting exclusive mode
  * for which method {@link #isHeldExclusively} reports whether synchronization
  * is exclusively held with respect to the current thread, method
  * {@link #release} invoked with the current {@link #getState} value fully
@@ -219,7 +220,7 @@ import sun.misc.Unsafe;
  * {@code int} state, acquire, and release parameters, and an internal FIFO wait
  * queue. When this does not suffice, you can build synchronizers from a lower
  * level using {@link java.util.concurrent.atomic atomic} classes, your own
- * custom {@link java.util.Queue} classes, and {@link LockSupport} blocking
+ * custom {@link java.util.Queue} classes, and {@link java.util.myconcurrent.locks.LockSupport} blocking
  * support.
  * 这个类给同步提供了一个有用的可以扩展的基础，依赖于int状态，请求和释放参数，以及内部的FIFO等待队列，
  * 来指定同步者的范围，如果这还不够的话，你可以通过更底层的atomic来，有自己定制的Queue类，以及LockSupport
@@ -651,7 +652,7 @@ public abstract class AbstractQueuedSynchronizer extends AbstractOwnableSynchron
       }
     }
     if (s != null) {
-      LockSupport.unpark(s.thread);
+      java.util.myconcurrent.locks.LockSupport.unpark(s.thread);
     }
   }
 
@@ -792,7 +793,7 @@ public abstract class AbstractQueuedSynchronizer extends AbstractOwnableSynchron
    * @return {@code true} if interrupted
    */
   private final boolean parkAndCheckInterrupt() {
-    LockSupport.park(this); // 阻塞当前线程，线程在这里被阻塞
+    java.util.myconcurrent.locks.LockSupport.park(this); // 阻塞当前线程，线程在这里被阻塞
     /**
      * public static boolean interrupted()
      * 测试当前线程是否已经中断。线程的中断状态
@@ -903,7 +904,7 @@ public abstract class AbstractQueuedSynchronizer extends AbstractOwnableSynchron
           return false;
         }
         if (shouldParkAfterFailedAcquire(p, node) && nanosTimeout > spinForTimeoutThreshold) {
-          LockSupport.parkNanos(this, nanosTimeout);
+          java.util.myconcurrent.locks.LockSupport.parkNanos(this, nanosTimeout);
         }
         if (Thread.interrupted()) {
           throw new InterruptedException();
@@ -1024,7 +1025,7 @@ public abstract class AbstractQueuedSynchronizer extends AbstractOwnableSynchron
           return false;
         }
         if (shouldParkAfterFailedAcquire(p, node) && nanosTimeout > spinForTimeoutThreshold) {
-          LockSupport.parkNanos(this, nanosTimeout);
+          java.util.myconcurrent.locks.LockSupport.parkNanos(this, nanosTimeout);
         }
         if (Thread.interrupted()) {
           throw new InterruptedException();
@@ -1046,7 +1047,7 @@ public abstract class AbstractQueuedSynchronizer extends AbstractOwnableSynchron
    * This method is always invoked by the thread performing acquire. If this
    * method reports failure, the acquire method may queue the thread, if it is
    * not already queued, until it is signalled by a release from some other
-   * thread. This can be used to implement method {@link Lock#tryLock()}.
+   * thread. This can be used to implement method {@link java.util.myconcurrent.locks.Lock#tryLock()}.
    * <p>
    * <p>
    * The default implementation throws {@link UnsupportedOperationException}.
@@ -1177,7 +1178,7 @@ public abstract class AbstractQueuedSynchronizer extends AbstractOwnableSynchron
    * at least once {@link #tryAcquire}, returning on success. Otherwise the
    * thread is queued, possibly repeatedly blocking and unblocking, invoking
    * {@link #tryAcquire} until success. This method can be used to implement
-   * method {@link Lock#lock}.
+   * method {@link java.util.myconcurrent.locks.Lock#lock}.
    *
    * @param arg the acquire argument. This value is conveyed to
    * {@link #tryAcquire} but is otherwise uninterpreted and can
@@ -1195,7 +1196,7 @@ public abstract class AbstractQueuedSynchronizer extends AbstractOwnableSynchron
    * once {@link #tryAcquire}, returning on success. Otherwise the thread is
    * queued, possibly repeatedly blocking and unblocking, invoking
    * {@link #tryAcquire} until success or the thread is interrupted. This
-   * method can be used to implement method {@link Lock#lockInterruptibly}.
+   * method can be used to implement method {@link java.util.myconcurrent.locks.Lock#lockInterruptibly}.
    *
    * @param arg the acquire argument. This value is conveyed to
    * {@link #tryAcquire} but is otherwise uninterpreted and can
@@ -1259,7 +1260,7 @@ public abstract class AbstractQueuedSynchronizer extends AbstractOwnableSynchron
    * returning on success. Otherwise, the thread is queued, possibly
    * repeatedly blocking and unblocking, invoking {@link #tryAcquire} until
    * success or the thread is interrupted or the timeout elapses. This method
-   * can be used to implement method {@link Lock#tryLock(long, TimeUnit)}.
+   * can be used to implement method {@link java.util.myconcurrent.locks.Lock#tryLock(long, TimeUnit)}.
    *
    * @param arg the acquire argument. This value is conveyed to
    * {@link #tryAcquire} but is otherwise uninterpreted and can
@@ -1303,7 +1304,7 @@ public abstract class AbstractQueuedSynchronizer extends AbstractOwnableSynchron
    * 线程额阻塞。
    * Releases in exclusive mode. Implemented by unblocking one or more
    * threads if {@link #tryRelease} returns true. This method can be used to
-   * implement method {@link Lock#unlock}.
+   * implement method {@link java.util.myconcurrent.locks.Lock#unlock}.
    *
    * @param arg the release argument. This value is conveyed to
    * {@link #tryRelease} but is otherwise uninterpreted and can
@@ -1699,7 +1700,7 @@ public abstract class AbstractQueuedSynchronizer extends AbstractOwnableSynchron
     if (ws > 0 || !compareAndSetWaitStatus(p, ws,
         Node.SIGNAL)) // 如果前一个节点状态为CANCELLED或设设置状态为SIGNAL失败，那么唤醒当前节点
     {
-      LockSupport.unpark(node.thread); // 唤醒当前节点
+      java.util.myconcurrent.locks.LockSupport.unpark(node.thread); // 唤醒当前节点
     }
     return true;
   }
@@ -2101,7 +2102,7 @@ public abstract class AbstractQueuedSynchronizer extends AbstractOwnableSynchron
 
   /**
    * Condition implementation for a {@link AbstractQueuedSynchronizer} serving
-   * as the basis of a {@link Lock} implementation.
+   * as the basis of a {@link java.util.myconcurrent.locks.Lock} implementation.
    *
    * Condition实现作在AbstractQueuedSynchronizer中作为Lock一个基础服务。
    * <p>
@@ -2116,7 +2117,7 @@ public abstract class AbstractQueuedSynchronizer extends AbstractOwnableSynchron
    * This class is Serializable, but all fields are transient, so deserialized
    * conditions have no waiters.
    */
-  public class ConditionObject implements Condition, java.io.Serializable {
+  public class ConditionObject implements java.util.myconcurrent.locks.Condition, java.io.Serializable {
 
     private static final long serialVersionUID = 1173984872572414699L;
     /**
@@ -2298,7 +2299,7 @@ public abstract class AbstractQueuedSynchronizer extends AbstractOwnableSynchron
       int savedState = fullyRelease(node);
       boolean interrupted = false;
       while (!isOnSyncQueue(node)) {
-        LockSupport.park(this);
+        java.util.myconcurrent.locks.LockSupport.park(this);
         if (Thread.interrupted()) {
           interrupted = true;
         }
@@ -2358,7 +2359,7 @@ public abstract class AbstractQueuedSynchronizer extends AbstractOwnableSynchron
       int savedState = fullyRelease(node); // 释放锁，不然其他线程无法获取锁（注意这里是独占模型），将该节点从等待队列移出
       int interruptMode = 0;
       while (!isOnSyncQueue(node)) { // 如果当前节点在同步队列上，跳出循环
-        LockSupport.park(this); // 阻塞当前线程
+        java.util.myconcurrent.locks.LockSupport.park(this); // 阻塞当前线程
         if ((interruptMode = checkInterruptWhileWaiting(node))
             != 0) // 如果被唤醒后，发现当前线程被中断，则跳出循环，没有中断则继续
         {
@@ -2414,7 +2415,7 @@ public abstract class AbstractQueuedSynchronizer extends AbstractOwnableSynchron
           break;
         }
         if (nanosTimeout >= spinForTimeoutThreshold) {
-          LockSupport.parkNanos(this, nanosTimeout);
+          java.util.myconcurrent.locks.LockSupport.parkNanos(this, nanosTimeout);
         }
         if ((interruptMode = checkInterruptWhileWaiting(node)) != 0) {
           break;
@@ -2462,7 +2463,7 @@ public abstract class AbstractQueuedSynchronizer extends AbstractOwnableSynchron
           timedout = transferAfterCancelledWait(node);
           break;
         }
-        LockSupport.parkUntil(this, abstime);
+        java.util.myconcurrent.locks.LockSupport.parkUntil(this, abstime);
         if ((interruptMode = checkInterruptWhileWaiting(node)) != 0) {
           break;
         }
@@ -2510,7 +2511,7 @@ public abstract class AbstractQueuedSynchronizer extends AbstractOwnableSynchron
           break;
         }
         if (nanosTimeout >= spinForTimeoutThreshold) {
-          LockSupport.parkNanos(this, nanosTimeout);
+          java.util.myconcurrent.locks.LockSupport.parkNanos(this, nanosTimeout);
         }
         if ((interruptMode = checkInterruptWhileWaiting(node)) != 0) {
           break;

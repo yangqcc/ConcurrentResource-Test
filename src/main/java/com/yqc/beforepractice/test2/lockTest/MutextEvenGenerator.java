@@ -4,8 +4,8 @@ package com.yqc.beforepractice.test2.lockTest;
 import com.yqc.beforepractice.test2.getResource.EventChecker;
 import com.yqc.beforepractice.test2.getResource.IntGenerator;
 
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.myconcurrent.locks.Lock;
+import java.util.myconcurrent.locks.ReentrantLock;
 
 public class MutextEvenGenerator extends IntGenerator {
     private int currentEvenValue = 0;

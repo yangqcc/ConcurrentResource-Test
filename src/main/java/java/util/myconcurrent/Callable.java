@@ -33,7 +33,7 @@
  * http://creativecommons.org/publicdomain/zero/1.0/
  */
 
-package java.util.concurrent;
+package java.util.myconcurrent;
 
 /**
  * A task that returns a result and may throw an exception.
@@ -46,10 +46,10 @@ package java.util.concurrent;
  * {@code Runnable}, however, does not return a result and cannot
  * throw a checked exception.
  *
- * <p>The {@link Executors} class contains utility methods to
+ * <p>The {@link java.util.myconcurrent.Executors} class contains utility methods to
  * convert from other common forms to {@code Callable} classes.
  *
- * @see Executor
+ * @see java.util.myconcurrent.Executor
  * @since 1.5
  * @author Doug Lea
  * @param <V> the result type of method {@code call}
