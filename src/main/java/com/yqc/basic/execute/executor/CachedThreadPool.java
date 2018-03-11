@@ -1,7 +1,7 @@
 package com.yqc.basic.execute.executor;
 
 import java.util.concurrent.ExecutorService;
-import util.concurrent.Executors;
+import java.util.concurrent.Executors;
 
 public class CachedThreadPool {
     public static void main(String[] args) {

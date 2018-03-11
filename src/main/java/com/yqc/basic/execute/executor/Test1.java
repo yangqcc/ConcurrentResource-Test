@@ -1,7 +1,7 @@
 package com.yqc.basic.execute.executor;
 
-import util.concurrent.ArrayBlockingQueue;
-import util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /**

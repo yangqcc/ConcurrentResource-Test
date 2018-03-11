@@ -1,7 +1,7 @@
 package com.yqc.resource;
 
-import util.concurrent.locks.Lock;
-import util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class MutexEvenGenerator extends IntGenerator {
     private int currentEvenValue = 0;

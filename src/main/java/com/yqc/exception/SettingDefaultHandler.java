@@ -1,7 +1,7 @@
 package com.yqc.exception;
 
 import java.util.concurrent.ExecutorService;
-import util.concurrent.Executors;
+import java.util.concurrent.Executors;
 
 public class SettingDefaultHandler {
     public static void main(String[] args) {

@@ -1,7 +1,7 @@
 package com.yqc;
 
 import java.util.concurrent.ExecutorService;
-import util.concurrent.Executors;
+import java.util.concurrent.Executors;
 
 public class TestThread {
     public static void main(String[] args) throws InterruptedException {

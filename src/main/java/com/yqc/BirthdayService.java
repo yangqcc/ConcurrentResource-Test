@@ -1,9 +1,9 @@
 package com.yqc;
 
-import util.concurrent.ArrayBlockingQueue;
-import util.concurrent.BlockingQueue;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
-import util.concurrent.Executors;
+import java.util.concurrent.Executors;
 
 /**
  * 抄来的代码，写得很差

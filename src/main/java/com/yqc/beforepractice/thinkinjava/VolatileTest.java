@@ -1,7 +1,7 @@
 package com.yqc.beforepractice.thinkinjava;
 
 import java.util.concurrent.ExecutorService;
-import util.concurrent.Executors;
+import java.util.concurrent.Executors;
 
 public class VolatileTest implements Runnable {
     public volatile int i = 1;

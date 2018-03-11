@@ -1,9 +1,9 @@
 package com.yqc.locks;
 
 import java.util.concurrent.ExecutorService;
-import util.concurrent.Executors;
-import util.concurrent.locks.Lock;
-import util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.Executors;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class TestLock {
     Lock lock = new ReentrantLock();

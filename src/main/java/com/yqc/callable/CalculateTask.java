@@ -1,6 +1,6 @@
 package com.yqc.callable;
 
-import util.concurrent.Callable;
+import java.util.concurrent.Callable;
 
 /**
  * @author yangqc

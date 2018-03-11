@@ -1,4 +1,4 @@
-package util.practice.chapter7;
+package java.util.practice.chapter7;
 
 import java.io.IOException;
 import java.io.InputStream;

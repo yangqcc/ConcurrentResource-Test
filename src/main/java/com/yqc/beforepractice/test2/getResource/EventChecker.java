@@ -1,9 +1,9 @@
 package com.yqc.beforepractice.test2.getResource;
 
 import java.util.concurrent.ExecutorService;
-import util.concurrent.Executors;
-import util.concurrent.locks.Lock;
-import util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.Executors;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class EventChecker implements Runnable {
 

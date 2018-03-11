@@ -1,10 +1,7 @@
 package com.yqc.beforepractice.test2.returnValue;
 
-import util.concurrent.Callable;
-import util.concurrent.Executors;
 import java.util.ArrayList;
 import java.util.concurrent.*;
-import util.concurrent.Future;
 
 /**
  * 有返回值的任务

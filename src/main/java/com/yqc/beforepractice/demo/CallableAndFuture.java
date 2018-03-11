@@ -2,8 +2,8 @@ package com.yqc.beforepractice.demo;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
-import util.concurrent.Executors;
-import util.concurrent.Future;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 public class CallableAndFuture {
     public static void main(String[] args) {

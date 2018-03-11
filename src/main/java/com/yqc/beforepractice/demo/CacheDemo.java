@@ -2,8 +2,8 @@ package com.yqc.beforepractice.demo;
 
 import java.util.HashMap;
 import java.util.Map;
-import util.concurrent.locks.ReadWriteLock;
-import util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * 简单的缓存系统

@@ -3,7 +3,7 @@ package com.yqc.beforepractice.test2.lockTest;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ExecutorService;
-import util.concurrent.Executors;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class AtomicIntegerTest implements Runnable {

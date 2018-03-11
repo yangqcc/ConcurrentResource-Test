@@ -1,8 +1,8 @@
 package com.yqc.banktest;
 
-import util.concurrent.locks.Condition;
-import util.concurrent.locks.Lock;
-import util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class Bank {
     private final double[] accounts;

@@ -2,7 +2,7 @@ package com.yqc.beforepractice.thinkinjava;
 
 import java.util.LinkedList;
 import java.util.concurrent.ExecutorService;
-import util.concurrent.Executors;
+import java.util.concurrent.Executors;
 
 class MyMeal {
     private int orderNum;

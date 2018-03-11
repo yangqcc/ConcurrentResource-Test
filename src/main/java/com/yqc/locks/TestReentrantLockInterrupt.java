@@ -1,6 +1,6 @@
 package com.yqc.locks;
 
-import util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * ReentrantLock在获取被阻塞时，并不会响应中断，只会设置线程的标志位

@@ -1,10 +1,8 @@
 package com.yqc.activeobject;
 
-import util.concurrent.Executors;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.*;
-import util.concurrent.Future;
 
 /**
  * 活动对象

@@ -1,7 +1,7 @@
 package com.yqc.singleton;
 
 import java.util.concurrent.ExecutorService;
-import util.concurrent.Executors;
+import java.util.concurrent.Executors;
 
 /**
  * 错误的单例模式

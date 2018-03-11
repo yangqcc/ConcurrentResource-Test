@@ -1,8 +1,8 @@
 package com.yqc.basic.stop;
 
 import java.util.concurrent.TimeUnit;
-import util.concurrent.locks.Lock;
-import util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 class BlockedMutex {
     private Lock lock = new ReentrantLock(); // ReentrantLock上阻塞的任务具备可以被中断的能力

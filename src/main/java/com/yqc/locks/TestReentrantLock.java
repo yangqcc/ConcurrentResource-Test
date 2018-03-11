@@ -1,8 +1,8 @@
 package com.yqc.locks;
 
 import java.util.ArrayList;
-import util.concurrent.locks.Lock;
-import util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * 测试可重入锁

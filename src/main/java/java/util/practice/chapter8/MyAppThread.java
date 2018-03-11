@@ -1,4 +1,4 @@
-package util.practice.chapter8;
+package java.util.practice.chapter8;
 
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;

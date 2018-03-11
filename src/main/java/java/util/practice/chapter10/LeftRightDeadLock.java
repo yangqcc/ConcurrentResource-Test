@@ -1,4 +1,4 @@
-package util.practice.chapter10;
+package java.util.practice.chapter10;
 
 /**
  * ���׷�������

@@ -3,7 +3,7 @@ package com.yqc.forkjoin;
 import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ForkJoinPool;
-import util.concurrent.Future;
+import java.util.concurrent.Future;
 import java.util.concurrent.RecursiveTask;
 
 /**
