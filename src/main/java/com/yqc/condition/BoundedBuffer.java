@@ -1,11 +1,11 @@
 package com.yqc.condition;
 
 
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import util.concurrent.Executor;
+import util.concurrent.Executors;
+import util.concurrent.locks.Condition;
+import util.concurrent.locks.Lock;
+import util.concurrent.locks.ReentrantLock;
 
 /**
  * <p>title:</p> <p>description:</p>

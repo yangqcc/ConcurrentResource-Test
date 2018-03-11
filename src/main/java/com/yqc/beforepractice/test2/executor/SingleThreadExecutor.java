@@ -3,7 +3,7 @@ package com.yqc.beforepractice.test2.executor;
 import com.yqc.basic.execute.executor.LiftOff;
 
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import util.concurrent.Executors;
 
 public class SingleThreadExecutor {
     public static void main(String[] args) {

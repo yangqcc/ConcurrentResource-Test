@@ -3,7 +3,7 @@ package com.yqc.beforepractice.test2.executor;
 import com.yqc.basic.execute.executor.LiftOff;
 
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import util.concurrent.Executors;
 
 /**
  * 单个Executors来管理所有线程任务 线程池

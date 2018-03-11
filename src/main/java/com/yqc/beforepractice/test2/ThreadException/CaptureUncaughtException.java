@@ -1,7 +1,7 @@
 package com.yqc.beforepractice.test2.ThreadException;
 
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 
 class ExceptionThread2 implements Runnable {

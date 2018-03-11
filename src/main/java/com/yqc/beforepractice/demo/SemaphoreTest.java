@@ -1,8 +1,8 @@
 package com.yqc.beforepractice.demo;
 
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Semaphore;
+import util.concurrent.Executors;
+import util.concurrent.Semaphore;
 
 public class SemaphoreTest {
     public static void main(String[] args) {

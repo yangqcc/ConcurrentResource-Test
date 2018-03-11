@@ -1,7 +1,7 @@
 package com.yqc.beforepractice.thinkinjava;
 
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import util.concurrent.Executors;
 
 /**
  * 异常逃逸，捕获不到

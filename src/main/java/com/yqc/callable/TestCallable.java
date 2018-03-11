@@ -2,11 +2,11 @@ package com.yqc.callable;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Callable;
+import util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import util.concurrent.Executors;
+import util.concurrent.Future;
 
 public class TestCallable {
 

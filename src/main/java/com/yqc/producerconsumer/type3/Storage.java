@@ -10,9 +10,9 @@ package com.yqc.producerconsumer.type3;
  */
 
 import java.util.LinkedList;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import util.concurrent.locks.Condition;
+import util.concurrent.locks.Lock;
+import util.concurrent.locks.ReentrantLock;
 import lombok.Getter;
 
 public class Storage {

@@ -1,7 +1,7 @@
 package com.yqc.callable;
 
-import java.util.concurrent.Callable;
-import java.util.concurrent.FutureTask;
+import util.concurrent.Callable;
+import util.concurrent.FutureTask;
 
 /**
  * @author yangqc

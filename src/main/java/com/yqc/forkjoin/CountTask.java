@@ -2,7 +2,7 @@ package com.yqc.forkjoin;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.Future;
+import util.concurrent.Future;
 import java.util.concurrent.RecursiveTask;
 
 public class CountTask extends RecursiveTask<Integer> {

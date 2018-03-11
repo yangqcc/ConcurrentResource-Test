@@ -1,7 +1,7 @@
 package com.yqc.beforepractice.test2.synchronizedTest;
 
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import util.concurrent.Executors;
 
 /**
  * synchronized解决线程同步问题

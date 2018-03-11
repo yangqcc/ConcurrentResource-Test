@@ -1,6 +1,6 @@
 package com.yqc.producerconsumer.type4;
 
-import java.util.concurrent.ArrayBlockingQueue;
+import util.concurrent.ArrayBlockingQueue;
 import lombok.Getter;
 
 /**

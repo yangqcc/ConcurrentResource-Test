@@ -1,7 +1,7 @@
 package com.yqc.locks;
 
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import util.concurrent.locks.Lock;
+import util.concurrent.locks.ReentrantLock;
 
 public class TestLockInterrupt {
     private Lock lock = new ReentrantLock();

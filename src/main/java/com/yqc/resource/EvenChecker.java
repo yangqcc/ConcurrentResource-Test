@@ -1,7 +1,7 @@
 package com.yqc.resource;
 
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import util.concurrent.Executors;
 
 public class EvenChecker implements Runnable {
     private final int id;

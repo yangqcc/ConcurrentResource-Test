@@ -1,8 +1,8 @@
 package com.yqc.beforepractice.demo;
 
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import util.concurrent.locks.Condition;
+import util.concurrent.locks.Lock;
+import util.concurrent.locks.ReentrantLock;
 
 public class ThreeConditionCommunication {
     public static void main(String[] args) {

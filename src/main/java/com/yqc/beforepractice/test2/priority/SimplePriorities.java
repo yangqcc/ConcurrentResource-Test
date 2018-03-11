@@ -1,7 +1,7 @@
 package com.yqc.beforepractice.test2.priority;
 
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import util.concurrent.Executors;
 
 /**
  * 线程优先级

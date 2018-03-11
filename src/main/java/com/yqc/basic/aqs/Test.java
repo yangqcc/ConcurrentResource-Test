@@ -1,7 +1,7 @@
 package com.yqc.basic.aqs;
 
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import util.concurrent.Executors;
 
 public class Test {
     public static void main(String[] args) throws InterruptedException {

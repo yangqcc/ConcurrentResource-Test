@@ -1,7 +1,7 @@
 package com.yqc.beforepractice.demo;
 
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import util.concurrent.Executors;
 
 public class ThreadPoolTest {
     public static void main(String[] args) {

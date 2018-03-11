@@ -1,7 +1,7 @@
 package com.yqc.producerconsumer.type2;
 
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
+import util.concurrent.Executor;
+import util.concurrent.Executors;
 
 /**
  * <p>title:</p>

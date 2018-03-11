@@ -33,7 +33,7 @@
  * http://creativecommons.org/publicdomain/zero/1.0/
  */
 
-package java.util.concurrent;
+package util.concurrent;
 
 /**
  * Exception thrown by an {@link Executor} when a task cannot be

@@ -1,7 +1,7 @@
-package java.util.practice.chapter8;
+package util.practice.chapter8;
 
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
+import util.concurrent.ArrayBlockingQueue;
+import util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 

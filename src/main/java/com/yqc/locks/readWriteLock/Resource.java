@@ -2,9 +2,9 @@ package com.yqc.locks.readWriteLock;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
+import util.concurrent.locks.Lock;
+import util.concurrent.locks.ReadWriteLock;
+import util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * 测试读写锁

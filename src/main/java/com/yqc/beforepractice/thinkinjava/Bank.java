@@ -1,8 +1,8 @@
 package com.yqc.beforepractice.thinkinjava;
 
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import util.concurrent.locks.Condition;
+import util.concurrent.locks.Lock;
+import util.concurrent.locks.ReentrantLock;
 
 /**
  * 银行类

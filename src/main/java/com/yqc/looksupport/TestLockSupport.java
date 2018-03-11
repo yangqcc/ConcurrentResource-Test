@@ -1,6 +1,6 @@
 package looksupport;
 
-import java.util.concurrent.locks.LockSupport;
+import util.concurrent.locks.LockSupport;
 
 /**
  * LockSupport会响应中断，也就是说，调用park，该线程阻塞，如果此期间 线程被中断，那么会从阻塞中恢复，但是只会设置中断标志位，不会抛出异常

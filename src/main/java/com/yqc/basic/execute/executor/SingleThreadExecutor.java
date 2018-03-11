@@ -1,7 +1,7 @@
 package com.yqc.basic.execute.executor;
 
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import util.concurrent.Executors;
 
 /**
  * 只创建一个线程
