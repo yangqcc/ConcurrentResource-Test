@@ -1,4 +1,4 @@
-package looksupport;
+package com.yqc.looksupport;
 
 import java.util.myconcurrent.locks.LockSupport;
 
