@@ -575,10 +575,9 @@ public abstract class AbstractQueuedSynchronizer extends AbstractOwnableSynchron
         }
       } else {
         node.prev = t; // 加入队列后，那么返回
-        if (compareAndSetTail(t,
-            node)) {    // private final boolean compareAndSetTail(Node expect, Node update) {
-          t.next = node;                   //          return unsafe.compareAndSwapObject(this,tailOffset, expect, update);
-          return t;                        // }
+        if (compareAndSetTail(t, node)) {    // private final boolean compareAndSetTail(Node expect, Node update) {
+          t.next = node;                     //          return unsafe.compareAndSwapObject(this,tailOffset, expect, update);
+          return t;                          // }
         }
       }
     }
@@ -652,7 +651,7 @@ public abstract class AbstractQueuedSynchronizer extends AbstractOwnableSynchron
       }
     }
     if (s != null) {
-      java.util.myconcurrent.locks.LockSupport.unpark(s.thread);
+      LockSupport.unpark(s.thread);
     }
   }
 
@@ -793,7 +792,7 @@ public abstract class AbstractQueuedSynchronizer extends AbstractOwnableSynchron
    * @return {@code true} if interrupted
    */
   private final boolean parkAndCheckInterrupt() {
-    java.util.myconcurrent.locks.LockSupport.park(this); // 阻塞当前线程，线程在这里被阻塞
+    LockSupport.park(this); // 阻塞当前线程，线程在这里被阻塞
     /**
      * public static boolean interrupted()
      * 测试当前线程是否已经中断。线程的中断状态
@@ -1191,7 +1190,7 @@ public abstract class AbstractQueuedSynchronizer extends AbstractOwnableSynchron
   }
 
   /**
-   * Acquires in exclusive mode, aborting if interrupted. 独占方式请求，如果被中断，会被终止
+   * Acquires in exclusive mode, aborting if interrupted.       独占方式请求，如果被中断，会被终止
    * Implemented by first checking interrupt status, then invoking at least
    * once {@link #tryAcquire}, returning on success. Otherwise the thread is
    * queued, possibly repeatedly blocking and unblocking, invoking
@@ -1695,12 +1694,12 @@ public abstract class AbstractQueuedSynchronizer extends AbstractOwnableSynchron
      * to set waitStatus fails, wake up to resync (in which case the
      * waitStatus can be transiently and harmlessly wrong).
      */
-    Node p = enq(node); // 加入到等待队列中，仅仅是加入到等待队列的末尾，且此时的状态为0，enq(node)会返回node在等待队列里的前一个结点
+    Node p = enq(node); // 加入到等待队列中，仅仅是加入到等待队列的末尾，且此时的状态为0，enq(node)会返回node在等待队列里的*前一个*结点
     int ws = p.waitStatus; // 前个节点的状态
     if (ws > 0 || !compareAndSetWaitStatus(p, ws,
         Node.SIGNAL)) // 如果前一个节点状态为CANCELLED或设设置状态为SIGNAL失败，那么唤醒当前节点
     {
-      java.util.myconcurrent.locks.LockSupport.unpark(node.thread); // 唤醒当前节点
+      LockSupport.unpark(node.thread); // 唤醒当前节点
     }
     return true;
   }
@@ -1955,7 +1954,8 @@ public abstract class AbstractQueuedSynchronizer extends AbstractOwnableSynchron
      */
     static final int CANCELLED = 1;
     /**
-     * 表示该节点的后继节点的应该被unpark
+     * 表示该节点的后继节点的应该被unpark,当前节点加入等待队列时,上个节点状态
+     * 被设置成SIGNAL.
      * waitStatus value to indicate successor's thread needs unparking
      */
     static final int SIGNAL = -1;
@@ -1972,19 +1972,26 @@ public abstract class AbstractQueuedSynchronizer extends AbstractOwnableSynchron
 
     /**
      * Status field, taking on only the values:
-     * SIGNAL:     The successor of this node is (or will soon be)
+     *
+     * SIGNAL:The successor of this node is (or will soon be)
      * blocked (via park), so the current node must
      * unpark its successor when it releases or
      * cancels. To avoid races, acquire methods must
      * first indicate they need a signal,
      * then retry the atomic acquire, and then,
      * on failure, block.
+     * 当前节点的后继节点被阻塞或者将要被阻塞，所以当前节点在释放或者
+     * 取消的时候，必须唤醒她的后继节点。为了避免竞争，acquire方法必须
+     * 先表明它需要被唤醒，然后再原子请求，如果再失败，阻塞。
+     *
      * CANCELLED:  This node is cancelled due to timeout or interrupt.
      * Nodes never leave this state. In particular,
      * a thread with cancelled node never again blocks.
+     *
      * 节点timeout或者interrupt便会设置为CANCELLED状态.
      * 节点一旦设置为CANCELLED状态后将不会改变，另外，一个
      * 线程如果是CANCELLED状态将不会阻塞，会从队列里面清除。
+     *
      * CONDITION:  This node is currently on a condition queue.
      * It will not be used as a sync queue node
      * until transferred, at which time the status
@@ -1993,17 +2000,22 @@ public abstract class AbstractQueuedSynchronizer extends AbstractOwnableSynchron
      * field, but simplifies mechanics.)
      * 这个节点当前在一个条件队列里面。直到被传输前，它将不会作为
      * 一个同步队列。
+     *
      * PROPAGATE:  A releaseShared should be propagated to other
      * nodes. This is set (for head node only) in
      * doReleaseShared to ensure propagation
      * continues, even if other operations have
      * since intervened.
+     * 一个共享释放应该传递给其他节点，只用于头结点来保证传递的继续，
+     * 即使有其他操作进行干预。
+     *
      * 0:          None of the above
      *
      * The values are arranged numerically to simplify use.
      * Non-negative values mean that a node doesn't need to
      * signal. So, most code doesn't need to check for particular
      * values, just for sign.
+     * 非负的表示一个节点不必被唤醒。所以大部分代码不必检查特定的值，
      *
      * The field is initialized to 0 for normal sync nodes, and
      * CONDITION for condition nodes.  It is modified using CAS
@@ -2116,6 +2128,7 @@ public abstract class AbstractQueuedSynchronizer extends AbstractOwnableSynchron
    * <p>
    * This class is Serializable, but all fields are transient, so deserialized
    * conditions have no waiters.
+   * 反序列化的类没有waiters，和AQS一样。
    */
   public class ConditionObject implements java.util.myconcurrent.locks.Condition, java.io.Serializable {
 
@@ -2132,12 +2145,14 @@ public abstract class AbstractQueuedSynchronizer extends AbstractOwnableSynchron
     private static final int THROW_IE = -1;
     /**
      * First node of condition queue.
+     * 条件队列的第一个节点
      */
     private transient Node firstWaiter;
 
     // Internal methods
     /**
      * Last node of condition queue.
+     * 条件队列的第二个节点
      */
     private transient Node lastWaiter;
 
@@ -2150,7 +2165,7 @@ public abstract class AbstractQueuedSynchronizer extends AbstractOwnableSynchron
     /**
      * 该方法在Condition的await()方法中使用，由于Condition的await()方法
      * 必须在持有锁的情况下调用，所以这里已经是单线程执行情况，所有没有实现线程安全机制 使用了线程封闭策略
-     * Adds a new waiter to wait queue.
+     * Adds a new waiter to wait queue.（将一个新的waiter添加到一个等待队列）
      *
      * @return its new wait node
      */
@@ -2207,7 +2222,8 @@ public abstract class AbstractQueuedSynchronizer extends AbstractOwnableSynchron
     }
 
     /**
-     * 用于Condition Unlinks cancelled waiter nodes from condition queue.
+     * 将cancelled的等待节点从condition队列取消关联
+     * Unlinks cancelled waiter nodes from condition queue.
      * Called only while holding lock. This is called when cancellation
      * occurred during condition wait, and upon insertion of a new waiter
      * when lastWaiter is seen to have been cancelled. This method is needed
@@ -2225,7 +2241,7 @@ public abstract class AbstractQueuedSynchronizer extends AbstractOwnableSynchron
         Node next = t.nextWaiter;
         if (t.waitStatus != Node.CONDITION) { // 下一个结点状态不为CONDITION，说明已被加入到等待队列
           t.nextWaiter = null; // 头结点的下个节点置为null
-          if (trail == null) //
+          if (trail == null)   //
           {
             firstWaiter = next; // 头结点设置为当前节点的下个节点，此时当前节点完全从条件队列中移除
           } else {
@@ -2299,7 +2315,7 @@ public abstract class AbstractQueuedSynchronizer extends AbstractOwnableSynchron
       int savedState = fullyRelease(node);
       boolean interrupted = false;
       while (!isOnSyncQueue(node)) {
-        java.util.myconcurrent.locks.LockSupport.park(this);
+        LockSupport.park(this);
         if (Thread.interrupted()) {
           interrupted = true;
         }
@@ -2317,8 +2333,7 @@ public abstract class AbstractQueuedSynchronizer extends AbstractOwnableSynchron
      * Checks for interrupt,returning THROW_IE if interrupted before signalled, REINTERRUPT if
      * after signalled, or 0 if not interrupted.
      */
-    private int checkInterruptWhileWaiting(
-        Node node) { // 如果被中断，返回THROW_IE,否则返回0（如果加入到等待队列成功，返回THROW_IE）
+    private int checkInterruptWhileWaiting(Node node) { // 如果被中断，返回THROW_IE,否则返回0（如果加入到等待队列成功，返回THROW_IE）
       return Thread.interrupted() ? (transferAfterCancelledWait(node) ? THROW_IE : REINTERRUPT) : 0;
     }
 
