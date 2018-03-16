@@ -269,7 +269,7 @@ import java.util.myconcurrent.locks.AbstractQueuedSynchronizer.ConditionObject;
  * @author Doug Lea
  * @since 1.5
  */
-public class ReentrantReadWriteLock implements java.util.myconcurrent.locks.ReadWriteLock, java.io.Serializable {
+public class ReentrantReadWriteLock implements ReadWriteLock, java.io.Serializable {
     private static final long serialVersionUID = -6992448646407690164L;
     // Unsafe mechanics
     private static final sun.misc.Unsafe UNSAFE;
@@ -279,8 +279,7 @@ public class ReentrantReadWriteLock implements java.util.myconcurrent.locks.Read
         try {
             UNSAFE = sun.misc.Unsafe.getUnsafe();
             Class<?> tk = Thread.class;
-            TID_OFFSET = UNSAFE.objectFieldOffset
-                    (tk.getDeclaredField("tid"));
+            TID_OFFSET = UNSAFE.objectFieldOffset(tk.getDeclaredField("tid"));
         } catch (Exception e) {
             throw new Error(e);
         }
@@ -606,7 +605,7 @@ public class ReentrantReadWriteLock implements java.util.myconcurrent.locks.Read
      * Subclassed into fair and nonfair versions.
      * ReentrantReadWriteLock的同步操作，子类用于公平和非公平版本。
      */
-    abstract static class Sync extends java.util.myconcurrent.locks.AbstractQueuedSynchronizer {
+    abstract static class Sync extends AbstractQueuedSynchronizer {
         static final int SHARED_SHIFT = 16;
 
         /*
@@ -623,7 +622,7 @@ public class ReentrantReadWriteLock implements java.util.myconcurrent.locks.Read
          * The number of reentrant read locks held by current thread.
          * Initialized only in constructor and readObject.
          * Removed whenever a thread's read hold count drops to 0.
-         * 当前线程持有的可重入读锁的数量，只能通过构造函数和readObject初始化。
+         * 记录当前线程持有的可重入读锁的数量，只能通过构造函数和readObject初始化。
          * 一个线程持有读锁的数量减到0时便会移除该对象。
          */
         private transient ThreadLocalHoldCounter readHolds;
@@ -650,13 +649,14 @@ public class ReentrantReadWriteLock implements java.util.myconcurrent.locks.Read
          * firstReader is the first thread to have acquired the read lock.
          * firstReaderHoldCount is firstReader's hold count.
          *
-         * firstReader是第一个请求读锁的线程对象。而firstReaderHoldCount是firstReader
+         * firstReader是第一个请求到读锁的线程对象。而firstReaderHoldCount是firstReader
          * 持有读锁的数量。
          * <p>
          * <p>More precisely, firstReader is the unique thread that last
          * changed the shared count from 0 to 1, and has not released the
          * read lock since then; null if there is no such thread.
-         *
+         * 更加准确的说，firstReader是唯一的一个最后将共享数量由0改到1的线程，并且当前
+         * 还没有释放读锁，null表示没有符合条件的线程。
          * <p>
          * <p>Cannot cause garbage retention unless the thread terminated
          * without relinquishing its read locks, since tryReleaseShared
@@ -673,7 +673,7 @@ public class ReentrantReadWriteLock implements java.util.myconcurrent.locks.Read
 
         Sync() {
             readHolds = new ThreadLocalHoldCounter();
-            setState(getState()); // ensures visibility of readHolds
+            setState(getState()); // ensures visibility of readHolds 确保readHolds的可见性
         }
 
         /**
@@ -710,8 +710,9 @@ public class ReentrantReadWriteLock implements java.util.myconcurrent.locks.Read
          * Acquires and releases use the same code for fair and
          * nonfair locks, but differ in whether/how they allow barging
          * when queues are non-empty.
+         * 对于公平和非公平锁的请求和释放使用的是相同的代码，不同点在于对于
+         * 队列非空的时候，怎么处理请求。
          */
-
         protected final boolean tryRelease(int releases) {
             if (!isHeldExclusively())
                 throw new IllegalMonitorStateException();
@@ -852,7 +853,7 @@ public class ReentrantReadWriteLock implements java.util.myconcurrent.locks.Read
         /**
          * Full version of acquire for reads, that handles CAS misses
          * and reentrant reads not dealt with in tryAcquireShared.
-         * 读锁请求的Full版本
+         * 读锁请求的完整版本
          */
         final int fullTryAcquireShared(Thread current) {
             /*
@@ -938,9 +939,11 @@ public class ReentrantReadWriteLock implements java.util.myconcurrent.locks.Read
             Thread current = Thread.currentThread();
             for (; ; ) {
                 int c = getState();
+                //先判断独占锁是否被获取，如果被获取再判断获取独占锁的是否是当前线程
                 if (exclusiveCount(c) != 0 &&
                         getExclusiveOwnerThread() != current)
                     return false;
+                //获取共享锁的数量
                 int r = sharedCount(c);
                 if (r == MAX_COUNT)
                     throw new Error("Maximum lock count exceeded");
@@ -1098,7 +1101,7 @@ public class ReentrantReadWriteLock implements java.util.myconcurrent.locks.Read
     /**
      * The lock returned by method {@link ReentrantReadWriteLock#readLock}.
      */
-    public static class ReadLock implements java.util.myconcurrent.locks.Lock, java.io.Serializable {
+    public static class ReadLock implements Lock, java.io.Serializable {
         private static final long serialVersionUID = -5992448646407690164L;
         private final Sync sync;
 

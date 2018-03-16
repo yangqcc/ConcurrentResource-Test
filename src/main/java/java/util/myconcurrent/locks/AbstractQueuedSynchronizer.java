@@ -1223,9 +1223,8 @@ public abstract class AbstractQueuedSynchronizer extends AbstractOwnableSynchron
    * can represent anything you like.
    */
   public final void acquireShared(int arg) {
-    if (tryAcquireShared(arg) < 0)
+    if (tryAcquireShared(arg) < 0) {
       //还会再尝试获取资源一次
-    {
       doAcquireShared(arg);
     }
   }

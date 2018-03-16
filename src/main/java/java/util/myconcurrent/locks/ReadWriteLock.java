@@ -121,12 +121,12 @@ public interface ReadWriteLock {
      *
      * @return the lock used for reading
      */
-    java.util.myconcurrent.locks.Lock readLock();
+    Lock readLock();
 
     /**
      * Returns the lock used for writing.
      *
      * @return the lock used for writing
      */
-    java.util.myconcurrent.locks.Lock writeLock();
+    Lock writeLock();
 }

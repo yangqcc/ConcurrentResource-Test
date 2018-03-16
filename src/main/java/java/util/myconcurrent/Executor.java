@@ -115,8 +115,8 @@ import java.util.concurrent.ExecutorService;
  *
  * The {@code Executor} implementations provided in this package
  * implement {@link ExecutorService}, which is a more extensive
- * interface.  The {@link java.util.myconcurrent.ThreadPoolExecutor} class provides an
- * extensible thread pool implementation. The {@link java.util.myconcurrent.Executors} class
+ * interface.  The {@link java.util.concurrent.ThreadPoolExecutor} class provides an
+ * extensible thread pool implementation. The {@link java.util.concurrent.Executors} class
  * provides convenient factory methods for these Executors.
  *
  * <p>Memory consistency effects: Actions in a thread prior to
